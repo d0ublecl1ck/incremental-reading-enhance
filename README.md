@@ -115,7 +115,7 @@ Settings are grouped by workflow and include plain-language descriptions.
 | **Spaced Repetition** | Dependency status, deck tag, and multiline card separators. |
 | **Knowledge tree** | Branch warnings, completion visibility, and expansion state. |
 | **Paths** | Every plugin-managed source, extract, card, category, attachment, dashboard, and log path. |
-| **General** | Date convention and diagnostic logging. |
+| **General** | Date convention, extract highlight colour, and diagnostic logging. |
 
 Use **Run setup check** at the top of the settings page to verify the Spaced Repetition dependency, folder separation, A-Factor bounds, and card separators. Each path setting has a reset-to-default button. Configure card algorithms and review behaviour in Spaced Repetition itself.
 
