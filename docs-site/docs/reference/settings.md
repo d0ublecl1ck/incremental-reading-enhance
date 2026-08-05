@@ -28,4 +28,4 @@ Separate folders are configurable for sources, extracts, cards, attachments, and
 
 ## Diagnostics and dates
 
-Date convention and diagnostic logging settings support troubleshooting and migration. Run **Run setup check** after changing folders, A-Factor bounds, card separators, or the dependency.
+Date convention and diagnostic logging settings support troubleshooting and migration. **Extract highlight colour** controls both the marker left on newly extracted source passages and the background accent shown on extract notes in editing and reading views. Run **Run setup check** after changing folders, A-Factor bounds, card separators, or the dependency.

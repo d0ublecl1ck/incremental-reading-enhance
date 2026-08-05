@@ -257,6 +257,7 @@ const SPACED_REPETITION_TAB_VIEW = 'spaced-repetition-tab-view';
 const READ_POINT_MARKER = '📍<!--ir-readpoint-->';
 const READ_POINT_RE = /(?:📍\s*)?<!--ir-readpoint-->/g;
 const BODY_MARKER = '<!--ir-card-body-->';
+const DEFAULT_EXTRACT_HIGHLIGHT_COLOR = '#ffd166';
 // ==highlight== cloze marker. Inner allows single '=' (LaTeX like ==E = mc^2==)
 // but not '==', so the closing delimiter is never swallowed. Build per-use with
 // `new RegExp(HL_CLOZE_SRC, 'g')` — shared lastIndex across call sites would corrupt matchAll/replace.
@@ -309,6 +310,7 @@ const DEFAULT_SETTINGS = {
   misc: {
     debug: false,
     date_format: 'DD-MM-YYYY',
+    extract_highlight_color: DEFAULT_EXTRACT_HIGHLIGHT_COLOR,
   },
   tree: {
     expanded: [],
@@ -322,6 +324,23 @@ const DEFAULT_SETTINGS = {
     readPoints: {},
   },
 };
+
+function normalizedExtractHighlightColor(value) {
+  const color = String(value || '').trim().toLowerCase();
+  return /^#[0-9a-f]{6}$/.test(color) ? color : DEFAULT_EXTRACT_HIGHLIGHT_COLOR;
+}
+
+function extractHighlightBackground(value) {
+  const color = normalizedExtractHighlightColor(value);
+  const number = Number.parseInt(color.slice(1), 16);
+  return `rgba(${number >> 16}, ${(number >> 8) & 255}, ${number & 255}, 0.18)`;
+}
+
+function excerptHighlightMarkup(value) {
+  const text = String(value || '');
+  if (!text || /^<mark class="ir-excerpt-text">[\s\S]*<\/mark>$/.test(text)) return text;
+  return `<mark class="ir-excerpt-text">${text}</mark>`;
+}
 
 //  Date helpers
 // ============================================================================
@@ -1863,6 +1882,24 @@ class IncrementalReadingSettingTab extends PluginSettingTab {
           }
         });
       });
+    new Setting(sec).setName('Extract highlight colour')
+      .setDesc('Accent used for extracted source passages and extract notes in editing and reading views.')
+      .addColorPicker(picker => picker
+        .setValue(normalizedExtractHighlightColor(s.extract_highlight_color))
+        .onChange(async value => {
+          s.extract_highlight_color = normalizedExtractHighlightColor(value);
+          await save();
+          this.plugin._refreshExcerptViews();
+        }))
+      .addExtraButton(button => button
+        .setIcon('rotate-ccw')
+        .setTooltip('Reset extract highlight colour')
+        .onClick(async () => {
+          s.extract_highlight_color = DEFAULT_EXTRACT_HIGHLIGHT_COLOR;
+          await save();
+          this.plugin._refreshExcerptViews();
+          this.display();
+        }));
     new Setting(sec).setName('Diagnostics').setHeading();
     new Setting(sec).setName('Debug logging')
       .setDesc('Write additional details to the developer console. Keep disabled during normal use.')
@@ -2466,6 +2503,7 @@ class IncrementalReadingPlugin extends Plugin {
     this.treeIndexCache = null;
     this.duePoolCache = null;
     this.registerEvent(this.app.metadataCache.on('changed', file => {
+      this._refreshExcerptViews(file);
       if (!isPathInIRCollection(this.settings, file.path)) return;
       const next = irViewSignature(this.app, file);
       const previous = this.irMetadataSignatures.get(file.path) ?? null;
@@ -2512,6 +2550,8 @@ class IncrementalReadingPlugin extends Plugin {
     this.registerView(KNOWLEDGE_TREE_SIDEBAR_TYPE, leaf => new KnowledgeTreeView(leaf, this, 'sidebar'));
     this.registerView(MAIN_DASHBOARD_VIEW_TYPE, leaf => new MainDashboardView(leaf, this));
     this.registerView(PDF_VIEW_TYPE, leaf => new PdfViewerView(leaf, this));
+    this.registerEvent(this.app.workspace.on('file-open', () => this._refreshExcerptViews()));
+    this.registerEvent(this.app.workspace.on('layout-change', () => this._refreshExcerptViews()));
     const cmd = (id, name, callback) => this.addCommand({ id, name, callback });
 
     // ---- Visual learning code-block renderer ----
@@ -2585,16 +2625,41 @@ class IncrementalReadingPlugin extends Plugin {
     cmd('open-toolkit-view',  'Open Toolkit view…',               () => this.openToolkitView());
     cmd('advanced-tools',     'Advanced tools…',                  () => this.advancedTools());
     this.app.workspace.onLayoutReady(() => {
+      this._refreshExcerptViews();
       const count = this._legacyCardFiles().length;
       if (count) new Notice(`Incremental Reading Toolkit: ${count} legacy card${count === 1 ? '' : 's'} found. Open Advanced tools and choose "Migrate legacy cards to Spaced Repetition".`, 10000);
     });
   }
 
   onunload() {
+    this._clearExcerptViews();
     if (!this.sessionSaveTimer) return;
     window.clearTimeout(this.sessionSaveTimer);
     this.sessionSaveTimer = null;
     this.saveData(this.settings).catch(error => console.error('[IR] final session persistence failed', error));
+  }
+
+  _refreshExcerptViews(file = null) {
+    const color = normalizedExtractHighlightColor(this.settings?.misc?.extract_highlight_color);
+    const background = extractHighlightBackground(color);
+    for (const leaf of this.app.workspace.getLeavesOfType('markdown')) {
+      const view = leaf.view;
+      if (!view?.contentEl || (file && view.file?.path !== file.path)) continue;
+      const isExtract = getFm(this.app, view.file)?.type === 'extract';
+      view.contentEl.toggleClass('ir-extract-view', isExtract);
+      view.contentEl.style.setProperty('--ir-extract-highlight-color', color);
+      view.contentEl.style.setProperty('--ir-extract-highlight-background', background);
+    }
+  }
+
+  _clearExcerptViews() {
+    for (const leaf of this.app.workspace.getLeavesOfType('markdown')) {
+      const el = leaf.view?.contentEl;
+      if (!el) continue;
+      el.removeClass('ir-extract-view');
+      el.style.removeProperty('--ir-extract-highlight-color');
+      el.style.removeProperty('--ir-extract-highlight-background');
+    }
   }
 
   async _runActionMenu(title, entries) {
@@ -3995,7 +4060,16 @@ class IncrementalReadingPlugin extends Plugin {
     const editor = getEditorForFile(this.app, active);
     const selection = editor?.getSelection?.() || '';
     if (!selection.trim()) { new Notice('No text selected.'); return; }
-    await this._writeExtract(active, fm, selection.trim());
+    const from = editor.getCursor('from');
+    const to = editor.getCursor('to');
+    const selectedText = selection.trim();
+    const created = await this._writeExtract(active, fm, selectedText);
+    if (!created) return;
+    if (editor.getRange(from, to).trim() !== selectedText) {
+      new Notice('Extract created, but the source changed before its passage could be highlighted.');
+      return;
+    }
+    editor.replaceRange(excerptHighlightMarkup(editor.getRange(from, to)), from, to);
   }
 
   async _createExtract(fromClipboard) {
@@ -4025,9 +4099,9 @@ class IncrementalReadingPlugin extends Plugin {
     const autoInterval = priorityToInterval(priority);
 
     const customStr = await askText(this.app, `First interval in days (blank for auto: ${autoInterval}d)`, '');
-    if (customStr === null) return;
+    if (customStr === null) return false;
     if (customStr.trim() && !/^[1-9]\d*$/.test(customStr.trim())) {
-      new Notice('Invalid interval — enter a positive whole number of days.'); return;
+      new Notice('Invalid interval — enter a positive whole number of days.'); return false;
     }
     const interval = customStr.trim() ? Number(customStr) : autoInterval;
     const nextReview = futureDateString(interval, this.settings);
@@ -4052,7 +4126,7 @@ ${body}
 `;
     const path = `${extractsFolder}/${name}.md`;
     if (this.app.vault.getAbstractFileByPath(path)) {
-      new Notice(`Extract already exists at ${path}`); return;
+      new Notice(`Extract already exists at ${path}`); return false;
     }
     await this.app.vault.create(path, content);
     const decayCap = Math.min(100, priority + 30);
@@ -4063,6 +4137,7 @@ ${body}
     const bump = await this._bumpAFactor(sourceFile, fm, this.settings.scheduling.extract_bump);
     const bumpMsg = bump ? ` · a ${bump.from}→${bump.to}` : '';
     new Notice(`Extract: ${name} · p${priority}→${newPri} · review +${interval}d (${nextReview})${bumpMsg}`);
+    return true;
   }
 
   async flashcardClipboard() {

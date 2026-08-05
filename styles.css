@@ -17,6 +17,21 @@
 .ir-settings-section input.is-invalid { border-color: var(--text-error); }
 .ir-settings-section input[type='text'] { width: min(360px, 42vw); }
 
+/* Extract notes — colour variables are set per Markdown view from plugin settings. */
+.ir-extract-view .markdown-preview-sizer,
+.ir-extract-view .cm-content {
+  background: var(--ir-extract-highlight-background, rgba(255, 209, 102, 0.18));
+  box-shadow: inset 4px 0 0 var(--ir-extract-highlight-color, #ffd166);
+  border-radius: 4px;
+}
+.ir-excerpt-text {
+  color: inherit;
+  background: var(--ir-extract-highlight-background, rgba(255, 209, 102, 0.18));
+  box-shadow: inset 0 -2px 0 var(--ir-extract-highlight-color, #ffd166);
+  border-radius: 2px;
+  padding: 0 0.08em;
+}
+
 /* In-app quickstart and user guide */
 .ir-guide-modal { max-height: 72vh; overflow-y: auto; }
 .ir-guide-modal h3 { margin-top: 20px; }

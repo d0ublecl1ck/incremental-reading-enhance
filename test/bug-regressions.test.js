@@ -49,8 +49,20 @@ test('invalid clock components are rejected', () => {
 });
 
 test('extract creation distinguishes cancellation from an automatic interval', () => {
-  assert.match(main, /if \(customStr === null\) return;/);
+  assert.match(main, /if \(customStr === null\) return false;/);
   assert.match(main, /Invalid interval — enter a positive whole number of days/);
+});
+
+test('extract notes receive a configurable highlight in editor and reading views', () => {
+  assert.match(main, /extract_highlight_color: DEFAULT_EXTRACT_HIGHLIGHT_COLOR/);
+  assert.match(main, /setName\('Extract highlight colour'\)/);
+  assert.match(main, /getFm\(this\.app, view\.file\)\?\.type === 'extract'/);
+  assert.match(main, /toggleClass\('ir-extract-view', isExtract\)/);
+  assert.match(main, /editor\.replaceRange\(excerptHighlightMarkup\(editor\.getRange\(from, to\)\), from, to\)/);
+  const css = fs.readFileSync(path.join(__dirname, '..', 'styles.css'), 'utf8');
+  assert.match(css, /\.ir-extract-view \.markdown-preview-sizer/);
+  assert.match(css, /\.ir-extract-view \.cm-content/);
+  assert.match(css, /\.ir-excerpt-text/);
 });
 
 test('asynchronous queue refreshes discard stale results', () => {

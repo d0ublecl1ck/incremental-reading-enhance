@@ -71,6 +71,7 @@ When grading, enter the page where you stopped. Chapter scheduling uses the chap
 ## Create extracts and cards
 
 An extract is another reading topic. It is useful when a passage still needs editing, context, or thought.
+Newly extracted passages stay marked in their source, and extract notes have a matching background accent in editing and reading views. Change the colour under **Settings -> Incremental Reading Toolkit -> General -> Extract highlight colour**.
 
 A card is ready for recall practice. Card options include:
 
