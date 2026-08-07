@@ -92,12 +92,17 @@ Use **Current element actions…** for one-note actions and **Advanced tools…*
 - **Postpone subtree**: move a source and its descendants together.
 - **Mercy (spread overdue)**: distribute overdue topics across a selected window.
 - **Subset review**: choose a due descendant from the active source.
-- **Done**: keep the note but remove it from future reading sessions.
+- **Done**: keep the note, clear its future review date, and remove it from future sessions. Done cards also leave the Spaced Repetition deck.
+- **Reset**: make an item active again and clear its scheduling history. A reset card returns to the Spaced Repetition deck as a new card.
 - **Dismiss**: exclude material you no longer want to process.
 
 ## Organize the knowledge tree
 
-Choose **Knowledge tree** from **Open Toolkit view…** to create categories, drag material under a parent, reorder siblings, or rename nodes. Files with duplicate basenames remain visible but cannot be used as parents until they are given unique names; this prevents ambiguous links from changing the wrong note.
+Choose **Knowledge tree** from **Open Toolkit view…** to create categories, drag material under a parent, reorder siblings, or rename nodes. Use the checkboxes to select multiple sources, extracts, or cards, then choose **Done** or **Reset** in the bulk-action bar. **Select visible** operates on the currently rendered rows, and Shift-click selects a range. Each row also has its own Done and Reset buttons.
+
+Completed items disappear when **Show completed material** is off. Their notes remain in the vault, but future Toolkit scheduling is cleared; cards are additionally removed from the configured Spaced Repetition deck. Resetting restores the item as active and starts its schedule over.
+
+Files with duplicate basenames remain visible but cannot be used as parents until they are given unique names; this prevents ambiguous links from changing the wrong note.
 
 ## Date formats
 

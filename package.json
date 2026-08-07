@@ -6,7 +6,7 @@
   "scripts": {
     "test": "node --test test/*.test.js",
     "validate": "node scripts/validate-release.mjs",
-    "check": "node --check main.js && node --check tree-core.js && node --check spaced-repetition-core.js && node --check date-core.js && node --check topic-core.js && npm run validate && npm test",
+    "check": "node --check main.js && node --check tree-core.js && node --check status-core.js && node --check spaced-repetition-core.js && node --check date-core.js && node --check topic-core.js && npm run validate && npm test",
     "build": "npm run check"
   },
   "keywords": [

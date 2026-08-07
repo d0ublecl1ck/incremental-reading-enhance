@@ -99,7 +99,7 @@ For recommended keybindings and complete note, PDF, card, queue, and date workfl
 | **Extract selection** | Turn selected source text into a linked extract. |
 | **Flashcard from clipboard** | Create a native Spaced Repetition card from clipboard text. |
 | **Capture or create…** | New/imported sources, PDF-aware extracts, image cards, image extracts, and occlusions. |
-| **Current element actions…** | Done, dismiss, postpone, schedule, priority, parent/PDF navigation, read points, and checkpoints. |
+| **Current element actions…** | Done/reset (including cards), dismiss, postpone, schedule, priority, parent/PDF navigation, read points, and checkpoints. |
 | **Open Toolkit view…** | Dashboard, analytics, queue, knowledge tree, or user guide. |
 | **Advanced tools…** | Subset/overload tools, splits, tree editing, migration, inline-card export, and diagnostics. |
 
@@ -113,7 +113,7 @@ Settings are grouped by workflow and include plain-language descriptions.
 | **Queue** | Mixed-card behaviour, ordering, filters, and session display. |
 | **Inline cards** | Question/answer and cloze parsing patterns. |
 | **Spaced Repetition** | Dependency status, deck tag, and multiline card separators. |
-| **Knowledge tree** | Branch warnings, completion visibility, and expansion state. |
+| **Knowledge tree** | Multi-select Done/Reset actions, branch warnings, completion visibility, and expansion state. |
 | **Paths** | Every plugin-managed source, extract, card, category, attachment, dashboard, and log path. |
 | **General** | Date convention, extract highlight colour, and diagnostic logging. |
 

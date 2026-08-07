@@ -4,6 +4,13 @@
 
 ### Added
 - Newly extracted source passages stay highlighted, and extract notes receive a matching configurable background accent in editing and reading views. The colour picker is under General settings.
+- The Knowledge Tree now supports checkbox and Shift-click multi-selection with bulk **Done** and **Reset** actions, plus matching actions on individual rows.
+- Cards can now be marked done. Completion clears future Toolkit scheduling, removes cards from the Spaced Repetition deck, and removes completed items from the active tree; resetting starts their scheduling over.
+
+### Fixed
+- Card completion now retires the deck tag stored on that card, even after the configured deck changes, and legacy migration preserves completed cards instead of reactivating them.
+- Hidden completed parents no longer remain as visible tree rows; active descendants are promoted to the nearest visible level.
+- Filtering or collapsing the tree now drops selections that are no longer visible before a bulk action can use them.
 
 ## 1.1.7 — 2026-07-19
 

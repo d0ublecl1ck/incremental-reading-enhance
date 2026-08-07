@@ -46,14 +46,20 @@
 .ir-tree-toolbar button { padding: 2px 8px; }
 .ir-tree-filter { flex: 1; min-width: 120px; }
 .ir-tree-type-filter { min-width: 110px; }
+.ir-tree-bulk { display: flex; align-items: center; gap: 6px; min-height: 30px; margin: 0 0 8px; padding: 4px 6px; border: 1px solid var(--background-modifier-border); border-radius: 6px; background: var(--background-secondary); }
+.ir-tree-bulk.is-active { border-color: var(--interactive-accent); }
+.ir-tree-bulk-count { min-width: 68px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.ir-tree-bulk button { padding: 2px 8px; }
 .ir-tree-summary { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 10px; }
 .ir-tree-summary button { padding: 3px 8px; border: 0; border-radius: 999px; background: var(--background-secondary); color: var(--text-muted); cursor: pointer; }
 .ir-tree-summary button:hover { color: var(--text-normal); background: var(--background-modifier-hover); }
 .ir-tree-body { user-select: none; }
 .ir-tree-row { display: flex; align-items: center; gap: 6px; padding: 2px 4px; cursor: pointer; border-radius: 4px; }
 .ir-tree-row:hover { background: var(--background-modifier-hover); }
+.ir-tree-row.is-selected { background: color-mix(in srgb, var(--interactive-accent) 18%, transparent); }
 .ir-tree-row.ir-tree-drop { outline: 2px solid var(--interactive-accent); }
 .ir-tree-twisty { width: 14px; display: inline-block; text-align: center; opacity: 0.7; }
+.ir-tree-select { flex: 0 0 auto; margin: 0 1px 0 0; cursor: pointer; }
 .ir-tree-icon { width: 16px; }
 .ir-tree-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ir-tree-pri { font-variant-numeric: tabular-nums; opacity: 0.6; }
@@ -64,7 +70,7 @@
 .ir-tree-status.is-done { color: var(--text-success); }
 .ir-tree-warn { color: var(--text-warning); }
 .ir-tree-unfiled > .ir-tree-title { font-style: italic; opacity: 0.8; }
-.ir-tree-actions { display: inline-flex; gap: 2px; }
+.ir-tree-actions { display: inline-flex; flex: 0 0 auto; gap: 2px; }
 .ir-tree-actions button { padding: 0 5px; line-height: 1.3; font-size: 0.85em; }
 .ir-tree-row:focus { outline: 2px solid var(--interactive-accent); outline-offset: -2px; }
 .ir-tree-compact .ir-tree-pri,
