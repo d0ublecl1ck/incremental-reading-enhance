@@ -1,6 +1,6 @@
 # Incremental Reading Toolkit changelog
 
-## Unreleased
+## 1.1.8 — 2026-08-07
 
 ### Added
 - Newly extracted source passages stay highlighted, and extract notes receive a matching configurable background accent in editing and reading views. The colour picker is under General settings.
