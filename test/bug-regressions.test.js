@@ -34,7 +34,7 @@ test('Spaced Repetition completion detects scheduling changes rather than arbitr
 });
 
 test('tree completion filtering does not force branches open', () => {
-  assert.match(main, /this\._match = \{ keep, forceExpand: !!f \|\| this\.typeFilter !== 'all' \}/);
+  assert.match(main, /this\._match = \{ keep, hiddenCompleted, forceExpand: !!f \|\| this\.typeFilter !== 'all' \}/);
   assert.match(main, /const expanded = !!this\._match\?\.forceExpand \|\| this\.plugin\.isExpanded\(key\)/);
 });
 

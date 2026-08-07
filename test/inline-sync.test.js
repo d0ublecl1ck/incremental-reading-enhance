@@ -31,6 +31,13 @@ test('main.js inlined spaced-repetition block is identical to its tested core', 
   );
 });
 
+test('main.js inlined status-core block is identical to status-core.js', () => {
+  assert.equal(
+    extractBlock('main.js', '// >>> status-core-functions', '// <<< status-core-functions'),
+    extractBlock('status-core.js', '// >>> status-core-functions', '// <<< status-core-functions')
+  );
+});
+
 test('main.js inlined date-core block is identical to date-core.js', () => {
   assert.equal(
     extractBlock('main.js', '// >>> date-core-functions', '// <<< date-core-functions'),

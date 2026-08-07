@@ -1,7 +1,7 @@
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert');
-const { effectiveParent, buildTreeIndex, linkTargetName, pageByPath } = require('../tree-core.js');
+const { effectiveParent, buildTreeIndex, linkTargetName, pageByPath, flattenedVisibleChildren } = require('../tree-core.js');
 
 const page = (path, basename, fm) => ({ path, basename, fm });
 
@@ -70,6 +70,23 @@ test('pageByPath resolves the correct node when basenames are duplicated', () =>
   const idx = buildTreeIndex(pages);
   assert.equal(pageByPath(idx, 'Sources/B/Shared.md').path, 'Sources/B/Shared.md');
   assert.equal(pageByPath(idx, 'missing.md'), null);
+});
+
+test('flattenedVisibleChildren promotes active descendants past hidden completed parents', () => {
+  const pages = [
+    page('category.md', 'Category', { type: 'category' }),
+    page('source.md', 'Done Source', { type: 'source', parent: '[[Category]]', status: 'done' }),
+    page('extract-a.md', 'Extract A', { type: 'extract', parent: '[[Done Source]]', status: 'active' }),
+    page('extract-b.md', 'Extract B', { type: 'extract', parent: '[[Done Source]]', status: 'active' }),
+  ];
+  const idx = buildTreeIndex(pages);
+  const visible = flattenedVisibleChildren(
+    idx,
+    pages[0],
+    new Set(pages.map(item => item.path)),
+    new Set(['source.md'])
+  );
+  assert.deepEqual(visible.map(item => item.path), ['extract-a.md', 'extract-b.md']);
 });
 
 test('linkTargetName returns a bare (non-wikilink) string as-is — frontmatter may store a plain basename', () => {

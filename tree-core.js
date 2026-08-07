@@ -62,6 +62,25 @@ function pageByPath(index, path) {
   return index.pages.find(page => page.path === path) || null;
 }
 
+// Return a page's visible children, promoting descendants past hidden nodes.
+// This keeps active descendants in the tree without rendering completed parents.
+function flattenedVisibleChildren(index, page, keep = null, hidden = null, seen = new Set()) {
+  if (!page || seen.has(page.path)) return [];
+  const nextSeen = new Set(seen);
+  nextSeen.add(page.path);
+  const children = index.childrenOf.get(page.basename.toLowerCase()) || [];
+  const visible = [];
+  for (const child of children) {
+    if (keep && !keep.has(child.path)) continue;
+    if (hidden?.has(child.path)) {
+      visible.push(...flattenedVisibleChildren(index, child, keep, hidden, nextSeen));
+    } else {
+      visible.push(child);
+    }
+  }
+  return visible;
+}
+
 // True if moving `childName` under `newParentName` would create a cycle.
 // Walks UP from newParentName via effective parents; cycle if childName is reached.
 function wouldCreateCycle(index, childName, newParentName) {
@@ -98,4 +117,4 @@ function computeReorder(siblings, movedPath, targetIndex) {
 }
 // <<< tree-core-functions
 
-module.exports = { linkTargetName, effectiveParent, siblingComparator, buildTreeIndex, pageByPath, wouldCreateCycle, computeReorder };
+module.exports = { linkTargetName, effectiveParent, siblingComparator, buildTreeIndex, pageByPath, flattenedVisibleChildren, wouldCreateCycle, computeReorder };

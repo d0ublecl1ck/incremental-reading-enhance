@@ -69,6 +69,25 @@ function pageByPath(index, path) {
   return index.pages.find(page => page.path === path) || null;
 }
 
+// Return a page's visible children, promoting descendants past hidden nodes.
+// This keeps active descendants in the tree without rendering completed parents.
+function flattenedVisibleChildren(index, page, keep = null, hidden = null, seen = new Set()) {
+  if (!page || seen.has(page.path)) return [];
+  const nextSeen = new Set(seen);
+  nextSeen.add(page.path);
+  const children = index.childrenOf.get(page.basename.toLowerCase()) || [];
+  const visible = [];
+  for (const child of children) {
+    if (keep && !keep.has(child.path)) continue;
+    if (hidden?.has(child.path)) {
+      visible.push(...flattenedVisibleChildren(index, child, keep, hidden, nextSeen));
+    } else {
+      visible.push(child);
+    }
+  }
+  return visible;
+}
+
 // True if moving `childName` under `newParentName` would create a cycle.
 // Walks UP from newParentName via effective parents; cycle if childName is reached.
 function wouldCreateCycle(index, childName, newParentName) {
@@ -104,7 +123,80 @@ function computeReorder(siblings, movedPath, targetIndex) {
   return writes;
 }
 // <<< tree-core-functions
-  return { linkTargetName, effectiveParent, siblingComparator, buildTreeIndex, pageByPath, wouldCreateCycle, computeReorder };
+  return { linkTargetName, effectiveParent, siblingComparator, buildTreeIndex, pageByPath, flattenedVisibleChildren, wouldCreateCycle, computeReorder };
+})();
+
+const statusCore = (function () {
+// >>> status-core-functions
+const RESET_SCHEDULING_FIELDS = [
+  'next_review', 'interval', 'review_count', 'last_reviewed', 'a_factor',
+  'last_grade', 'last_retrievability', 'stability', 'difficulty', 'ease',
+];
+
+function normalizedTagList(tags) {
+  if (Array.isArray(tags)) return tags.map(String).filter(Boolean);
+  if (typeof tags === 'string') return tags.split(/[\s,]+/).filter(Boolean);
+  return [];
+}
+
+function sameTag(left, right) {
+  return String(left || '').replace(/^#/, '').replace(/\/+$/, '')
+    === String(right || '').replace(/^#/, '').replace(/\/+$/, '');
+}
+
+function managedCardDeckTag(fm, configuredDeckTag) {
+  const normalize = value => String(value || '').replace(/^#/, '').replace(/\/+$/, '');
+  const stored = normalize(fm.ir_spaced_repetition_deck_tag);
+  const tags = normalizedTagList(fm.tags);
+  if (stored && tags.some(tag => sameTag(tag, stored))) return stored;
+  const configured = normalize(configuredDeckTag);
+  if (configured && tags.some(tag => sameTag(tag, configured))) return configured;
+  const likelyDeckTags = tags
+    .map(normalize)
+    .filter(tag => tag === 'flashcards' || tag.startsWith('flashcards/'));
+  return likelyDeckTags.length === 1 ? likelyDeckTags[0] : (stored || configured);
+}
+
+function completeItemFrontmatter(fm, today, deckTag) {
+  fm.status = 'done';
+  fm.date_done = today;
+  fm.last_reviewed = today;
+  delete fm.next_review;
+  delete fm.interval;
+  if (fm.type === 'card' && fm.ir_spaced_repetition === true) {
+    const managedDeckTag = managedCardDeckTag(fm, deckTag);
+    if (managedDeckTag) {
+      fm.tags = normalizedTagList(fm.tags).filter(tag => !sameTag(tag, managedDeckTag));
+      fm.ir_completed_deck_tag = managedDeckTag;
+      fm.ir_spaced_repetition_deck_tag = managedDeckTag;
+    }
+  }
+  return fm;
+}
+
+function resetItemFrontmatter(fm, deckTag) {
+  fm.status = 'active';
+  delete fm.date_done;
+  delete fm.date_dismissed;
+  for (const field of RESET_SCHEDULING_FIELDS) delete fm[field];
+  if (fm.type === 'card' && fm.ir_spaced_repetition === true) {
+    const restoreTag = fm.ir_completed_deck_tag || managedCardDeckTag(fm, deckTag);
+    const tags = normalizedTagList(fm.tags);
+    if (restoreTag && !tags.some(tag => sameTag(tag, restoreTag))) tags.push(String(restoreTag).replace(/^#/, ''));
+    fm.tags = tags;
+    if (restoreTag) fm.ir_spaced_repetition_deck_tag = String(restoreTag).replace(/^#/, '').replace(/\/+$/, '');
+    delete fm.ir_completed_deck_tag;
+  }
+  return fm;
+}
+
+function clearSpacedRepetitionSchedule(content) {
+  return String(content || '')
+    .replace(/[ \t]*<!--SR:!?[^>]*-->/g, '')
+    .replace(/[ \t]+\n/g, '\n');
+}
+// <<< status-core-functions
+  return { RESET_SCHEDULING_FIELDS, normalizedTagList, managedCardDeckTag, completeItemFrontmatter, resetItemFrontmatter, clearSpacedRepetitionSchedule };
 })();
 
 const spacedRepetitionCore = (function () {
@@ -2200,6 +2292,9 @@ class KnowledgeTreeView extends ItemView {
     this.refreshTimer = null;
     this.collectionRevision = 0;
     this.needsRender = false;
+    this.selectedPaths = new Set();
+    this.renderedSelectablePaths = [];
+    this.lastSelectedPath = null;
   }
 
   getViewType() { return this.mode === 'sidebar' ? KNOWLEDGE_TREE_SIDEBAR_TYPE : KNOWLEDGE_TREE_VIEW_TYPE; }
@@ -2277,6 +2372,11 @@ class KnowledgeTreeView extends ItemView {
       type.onchange = () => { this.typeFilter = type.value; this._renderBody(); };
     }
 
+    if (this.mode === 'main') {
+      this._bulkBar = root.createDiv({ cls: 'ir-tree-bulk' });
+      this._renderBulkBar();
+    }
+
     this._bodyEl = root.createDiv({ cls: 'ir-tree-body' });
     if (this.mode === 'main') {
       this._bodyEl.addEventListener('dragover', (e) => { e.preventDefault(); });
@@ -2293,12 +2393,23 @@ class KnowledgeTreeView extends ItemView {
     if (!this._bodyEl) { this._render(); return; }
     this._bodyEl.empty();
     this.index = this.plugin.buildTreeIndex();
+    const currentPaths = new Set(this.index.pages.map(page => page.path));
+    for (const path of this.selectedPaths) {
+      if (!currentPaths.has(path)) this.selectedPaths.delete(path);
+    }
+    this.renderedSelectablePaths = [];
     if (this.mode === 'main') this._renderSummary();
     this._computeFilter();
     const catRoots = this.index.roots.filter(p => p.fm.type === 'category' && !treeCore.effectiveParent(p.fm));
     const loose = this.index.roots.filter(p => !(p.fm.type === 'category' && !treeCore.effectiveParent(p.fm)));
     for (const p of catRoots) this._renderNode(this._bodyEl, p, 0);
     this._renderUnfiled(this._bodyEl, loose);
+    const renderedPaths = new Set(this.renderedSelectablePaths);
+    for (const path of this.selectedPaths) {
+      if (!renderedPaths.has(path)) this.selectedPaths.delete(path);
+    }
+    if (this.lastSelectedPath && !this.selectedPaths.has(this.lastSelectedPath)) this.lastSelectedPath = null;
+    this._renderBulkBar();
   }
 
   _computeFilter() {
@@ -2314,6 +2425,12 @@ class KnowledgeTreeView extends ItemView {
       return tagStr.toLowerCase().includes(f);
     };
     const keep = new Set();
+    const hiddenCompleted = new Set();
+    if (!this.plugin.settings.tree.show_completed) {
+      for (const page of this.index.pages) {
+        if (['done', 'dismissed'].includes(page.fm.status)) hiddenCompleted.add(page.path);
+      }
+    }
     for (const p of this.index.pages) {
       if (!matches(p)) continue;
       let cur = p;
@@ -2328,7 +2445,7 @@ class KnowledgeTreeView extends ItemView {
         cur = next;
       }
     }
-    this._match = { keep, forceExpand: !!f || this.typeFilter !== 'all' };
+    this._match = { keep, hiddenCompleted, forceExpand: !!f || this.typeFilter !== 'all' };
   }
 
   _renderSummary() {
@@ -2337,7 +2454,10 @@ class KnowledgeTreeView extends ItemView {
     this._bodyEl.parentElement.insertBefore(summary, this._bodyEl);
     summary.empty();
     const counts = { category: 0, source: 0, extract: 0, card: 0 };
-    for (const page of this.index.pages) counts[page.fm.type] = (counts[page.fm.type] || 0) + 1;
+    for (const page of this.index.pages) {
+      if (!this.plugin.settings.tree.show_completed && ['done', 'dismissed'].includes(page.fm.status)) continue;
+      counts[page.fm.type] = (counts[page.fm.type] || 0) + 1;
+    }
     for (const [type, label] of [['category', 'categories'], ['source', 'sources'], ['extract', 'extracts'], ['card', 'cards']]) {
       const chip = summary.createEl('button', { text: `${TREE_ICONS[type]} ${counts[type]} ${label}` });
       chip.title = `Show ${label}`;
@@ -2345,21 +2465,113 @@ class KnowledgeTreeView extends ItemView {
     }
   }
 
+  _renderBulkBar() {
+    if (!this._bulkBar) return;
+    const count = this.selectedPaths.size;
+    this._bulkBar.empty();
+    this._bulkBar.toggleClass('is-active', count > 0);
+    this._bulkBar.createSpan({ cls: 'ir-tree-bulk-count', text: `${count} selected` });
+
+    const rendered = this.renderedSelectablePaths;
+    const allVisibleSelected = rendered.length > 0 && rendered.every(path => this.selectedPaths.has(path));
+    const visible = this._bulkBar.createEl('button', { text: allVisibleSelected ? 'Unselect visible' : 'Select visible' });
+    visible.type = 'button';
+    visible.disabled = rendered.length === 0;
+    visible.onclick = () => {
+      for (const path of rendered) {
+        if (allVisibleSelected) this.selectedPaths.delete(path);
+        else this.selectedPaths.add(path);
+      }
+      this.lastSelectedPath = null;
+      this._renderBody();
+    };
+
+    const done = this._bulkBar.createEl('button', { text: 'Done' });
+    done.type = 'button'; done.disabled = count === 0;
+    done.title = 'Mark selected sources, extracts, and cards done';
+    done.onclick = () => this._runBulkAction('done');
+
+    const reset = this._bulkBar.createEl('button', { text: 'Reset' });
+    reset.type = 'button'; reset.disabled = count === 0;
+    reset.title = 'Make selected items active and clear their scheduling history';
+    reset.onclick = () => this._runBulkAction('reset');
+
+    const clear = this._bulkBar.createEl('button', { text: 'Clear' });
+    clear.type = 'button'; clear.disabled = count === 0;
+    clear.onclick = () => { this.selectedPaths.clear(); this.lastSelectedPath = null; this._renderBody(); };
+  }
+
+  async _runBulkAction(action) {
+    const paths = [...this.selectedPaths];
+    if (!paths.length) return;
+    const changed = action === 'done'
+      ? await this.plugin.markPathsDone(paths)
+      : await this.plugin.resetPaths(paths);
+    if (!changed) return;
+    this.selectedPaths.clear();
+    this.lastSelectedPath = null;
+    this._renderBody();
+  }
+
+  _toggleSelected(path, { range = false } = {}) {
+    if (range && this.lastSelectedPath) {
+      const from = this.renderedSelectablePaths.indexOf(this.lastSelectedPath);
+      const to = this.renderedSelectablePaths.indexOf(path);
+      if (from >= 0 && to >= 0) {
+        const shouldSelect = !this.selectedPaths.has(path);
+        for (const candidate of this.renderedSelectablePaths.slice(Math.min(from, to), Math.max(from, to) + 1)) {
+          if (shouldSelect) this.selectedPaths.add(candidate);
+          else this.selectedPaths.delete(candidate);
+        }
+      }
+    } else if (this.selectedPaths.has(path)) this.selectedPaths.delete(path);
+    else this.selectedPaths.add(path);
+    this.lastSelectedPath = path;
+    this._renderBody();
+  }
+
   _renderNode(parentEl, page, depth) {
     if (depth > 50) return;
     if (this._match && !this._match.keep.has(page.path)) return;
 
+    if (this._match?.hiddenCompleted.has(page.path)) {
+      const promoted = treeCore.flattenedVisibleChildren(
+        this.index, page, this._match.keep, this._match.hiddenCompleted
+      );
+      for (const child of promoted) this._renderNode(parentEl, child, depth);
+      return;
+    }
+
     const key = page.path;
-    const children = this.index.childrenOf.get(page.basename.toLowerCase()) || [];
+    const children = treeCore.flattenedVisibleChildren(
+      this.index, page, this._match?.keep || null, this._match?.hiddenCompleted || null
+    );
     const hasChildren = children.length > 0;
     const expanded = !!this._match?.forceExpand || this.plugin.isExpanded(key);
 
     const row = parentEl.createDiv({ cls: 'ir-tree-row' });
+    row.dataset.irPath = page.path;
     // Indent scales with tree depth, so it stays inline via a CSS var.
     row.style.setProperty('--ir-tree-depth', String(depth));
 
     const tw = row.createSpan({ cls: 'ir-tree-twisty', text: hasChildren ? (expanded ? '▼' : '▶') : '' });
     if (hasChildren) tw.onclick = (e) => { e.stopPropagation(); this.plugin.toggleExpanded(key); this._renderBody(); };
+
+    const selectable = this.mode === 'main' && ['source', 'extract', 'card'].includes(page.fm.type);
+    if (selectable) {
+      this.renderedSelectablePaths.push(page.path);
+      const checkbox = row.createEl('input', { cls: 'ir-tree-select', type: 'checkbox' });
+      checkbox.checked = this.selectedPaths.has(page.path);
+      checkbox.draggable = false;
+      checkbox.setAttribute('aria-label', `Select ${page.basename}`);
+      checkbox.onpointerdown = event => event.stopPropagation();
+      checkbox.onclick = event => {
+        event.preventDefault();
+        event.stopPropagation();
+        this._toggleSelected(page.path, { range: event.shiftKey });
+      };
+      row.toggleClass('is-selected', checkbox.checked);
+    }
 
     row.createSpan({ cls: 'ir-tree-icon', text: TREE_ICONS[page.fm.type] || '•' });
     row.createSpan({ cls: 'ir-tree-title', text: page.basename });
@@ -2387,8 +2599,14 @@ class KnowledgeTreeView extends ItemView {
     row.tabIndex = 0;
     row.setAttribute('role', 'treeitem');
     row.setAttribute('aria-expanded', hasChildren ? String(expanded) : 'false');
+    row.setAttribute('aria-selected', String(this.selectedPaths.has(page.path)));
     row.onclick = (event) => {
-      if (event.target.closest('button, .ir-tree-twisty')) return;
+      if (event.target.closest('button, input, .ir-tree-twisty')) return;
+      if (selectable && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault();
+        this._toggleSelected(page.path, { range: event.shiftKey });
+        return;
+      }
       this._openPage(page);
     };
     row.onkeydown = (event) => {
@@ -2403,7 +2621,15 @@ class KnowledgeTreeView extends ItemView {
   }
 
   _renderUnfiled(body, loose) {
-    const visible = this._match ? loose.filter(p => this._match.keep.has(p.path)) : loose;
+    const kept = this._match ? loose.filter(p => this._match.keep.has(p.path)) : loose;
+    const visible = [];
+    for (const page of kept) {
+      if (this._match?.hiddenCompleted.has(page.path)) {
+        visible.push(...treeCore.flattenedVisibleChildren(
+          this.index, page, this._match.keep, this._match.hiddenCompleted
+        ));
+      } else visible.push(page);
+    }
     if (!visible.length) return;
     const key = '::unfiled::';
     const expanded = !!this._match?.forceExpand || this.plugin.isExpanded(key);
@@ -2473,9 +2699,21 @@ class KnowledgeTreeView extends ItemView {
     const ren = actions.createEl('button', { text: '✎' });
     ren.type = 'button'; ren.draggable = false; ren.title = 'Rename';
     ren.onclick = async (e) => { e.preventDefault(); e.stopPropagation(); await this.plugin.renameTreeNode(page.path); this._renderBody(); };
-    const dis = actions.createEl('button', { text: '✕' });
-    dis.type = 'button'; dis.draggable = false; dis.title = 'Dismiss';
-    dis.onclick = async (e) => { e.preventDefault(); e.stopPropagation(); await this.plugin.dismissTreeNode(page.path); this._renderBody(); };
+    if (['source', 'extract', 'card'].includes(page.fm.type)) {
+      if (page.fm.status !== 'done') {
+        const done = actions.createEl('button', { text: '✓' });
+        done.type = 'button'; done.draggable = false; done.title = 'Mark done';
+        done.onclick = async (e) => { e.preventDefault(); e.stopPropagation(); await this.plugin.markPathsDone([page.path]); this._renderBody(); };
+      }
+      const reset = actions.createEl('button', { text: '↺' });
+      reset.type = 'button'; reset.draggable = false; reset.title = 'Reset scheduling and make active';
+      reset.onclick = async (e) => { e.preventDefault(); e.stopPropagation(); await this.plugin.resetPaths([page.path]); this._renderBody(); };
+    }
+    if (page.fm.type !== 'card') {
+      const dis = actions.createEl('button', { text: '✕' });
+      dis.type = 'button'; dis.draggable = false; dis.title = 'Dismiss';
+      dis.onclick = async (e) => { e.preventDefault(); e.stopPropagation(); await this.plugin.dismissTreeNode(page.path); this._renderBody(); };
+    }
   }
 }
 
@@ -2686,6 +2924,7 @@ class IncrementalReadingPlugin extends Plugin {
   currentElementActions() {
     return this._runActionMenu('Current element actions', [
       { label: 'Done', run: () => this.markDone() },
+      { label: 'Reset', run: () => this.resetCurrent() },
       { label: 'Dismiss', run: () => this.dismiss() },
       { label: 'Postpone', run: () => this.postpone() },
       { label: 'Schedule (manual date)', run: () => this.schedule() },
@@ -2774,6 +3013,7 @@ class IncrementalReadingPlugin extends Plugin {
       `date_added: ${todayDateString(this.settings)}`,
       `card_format: ${format}`,
       'ir_spaced_repetition: true',
+      `ir_spaced_repetition_deck_tag: ${JSON.stringify(this._spacedRepetitionDeckTag())}`,
       ...extraFrontmatter,
       'tags:',
       '  - incremental-reading',
@@ -2844,13 +3084,18 @@ class IncrementalReadingPlugin extends Plugin {
       await this.app.fileManager.processFrontMatter(file, (next) => {
         if (typeof next.tags === 'string') next.tags = next.tags.split(/[\s,]+/).filter(Boolean);
         if (!Array.isArray(next.tags)) next.tags = [];
-        for (const tag of ['incremental-reading', 'ir/card', this._spacedRepetitionDeckTag()]) {
+        const wasDone = next.status === 'done';
+        const deckTag = this._spacedRepetitionDeckTag();
+        for (const tag of ['incremental-reading', 'ir/card', ...(wasDone ? [] : [deckTag])]) {
           if (!next.tags.includes(tag)) next.tags.push(tag);
         }
         next.ir_spaced_repetition = true;
+        next.ir_spaced_repetition_deck_tag = deckTag;
+        if (wasDone) next.ir_completed_deck_tag = deckTag;
         next.card_format = format;
         for (const key of [
-          'status', 'priority', 'next_review', 'interval', 'review_count', 'last_reviewed',
+          ...(wasDone ? [] : ['status']), 'priority', 'next_review', 'interval', 'review_count',
+          ...(wasDone ? [] : ['last_reviewed']),
           'last_grade', 'last_retrievability', 'stability', 'difficulty', 'cssclasses',
         ]) delete next[key];
       });
@@ -2991,7 +3236,7 @@ class IncrementalReadingPlugin extends Plugin {
   }
 
   async migrateDateFormat(fromFormat, toFormat) {
-    const keys = ['next_review', 'last_reviewed', 'date_added', 'date_dismissed', 'today_session_date'];
+    const keys = ['next_review', 'last_reviewed', 'date_added', 'date_done', 'date_dismissed', 'today_session_date'];
     const files = new Map(this.getIRFiles().map(file => [file.path, file]));
     const dashboard = this.app.vault.getAbstractFileByPath(this.dashboardPath());
     if (dashboard instanceof TFile) files.set(dashboard.path, dashboard);
@@ -3473,7 +3718,7 @@ class IncrementalReadingPlugin extends Plugin {
       if (newReadPoint !== undefined && newReadPoint !== null) fmw.read_point = newReadPoint;
       if (newReadPointSeconds !== undefined && newReadPointSeconds !== null) fmw.read_point_seconds = newReadPointSeconds;
       if (newReadPointLine > 0) fmw.read_point_line = newReadPointLine;
-      if (markedDone) fmw.status = 'done';
+      if (markedDone) statusCore.completeItemFrontmatter(fmw, today, this._spacedRepetitionDeckTag());
       else if (fmw.status === 'inbox' || fmw.status === 'pending') fmw.status = 'active';
       for (const k of ['stability', 'difficulty', 'last_grade', 'last_retrievability', 'ease']) {
         if (fmw[k] !== undefined) delete fmw[k];
@@ -3495,8 +3740,12 @@ class IncrementalReadingPlugin extends Plugin {
     }
 
     const typeLabel = fm.type === 'source' ? 'Source' : 'Extract';
-    const doneMsg = markedDone ? ' | DONE' : '';
-    new Notice(`${typeLabel}: priority ${priority} a=${round4(aFactor)} → next in ${interval}d (${nextReview})${doneMsg}`);
+    if (markedDone) {
+      this.consumeSessionItem(file.path, { background: true });
+      new Notice(`${typeLabel} marked done. Future reviews cleared.`);
+    } else {
+      new Notice(`${typeLabel}: priority ${priority} a=${round4(aFactor)} → next in ${interval}d (${nextReview})`);
+    }
     return true;
   }
 
@@ -3709,6 +3958,70 @@ class IncrementalReadingPlugin extends Plugin {
     this._refreshTreeViews();
   }
 
+  async markPathsDone(paths, { confirm = true } = {}) {
+    const files = [...new Set(paths || [])]
+      .map(path => this.app.vault.getAbstractFileByPath(path))
+      .filter(file => file instanceof TFile && ['source', 'extract', 'card'].includes(getFm(this.app, file)?.type));
+    const pending = files.filter(file => getFm(this.app, file)?.status !== 'done');
+    if (!pending.length) { new Notice('The selected items are already done.'); return 0; }
+    if (confirm) {
+      const label = pending.length === 1 ? `"${pending[0].basename}"` : `${pending.length} selected items`;
+      const ok = await confirmDialog(
+        this.app,
+        `Mark ${label} as done?`,
+        'Future review dates will be cleared. Cards will also leave the Spaced Repetition deck.'
+      );
+      if (!ok) return 0;
+    }
+    const today = todayDateString(this.settings);
+    const deckTag = this._spacedRepetitionDeckTag();
+    for (const file of pending) {
+      await this.app.fileManager.processFrontMatter(file, fm => {
+        statusCore.completeItemFrontmatter(fm, today, deckTag);
+      });
+      this.cardDueCache.delete(file.path);
+      this.cardScheduleSignatures.delete(file.path);
+      if (this.pendingSpacedRepetitionReview?.path === file.path) this.pendingSpacedRepetitionReview = null;
+      this.consumeSessionItem(file.path, { background: true });
+    }
+    this._invalidateIRCollection();
+    this._refreshTreeViews();
+    new Notice(`${pending.length} item${pending.length === 1 ? '' : 's'} marked done. Future reviews cleared.`);
+    return pending.length;
+  }
+
+  async resetPaths(paths, { confirm = true } = {}) {
+    const files = [...new Set(paths || [])]
+      .map(path => this.app.vault.getAbstractFileByPath(path))
+      .filter(file => file instanceof TFile && ['source', 'extract', 'card'].includes(getFm(this.app, file)?.type));
+    if (!files.length) { new Notice('No resettable items selected.'); return 0; }
+    if (confirm) {
+      const label = files.length === 1 ? `"${files[0].basename}"` : `${files.length} selected items`;
+      const ok = await confirmDialog(
+        this.app,
+        `Reset ${label}?`,
+        'Sets status to active and clears scheduling history. Cards return to the Spaced Repetition deck as new cards.'
+      );
+      if (!ok) return 0;
+    }
+    const deckTag = this._spacedRepetitionDeckTag();
+    for (const file of files) {
+      const isCard = getFm(this.app, file)?.type === 'card';
+      await this.app.fileManager.processFrontMatter(file, fm => {
+        statusCore.resetItemFrontmatter(fm, deckTag);
+      });
+      if (isCard) {
+        await this.app.vault.process(file, content => statusCore.clearSpacedRepetitionSchedule(content));
+        this.cardDueCache.delete(file.path);
+        this.cardScheduleSignatures.delete(file.path);
+      }
+    }
+    this._invalidateIRCollection();
+    this._refreshTreeViews();
+    new Notice(`${files.length} item${files.length === 1 ? '' : 's'} reset.`);
+    return files.length;
+  }
+
   async seedInlineCards() {
     const active = this.app.workspace.getActiveFile();
     if (!active) { new Notice('No active file'); return; }
@@ -3810,17 +4123,17 @@ class IncrementalReadingPlugin extends Plugin {
   // ---- Done / Dismiss / Postpone / Schedule ------------------------------
 
   async markDone() {
-    const r = await resolveIRFromActive(this.app, this.settings, { allowCard: false, allowPdfFallback: true });
+    const r = await resolveIRFromActive(this.app, this.settings, { allowCard: true, allowPdfFallback: true });
     if (!r) return;
     const { tfile, fm } = r;
     if (fm.status === 'done') { new Notice('Already done.'); return; }
-    const labels = { source: 'Source', extract: 'Extract' };
-    if (!(await confirmDialog(this.app, `Mark ${labels[fm.type]} as done?`))) return;
-    await this.app.fileManager.processFrontMatter(tfile, (fmw) => {
-      fmw.status = 'done';
-      fmw.last_reviewed = todayDateString(this.settings);
-    });
-    new Notice(`${labels[fm.type]} marked done.`);
+    await this.markPathsDone([tfile.path]);
+  }
+
+  async resetCurrent() {
+    const r = await resolveIRFromActive(this.app, this.settings, { allowCard: true, allowPdfFallback: true });
+    if (!r) return;
+    await this.resetPaths([r.tfile.path]);
   }
 
   async dismiss() {
