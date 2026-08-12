@@ -20,6 +20,6 @@ Parent relationships are stored in note frontmatter and visualized in the Knowle
 
 The main Knowledge Tree also supports multi-selection. Select sources, extracts, and cards with their checkboxes (Shift-click selects a range), then use the bulk bar to mark them **Done** or **Reset** them. The same actions are available on individual rows.
 
-Done items keep their notes but lose their future Toolkit review schedule and disappear when completed items are hidden. Done cards also leave the configured Spaced Repetition deck. Reset makes an item active, clears its scheduling history, and returns a card to that deck as a new card.
+Done items keep their notes but lose their future Toolkit review schedule and disappear when completed items are hidden. Done SR cards also leave their configured deck. Reset makes an item active, clears Toolkit scheduling history, and returns an SR card to its deck as new.
 
 The tree is organizational, not a requirement for every note. Start with a source and a few extracts; introduce categories when the collection becomes hard to scan.

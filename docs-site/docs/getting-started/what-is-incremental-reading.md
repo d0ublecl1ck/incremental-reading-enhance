@@ -44,4 +44,4 @@ source → short reading pass → extract → optional flashcard
    └──── scheduled return             spaced review
 ```
 
-The Toolkit implements the left side of this loop inside Obsidian. The Spaced Repetition community plugin handles flashcard review on the right.
+The Toolkit implements the reading side inside Obsidian and lets you review cards in-house or delegate them to Anki or Spaced Repetition.

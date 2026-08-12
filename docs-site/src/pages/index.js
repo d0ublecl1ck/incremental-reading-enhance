@@ -15,7 +15,7 @@ const steps = [
 const releaseHighlights = [
   ['Open first', 'The next note paints before read-point positioning or card-review follow-up work begins.'],
   ['Refresh less', 'Inactive dashboards, queue timelines, and tree views stay quiet while you move between notes.'],
-  ['One clear loop', 'Build the queue, open the next element, and grade reading topics. Cards pass directly to Spaced Repetition.'],
+  ['One clear loop', 'Build the queue, open the next element, and grade reading topics. Keep cards in-house or send them to Anki.'],
 ];
 
 export default function Home() {
@@ -72,7 +72,7 @@ export default function Home() {
         <div><span className={styles.eyebrow}>WHAT THIS PLUGIN DOES</span><Heading as="h2">Two schedules. One learning stream.</Heading></div>
         <div>
           <p><strong>Reading topics</strong>—sources and extracts—are scheduled by the Toolkit with priority and A-Factor.</p>
-          <p><strong>Flashcards</strong> are ordinary Markdown cards handled by the actively maintained Spaced Repetition plugin.</p>
+          <p><strong>Flashcards</strong> are ordinary Markdown cards reviewed in-house or delegated to Anki or Spaced Repetition.</p>
           <Link to="/docs/concepts/mixed-learning">See how the queues work together →</Link>
         </div>
       </section>

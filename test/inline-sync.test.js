@@ -51,3 +51,17 @@ test('main.js inlined topic-core block is identical to topic-core.js', () => {
     extractBlock('topic-core.js', '// >>> topic-core-functions', '// <<< topic-core-functions')
   );
 });
+
+test('main.js inlined FSRS block is identical to fsrs-core.js', () => {
+  assert.equal(
+    extractBlock('main.js', '// >>> fsrs-core-functions', '// <<< fsrs-core-functions'),
+    extractBlock('fsrs-core.js', '// >>> fsrs-core-functions', '// <<< fsrs-core-functions')
+  );
+});
+
+test('main.js inlined card-provider block is identical to its tested core', () => {
+  assert.equal(
+    extractBlock('main.js', '// >>> card-provider-core-functions', '// <<< card-provider-core-functions'),
+    extractBlock('card-provider-core.js', '// >>> card-provider-core-functions', '// <<< card-provider-core-functions')
+  );
+});

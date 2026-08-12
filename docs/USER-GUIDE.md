@@ -4,10 +4,10 @@ This guide starts with a small daily workflow. You do not need to configure ever
 
 ## Before you begin
 
-1. Install and enable **Spaced Repetition**.
-2. Install and enable **Incremental Reading Toolkit**.
-3. Open **Settings -> Incremental Reading Toolkit** and select **Run setup check**.
-4. Confirm the managed vault paths, then choose a date format under **General**. Available formats are `DD-MM-YYYY`, `MM-DD-YYYY`, and `YYYY-MM-DD`.
+1. Install and enable **Incremental Reading Toolkit**.
+2. Under **Flashcards**, choose **Toolkit (in-house)** or **Anki via Flashcards**. **Spaced Repetition** remains available for existing workflows.
+3. If using Anki, install Flashcards by Reuseman and AnkiConnect, then grant permission in Flashcards settings; if using SR, install Spaced Repetition.
+4. Select **Run setup check**, confirm the managed paths, and choose a date format under **General**.
 
 Changing the date format migrates existing scheduling fields, checkpoints, dashboard dates, and review-log dates.
 
@@ -21,9 +21,9 @@ Select **Open user guide** at the top of the settings page, or choose **User gui
 4. Select an important passage and run **Extract selection**. For a PDF, copy the passage, open **Capture or create…**, and choose **Extract from clipboard (PDF-aware)**.
 5. Leave the cursor where you stopped. Run **Grade current reading topic**, choose whether to update the read point, then choose the topic pace. Run **Next element** separately when ready.
 6. When a passage should become durable memory, copy it and run **Flashcard from clipboard**.
-7. Continue with **Next element** for a mixed topic/card session. When it opens a card note, the Toolkit starts Spaced Repetition automatically. Answering the review finishes that queue item; press **Next element** when ready. Use Spaced Repetition's own global review command for card-only study.
+7. Continue with **Next element** for a mixed topic/card session. Toolkit cards open the in-house review window; existing SR cards open Spaced Repetition. Anki cards are synced and reviewed in Anki rather than added to the Toolkit queue.
 
-The learning queue alternates sources/extracts with card notes. **Next element** opens the next saved path first, then starts per-note card review when needed. Topic scheduling uses the Toolkit A-Factor model; card grading and intervals remain owned by Spaced Repetition.
+The learning queue alternates sources/extracts with locally reviewable card notes. Topic scheduling uses A-Factors. Toolkit cards use built-in FSRS; Anki and Spaced Repetition own the schedules for cards exported to them.
 
 ## Set up keybindings
 
@@ -81,7 +81,14 @@ A card is ready for recall practice. Card options include:
 - image naming cards;
 - image occlusion cards.
 
-Cards are ordinary Markdown notes tagged for Spaced Repetition. Configure review intervals, algorithms, and card statistics inside Spaced Repetition.
+Cards are ordinary Markdown notes with a stored backend. Choose the backend under **Settings -> Incremental Reading Toolkit -> Flashcards**:
+
+- **Toolkit (in-house)** stores scheduling fields in frontmatter and reviews with the built-in FSRS window.
+- **Anki via Flashcards** writes `cards-deck` frontmatter plus `#card`/`#card-reverse` or highlighted cloze syntax, then runs **Flashcards: Generate for the current file**. Configure the deck and Flashcards tag in the **Anki via Flashcards** section. Keep Anki and AnkiConnect running when syncing.
+- **Spaced Repetition (compatibility)** creates the existing tagged SR Markdown cards.
+
+The selection affects new cards only; existing cards retain their backend.
+Image-occlusion blocks require Obsidian's Toolkit renderer, so when Anki is selected those cards are saved with the in-house backend. Basic, reversed, cloze, and image-naming cards export to Anki normally.
 
 ## Manage a busy queue
 
@@ -92,15 +99,15 @@ Use **Current element actions…** for one-note actions and **Advanced tools…*
 - **Postpone subtree**: move a source and its descendants together.
 - **Mercy (spread overdue)**: distribute overdue topics across a selected window.
 - **Subset review**: choose a due descendant from the active source.
-- **Done**: keep the note, clear its future review date, and remove it from future sessions. Done cards also leave the Spaced Repetition deck.
-- **Reset**: make an item active again and clear its scheduling history. A reset card returns to the Spaced Repetition deck as a new card.
+- **Done**: keep the note, clear its future Toolkit review date, and remove it from future sessions. SR cards also leave their SR deck.
+- **Reset**: make an item active again and clear Toolkit scheduling history. SR cards return to their SR deck as new cards.
 - **Dismiss**: exclude material you no longer want to process.
 
 ## Organize the knowledge tree
 
 Choose **Knowledge tree** from **Open Toolkit view…** to create categories, drag material under a parent, reorder siblings, or rename nodes. Use the checkboxes to select multiple sources, extracts, or cards, then choose **Done** or **Reset** in the bulk-action bar. **Select visible** operates on the currently rendered rows, and Shift-click selects a range. Each row also has its own Done and Reset buttons.
 
-Completed items disappear when **Show completed material** is off. Their notes remain in the vault, but future Toolkit scheduling is cleared; cards are additionally removed from the configured Spaced Repetition deck. Resetting restores the item as active and starts its schedule over.
+Completed items disappear when **Show completed material** is off. Their notes remain in the vault, but future Toolkit scheduling is cleared; SR cards are additionally removed from their configured deck.
 
 Files with duplicate basenames remain visible but cannot be used as parents until they are given unique names; this prevents ambiguous links from changing the wrong note.
 
@@ -118,7 +125,11 @@ The **Schedule (manual date)** action expects the selected format. Relative valu
 
 **Cards do not appear in review**
 
-Confirm Spaced Repetition is enabled and that its flashcard tags include `#flashcards`. Toolkit cards use the `#flashcards/incremental-reading` subtag by default.
+Confirm the card's `ir_card_backend`. Toolkit cards need a due `next_review`; Anki cards are reviewed in Anki and do not enter the Toolkit queue; SR cards require Spaced Repetition and the configured flashcard tag.
+
+**Anki cards do not sync**
+
+Confirm Flashcards by Reuseman is enabled, Anki is open, AnkiConnect is installed, and permission was granted from Flashcards settings. Then open the card note and run **Flashcards: Generate for the current file**, or choose **Sync Anki cards with Flashcards** from the Toolkit's advanced tools.
 
 **The review command says Spaced Repetition is starting**
 

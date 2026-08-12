@@ -6,7 +6,7 @@ title: Troubleshooting
 
 ## Cards do not open for review
 
-Confirm Spaced Repetition is installed and enabled. Run **Run setup check**, then verify the deck tag and card separators match valid Spaced Repetition syntax.
+Run **Run setup check** and inspect the card's `ir_card_backend`. Toolkit cards need a due `next_review`; Anki cards are reviewed in Anki; Spaced Repetition cards require that plugin plus matching deck tags and separators.
 
 ## A topic does not appear
 

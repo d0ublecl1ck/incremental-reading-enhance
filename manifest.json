@@ -3,7 +3,7 @@
   "name": "Incremental Reading Toolkit",
   "version": "1.1.8",
   "minAppVersion": "1.12.7",
-  "description": "Process long-form reading into scheduled topics, extracts, and Spaced Repetition flashcards.",
+  "description": "Process long-form reading into scheduled topics, extracts, and flexible Toolkit or Anki flashcards.",
   "author": "kiera",
   "authorUrl": "https://github.com/kja140",
   "helpUrl": "https://github.com/kja140/incremental-reading#readme",

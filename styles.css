@@ -177,3 +177,16 @@
   background: rgba(255, 255, 255, 0.85);
   padding: 0 4px; border-radius: 2px; pointer-events: none;
 }
+
+/* Toolkit-owned flashcard review */
+.ir-fc-modal-el { max-width: min(900px, 92vw); width: 900px; }
+.ir-fc-label { font-size: 0.75em; opacity: 0.55; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+.ir-fc-label-answer { margin: 14px 0 6px; }
+.ir-fc-box { padding: 14px 16px; border-radius: 8px; overflow: auto; font-size: 1.05em; line-height: 1.5; }
+.ir-fc-question { background: var(--background-secondary); max-height: 55vh; }
+.ir-fc-answer-box { background: var(--background-modifier-success); margin-top: 12px; max-height: 50vh; opacity: 0.95; }
+.ir-fc-btn-row { display: flex; gap: 8px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+.ir-fc-show-btn { min-width: 180px; }
+.ir-fc-grade-btn { min-width: 120px; padding: 10px 12px; flex: 1; }
+.ir-fc-grade-label { font-weight: 600; }
+.ir-fc-grade-key { font-size: 0.78em; opacity: 0.7; }

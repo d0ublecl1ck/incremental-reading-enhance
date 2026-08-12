@@ -25,7 +25,7 @@
 
 Incremental Reading Toolkit helps you read long sources a little at a time, revisit them on a useful schedule, extract the parts that matter, and turn those extracts into flashcards. It works with Markdown notes, PDFs, clipboard content, and images.
 
-Topic scheduling uses a progress-aware **A-Factor**. Flashcard scheduling and grading are handled by the actively maintained [Spaced Repetition](https://github.com/st3v3nmw/obsidian-spaced-repetition) community plugin.
+Topic scheduling uses a progress-aware **A-Factor**. For flashcards, choose the Toolkit's built-in FSRS review, export to Anki through Reuseman's [Flashcards](https://github.com/reuseman/flashcards-obsidian) plugin, or retain the existing [Spaced Repetition](https://github.com/st3v3nmw/obsidian-spaced-repetition) integration.
 
 > [!IMPORTANT]
 > This plugin is desktop-only. Its integrated reader uses Electron and Node APIs to open vault PDFs and local external PDF paths; those APIs are unavailable on mobile.
@@ -36,18 +36,18 @@ Topic scheduling uses a progress-aware **A-Factor**. Flashcard scheduling and gr
 |:--|:--|:--|
 | 📖 **Sources** | Articles, books, videos, and long notes you revisit in portions | Reading queue + A-Factor |
 | ✂️ **Extracts** | Focused passages linked back to their parent source | Reading queue + A-Factor |
-| 🃏 **Cards** | Native Markdown flashcards in `#flashcards/incremental-reading` | Spaced Repetition plugin |
+| 🃏 **Cards** | Markdown flashcards linked to their source | Toolkit FSRS, Anki, or Spaced Repetition |
 
 ```text
 Source → Read a portion → Extract the useful part → Make a card → Review
-   ↑              A-Factor schedules topics              Spaced Repetition ↑
+   ↑              A-Factor schedules topics              chosen card system ↑
 ```
 
 ## Highlights
 
 | | Feature | What it gives you |
 |:--:|:--|:--|
-| 🔀 | **Mixed learning queue** | Alternates priority-aware reading topics with Spaced Repetition card notes. |
+| 🔀 | **Mixed learning queue** | Alternates priority-aware reading topics with Toolkit and Spaced Repetition card notes. Anki cards stay in Anki's review queue. |
 | 🧠 | **Progress-aware scheduling** | Recomputes topic intervals from remaining pages or seconds, with pace controls and a stall guard. |
 | ✂️ | **Fast capture** | Creates extracts from selected text, the clipboard, or a PDF and links them to their parent. |
 | 🃏 | **Flexible flashcards** | Creates cards from text, images, inline syntax, and image occlusion. |
@@ -56,25 +56,26 @@ Source → Read a portion → Extract the useful part → Make a card → Review
 | 📊 | **Analytics dashboard** | Shows session health, a 14-day review graph, queue workload, collection mix, and lifetime totals. |
 | 📄 | **Integrated PDF reader** | Opens vault or external PDFs with page navigation and saved read points. |
 
-Inline-card export understands `Q:: … ::A::`, `{{c1::…}}`, and `==highlight==` syntax and converts it into native Spaced Repetition card notes.
+Inline-card export understands `Q:: … ::A::`, `{{c1::…}}`, and `==highlight==` syntax and sends new cards to the selected card system.
 
 ## Installation
 
 ### Community Plugins
 
 1. Open **Settings → Community plugins** in Obsidian.
-2. Install and enable **Spaced Repetition**.
-3. Search for **Incremental Reading Toolkit**, then install and enable it.
-4. Run **Incremental Reading Toolkit: Run setup check** from the plugin settings.
+2. Search for **Incremental Reading Toolkit**, then install and enable it.
+3. Under **Flashcards → Create cards with**, choose **Toolkit (in-house)** or **Anki via Flashcards**. The compatibility option keeps the existing Spaced Repetition workflow.
+4. For Anki, install **Flashcards** by Reuseman and AnkiConnect, grant permission in Flashcards settings, and keep Anki running when syncing. For the SR option, install **Spaced Repetition**.
+5. Run the setup check from the Toolkit settings.
 
-Card creation writes Spaced Repetition-compatible Markdown. Topic scheduling remains available if Spaced Repetition is missing, and card-review commands will show an installation reminder.
+The choice applies to newly created cards. Backend ownership is stored on each card, so changing the setting does not silently convert existing material.
 
 ### Manual installation
 
 1. Download `main.js`, `manifest.json`, and `styles.css` from the latest [release](https://github.com/kja140/incremental-reading/releases).
 2. Copy them into `<vault>/.obsidian/plugins/incremental-reading-toolkit/`.
-3. Install and enable **Spaced Repetition**.
-4. Reload Obsidian, then enable **Incremental Reading Toolkit**.
+3. Reload Obsidian, then enable **Incremental Reading Toolkit**.
+4. Optionally install Reuseman's **Flashcards** or **Spaced Repetition** for the corresponding external workflow.
 
 ## Five-minute workflow
 
@@ -82,7 +83,7 @@ Card creation writes Spaced Repetition-compatible Markdown. Topic scheduling rem
 2. **Build the queue.** Run **Build today's session queue** once, then run **Next element**.
 3. **Keep the valuable parts.** Select important text and run **Extract selection**.
 4. **Schedule the return.** Leave the cursor where you stopped, then run **Grade current reading topic**.
-5. **Create recall material.** Run **Flashcard from clipboard**. When **Next element** opens a card note, Spaced Repetition starts automatically and the accepted review finishes that queue entry.
+5. **Create recall material.** Run **Flashcard from clipboard**. Toolkit cards open the built-in review window; SR cards open that plugin; Anki cards sync to Anki and are reviewed there.
 
 For recommended keybindings and complete note, PDF, card, queue, and date workflows, open the [user guide](docs/USER-GUIDE.md). You can also run **Open user guide** inside Obsidian.
 
@@ -94,10 +95,10 @@ For recommended keybindings and complete note, PDF, card, queue, and date workfl
 | Command | Purpose |
 |:--|:--|
 | **Build today's session queue** | Explicitly calculate and save today's scheduled queue. |
-| **Next element** | Open the following saved queue path without recalculating collection views; automatically start SR when it is a card. |
-| **Grade current reading topic** | Grade and schedule the current source or extract without navigating. Cards finish automatically in SR. |
+| **Next element** | Open the following saved queue path; start the correct in-vault card reviewer when applicable. |
+| **Grade current reading topic** | Grade the current source/extract, or an open Toolkit-owned card, without navigating. |
 | **Extract selection** | Turn selected source text into a linked extract. |
-| **Flashcard from clipboard** | Create a native Spaced Repetition card from clipboard text. |
+| **Flashcard from clipboard** | Create a card in the selected Toolkit, Anki, or SR workflow. |
 | **Capture or create…** | New/imported sources, PDF-aware extracts, image cards, image extracts, and occlusions. |
 | **Current element actions…** | Done/reset (including cards), dismiss, postpone, schedule, priority, parent/PDF navigation, read points, and checkpoints. |
 | **Open Toolkit view…** | Dashboard, analytics, queue, knowledge tree, or user guide. |
@@ -111,13 +112,15 @@ Settings are grouped by workflow and include plain-language descriptions.
 |:--|:--|
 | **Scheduling** | Reading intervals, progress awareness, A-Factor bounds, pace adjustments, and the stall guard. |
 | **Queue** | Mixed-card behaviour, ordering, filters, and session display. |
+| **Flashcards** | Backend used for newly created cards. |
 | **Inline cards** | Question/answer and cloze parsing patterns. |
+| **Anki via Flashcards** | Reuseman Flashcards status, target deck, card tag, and automatic sync. |
 | **Spaced Repetition** | Dependency status, deck tag, and multiline card separators. |
 | **Knowledge tree** | Multi-select Done/Reset actions, branch warnings, completion visibility, and expansion state. |
 | **Paths** | Every plugin-managed source, extract, card, category, attachment, dashboard, and log path. |
 | **General** | Date convention, extract highlight colour, and diagnostic logging. |
 
-Use **Run setup check** at the top of the settings page to verify the Spaced Repetition dependency, folder separation, A-Factor bounds, and card separators. Each path setting has a reset-to-default button. Configure card algorithms and review behaviour in Spaced Repetition itself.
+Use **Run setup check** to verify the selected card dependency, folder separation, and A-Factor bounds. Toolkit cards use built-in FSRS; Anki and Spaced Repetition retain ownership of their own review algorithms.
 
 ## Privacy and permissions
 

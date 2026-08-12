@@ -53,7 +53,7 @@ test('next element resolves only the saved queue and shared open path', () => {
 test('shared navigation opens first and defers follow-up work beyond note paint', () => {
   const method = main.match(/async _openLearningFile\(file, type, readPointLine = 0\) \{([\s\S]*?)\n  \}\n\n  async buildSessionQueue/)?.[1] || '';
   assert.match(method, /await this\.app\.workspace\.getLeaf\(false\)\.openFile\(file\)/);
-  assert.match(method, /window\.setTimeout\(\(\) => \{[\s\S]*?reviewCardsInNote\(file\)[\s\S]*?\}, 60\)/);
+  assert.match(method, /window\.setTimeout\(\(\) => \{[\s\S]*?_reviewCardFile\(file\)[\s\S]*?\}, 60\)/);
   assert.match(method, /Number\(readPointLine\) > 0/);
   assert.doesNotMatch(method, /cachedRead|jumpToReadPoint/);
   assert.match(method, /this\.directQueueNavigationDepth\+\+/);
