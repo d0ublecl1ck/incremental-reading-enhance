@@ -23,7 +23,7 @@ SuperMemo describes incremental reading as importing electronic articles, readin
 | Reading many sources in small portions | Priority-aware topic queue, `Next element`, postponement, and manual scheduling | Strong |
 | Read points | Markdown read-point markers plus PDF page and media timestamp progress | Strong |
 | Extracts linked to their source | Extract notes with `parent` and `source` links | Strong |
-| Topics and items | Sources/extracts are reading topics; flashcards are Spaced Repetition items | Strong, split across two plugins |
+| Topics and items | Sources/extracts are reading topics; flashcards use Toolkit FSRS, Anki, or Spaced Repetition | Strong |
 | Cloze and question-answer generation | Basic, bidirectional, cloze, image, and image-occlusion cards | Strong |
 | A-Factor topic scheduling | Progress-aware A-Factor intervals for sources and extracts | Similar, not algorithm-identical |
 | Prioritization | Numeric priority, boost/set-priority commands, and urgency-based queue ordering | Strong |
@@ -33,19 +33,19 @@ SuperMemo describes incremental reading as importing electronic articles, readin
 | Article decomposition | Extracts, split-on-heading, and split-book commands | Strong |
 | Source references | Obsidian links and source/parent frontmatter retained through extraction and card creation | Similar |
 | Incremental video and images | Timestamped video sources, image extracts, image cards, and image occlusion | Partial |
-| One unified learning process | Mixed topic/card stream with Spaced Repetition owning card grades | Strong, shared between plugins |
+| One unified learning process | Mixed topic/card stream for locally reviewable cards, with Anki cards reviewed externally | Strong |
 
 ## Intentional differences
 
 ### Card scheduling and review
 
-SuperMemo presents topics and memory items through one learning system. Incremental Reading Toolkit now mirrors that presentation with a mixed daily stream: independently ranked reading topics and card notes alternate whenever both are available. It writes cards in native [Spaced Repetition](https://github.com/st3v3nmw/obsidian-spaced-repetition) Markdown and opens that plugin's per-note review interface for the actual card grade. This keeps cards compatible with a maintained Obsidian ecosystem instead of duplicating a second flashcard scheduler.
+SuperMemo presents topics and memory items through one learning system. Incremental Reading Toolkit mirrors that presentation with a mixed daily stream for reading topics and locally reviewable card notes. Users can keep cards in-house with FSRS or delegate them to Reuseman's [Flashcards](https://github.com/reuseman/flashcards-obsidian) plugin for Anki, or to [Spaced Repetition](https://github.com/st3v3nmw/obsidian-spaced-repetition).
 
-As a result, `Build today's session queue` creates an interleaved topic/card session and `Next element` performs lightweight saved-path navigation before starting any follow-up action. Sources jump to their saved read point and cards start Spaced Repetition per-note review after the note paints. An accepted card review finishes that session item automatically; Spaced Repetition's global review command remains available for card-only study.
+As a result, `Build today's session queue` creates an interleaved topic/card session and `Next element` performs lightweight saved-path navigation before starting the correct Toolkit or Spaced Repetition reviewer. Anki-owned cards stay in Anki's queue.
 
 ### Scheduling algorithms
 
-The topic scheduler is inspired by SuperMemo's A-Factor-based topic repetition, but it does not claim to reproduce any SuperMemo algorithm. It combines an A-Factor with priority, progress, read-point changes, postponement, and configurable queue rules. Card intervals are entirely owned by Spaced Repetition.
+The topic scheduler is inspired by SuperMemo's A-Factor-based topic repetition, but it does not claim to reproduce any SuperMemo algorithm. It combines an A-Factor with priority, progress, read-point changes, postponement, and configurable queue rules. Toolkit-owned cards use the built-in FSRS scheduler; Anki and Spaced Repetition cards retain externally owned intervals.
 
 ### Overload tools
 
@@ -64,7 +64,7 @@ The target is functional kinship with the core SuperMemo incremental-reading loo
 - let priority decide what deserves attention;
 - support decomposition from source to extract to card;
 - provide practical tools when the queue becomes overloaded;
-- delegate memory-item review to Spaced Repetition's UI and scheduler.
+- let users keep memory-item review in-house or delegate it to Anki or Spaced Repetition.
 
 Features that depend on SuperMemo's proprietary application, data model, or algorithms are outside the compatibility claim.
 

@@ -21,4 +21,4 @@ ir_parent: Learning/Topics/Example
 Field names and values can evolve. Let the plugin create or migrate managed metadata instead of hand-authoring it from this simplified example. The authoritative behavior is the installed plugin version.
 :::
 
-Cards are different: the Toolkit writes Markdown compatible with Spaced Repetition, including the configured deck tag and separators. This is why card scheduling does not live in Toolkit-specific frontmatter.
+Cards store `ir_card_backend` as `toolkit`, `anki`, or `spaced_repetition`. Toolkit cards keep FSRS scheduling fields in frontmatter. Anki cards contain `cards-deck` plus Reuseman Flashcards syntax; SR cards contain that plugin's configured deck tag and separators.

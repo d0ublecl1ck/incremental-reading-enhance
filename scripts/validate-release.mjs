@@ -31,6 +31,7 @@ if (versions[manifest.version] !== manifest.minAppVersion) fail('versions.json d
 for (const path of [
   'main.js', 'manifest.json', 'styles.css', 'README.md', 'LICENSE',
   'date-core.js', 'topic-core.js', 'status-core.js', 'docs/USER-GUIDE.md',
+  'fsrs-core.js', 'card-provider-core.js',
 ]) {
   try {
     if (!statSync(path).isFile()) fail(`${path} is not a file`);

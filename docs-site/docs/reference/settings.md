@@ -18,7 +18,21 @@ Choose how reading topics are surfaced and ordered. Priority and due state remai
 
 Configure the patterns used when exporting inline questions, answers, clozes, and highlights into card notes.
 
-## Spaced Repetition
+## Flashcards
+
+Choose the backend for newly created cards:
+
+- **Toolkit (in-house)** uses the built-in FSRS reviewer.
+- **Anki via Flashcards** writes Reuseman Flashcards-compatible notes and syncs them to Anki.
+- **Spaced Repetition (compatibility)** preserves the existing SR Markdown workflow.
+
+The backend is stored on each card, so changing this setting does not convert existing cards.
+
+## Anki
+
+Shows whether Flashcards by Reuseman is available and configures its target deck, card tag, and automatic per-file generation. Anki and AnkiConnect must be running when a sync occurs.
+
+## Spaced Repetition compatibility
 
 The settings show dependency status, the deck tag (default behavior uses an incremental-reading deck), and separators for card Markdown. Review algorithm settings belong to Spaced Repetition.
 
@@ -28,4 +42,4 @@ Separate folders are configurable for sources, extracts, cards, attachments, and
 
 ## Diagnostics and dates
 
-Date convention and diagnostic logging settings support troubleshooting and migration. **Extract highlight colour** controls both the marker left on newly extracted source passages and the background accent shown on extract notes in editing and reading views. Run **Run setup check** after changing folders, A-Factor bounds, card separators, or the dependency.
+Date convention and diagnostic logging settings support troubleshooting and migration. **Extract highlight colour** controls both the marker left on newly extracted source passages and the background accent shown on extract notes in editing and reading views. Run **Run setup check** after changing folders, A-Factor bounds, the card backend, card separators, or a dependency.

@@ -2,7 +2,7 @@
 
 const {
   Plugin, Notice, Modal, FuzzySuggestModal, TFile, parseYaml, FileSystemAdapter,
-  PluginSettingTab, Setting, ItemView, normalizePath,
+  PluginSettingTab, Setting, ItemView, normalizePath, Component, MarkdownRenderer,
 } = require('obsidian');
 // Obsidian's plugin loader evaluates this file without a resolvable __dirname, so
 // `require('./tree-core.js')` fails ("Cannot find module"). The tree logic is therefore
@@ -218,6 +218,158 @@ function spacedRepetitionBody(format, question, answer, settings = {}) {
   return { nativeCardText, spacedRepetitionBody };
 })();
 
+const fsrsCore = (function () {
+// >>> fsrs-core-functions
+const DEFAULT_FSRS_SETTINGS = {
+  weights: [
+    0.2172, 1.1771, 3.2602, 16.1507,
+    7.0114, 0.57, 2.0966, 0.0069,
+    1.5261, 0.112, 1.0178, 1.849,
+    0.1133, 0.3127, 2.2934, 0.2191,
+    3.0004, 0.7536, 0.3332, 0.1437, 0.2,
+  ],
+  decay: 0.2,
+  request_retention: 0.9,
+  fuzz: false,
+  short_term_enabled: true,
+};
+
+const fsrsClamp = (value, low, high) => Math.min(Math.max(value, low), high);
+const fsrsRound4 = value => Math.round(value * 10000) / 10000;
+
+function fsrsContext(settings) {
+  const config = { ...DEFAULT_FSRS_SETTINGS, ...(settings || {}) };
+  const weights = Array.isArray(config.weights) && config.weights.length >= 19
+    ? config.weights
+    : DEFAULT_FSRS_SETTINGS.weights;
+  const decay = weights.length > 20 && Number(weights[20]) > 0
+    ? Number(weights[20])
+    : Number(config.decay) || DEFAULT_FSRS_SETTINGS.decay;
+  return {
+    weights,
+    decay,
+    factor: Math.pow(0.9, -1 / decay) - 1,
+    retention: Number(config.request_retention) || DEFAULT_FSRS_SETTINGS.request_retention,
+    fuzz: config.fuzz === true,
+    shortTerm: config.short_term_enabled !== false,
+  };
+}
+
+function fsrsRetrievability(context, elapsedDays, stability) {
+  if (!(Number(stability) > 0)) return 1;
+  return Math.pow(1 + context.factor * Math.max(0, elapsedDays) / stability, -context.decay);
+}
+
+function fsrsInterval(context, stability) {
+  let days = stability / context.factor
+    * (Math.pow(context.retention, -1 / context.decay) - 1);
+  if (context.fuzz) days *= 0.95 + Math.random() * 0.1;
+  return Math.max(1, Math.round(days));
+}
+
+function fsrsSeedDifficulty(context, grade) {
+  const weights = context.weights;
+  return fsrsClamp(weights[4] - Math.exp(weights[5] * (grade - 1)) + 1, 1, 10);
+}
+
+function fsrsUpdateDifficulty(context, difficulty, grade) {
+  const weights = context.weights;
+  const damped = difficulty + (-weights[6] * (grade - 3)) * (10 - difficulty) / 9;
+  const target = fsrsSeedDifficulty(context, 4);
+  return fsrsClamp(weights[7] * target + (1 - weights[7]) * damped, 1, 10);
+}
+
+function fsrsUpdateRecall(context, difficulty, stability, retrievability, grade) {
+  const weights = context.weights;
+  const hard = grade === 2 ? weights[15] : 1;
+  const easy = grade === 4 ? weights[16] : 1;
+  const growth = Math.exp(weights[8]) * (11 - difficulty)
+    * Math.pow(stability, -weights[9])
+    * (Math.exp((1 - retrievability) * weights[10]) - 1)
+    * hard * easy;
+  return Math.max(0.01, stability * (1 + growth));
+}
+
+function fsrsUpdateLapse(context, difficulty, stability, retrievability) {
+  const weights = context.weights;
+  const next = weights[11] * Math.pow(difficulty, -weights[12])
+    * (Math.pow(stability + 1, weights[13]) - 1)
+    * Math.exp((1 - retrievability) * weights[14]);
+  return Math.max(0.01, Math.min(next, stability));
+}
+
+function fsrsUpdateShortTerm(context, stability, grade) {
+  const weights = context.weights;
+  const exponent = Number.isFinite(weights[19]) ? weights[19] : 0.5;
+  const increase = Math.exp(weights[17] * (grade - 3 + weights[18]))
+    * Math.pow(stability, -exponent);
+  return fsrsClamp(stability * increase, 0.01, 36500);
+}
+
+function scheduleFsrsReview(state, grade, elapsedDays, settings) {
+  if (![1, 2, 3, 4].includes(grade)) throw new Error('FSRS grade must be 1-4.');
+  const context = fsrsContext(settings);
+  const firstReview = !(Number(state?.stability) > 0);
+  const beforeStability = firstReview ? null : Number(state.stability);
+  const beforeDifficulty = firstReview
+    ? null
+    : (Number(state.difficulty) || context.weights[4]);
+  const retrievability = firstReview
+    ? 1
+    : fsrsRetrievability(context, elapsedDays, beforeStability);
+  let stability;
+  let difficulty;
+  if (firstReview) {
+    stability = context.weights[grade - 1];
+    difficulty = fsrsSeedDifficulty(context, grade);
+  } else {
+    stability = elapsedDays < 1 && context.shortTerm
+      ? fsrsUpdateShortTerm(context, beforeStability, grade)
+      : (grade === 1
+        ? fsrsUpdateLapse(context, beforeDifficulty, beforeStability, retrievability)
+        : fsrsUpdateRecall(context, beforeDifficulty, beforeStability, retrievability, grade));
+    difficulty = fsrsUpdateDifficulty(context, beforeDifficulty, grade);
+  }
+  return {
+    stability: fsrsRound4(stability),
+    difficulty: fsrsRound4(difficulty),
+    retrievability: fsrsRound4(retrievability),
+    interval: fsrsInterval(context, stability),
+  };
+}
+// <<< fsrs-core-functions
+  return { DEFAULT_FSRS_SETTINGS, scheduleFsrsReview };
+})();
+
+const cardProviderCore = (function () {
+// >>> card-provider-core-functions
+function normalizeCardBackend(value) {
+  return ['toolkit', 'anki', 'spaced_repetition'].includes(value) ? value : 'toolkit';
+}
+
+function storedCardBackend(frontmatter) {
+  if (frontmatter?.ir_card_backend) return normalizeCardBackend(frontmatter.ir_card_backend);
+  if (frontmatter?.ir_anki === true) return 'anki';
+  if (frontmatter?.ir_spaced_repetition === true) return 'spaced_repetition';
+  return 'toolkit';
+}
+
+function compactFlashcardField(value) {
+  return String(value || '').replace(/\s*\n\s*/g, ' ').trim();
+}
+
+function flashcardsPluginBody(format, question, answer, settings = {}) {
+  const tag = String(settings.flashcardsTag || 'card').replace(/^#/, '').trim() || 'card';
+  if (format === 'cloze') {
+    return `${String(question || '').trim()}\n`;
+  }
+  const marker = format === 'reverse' ? `#${tag}-reverse` : `#${tag}`;
+  return `${compactFlashcardField(question)} ${marker}\n${String(answer || '').trim()}\n`;
+}
+// <<< card-provider-core-functions
+  return { normalizeCardBackend, storedCardBackend, compactFlashcardField, flashcardsPluginBody };
+})();
+
 const dateCore = (function () {
 // >>> date-core-functions
 const SUPPORTED_DATE_FORMATS = ['DD-MM-YYYY', 'MM-DD-YYYY', 'YYYY-MM-DD'];
@@ -345,6 +497,8 @@ const SPACED_REPETITION_PLUGIN_ID = 'obsidian-spaced-repetition';
 const SPACED_REPETITION_REVIEW_COMMAND = `${SPACED_REPETITION_PLUGIN_ID}:srs-review-flashcards`;
 const SPACED_REPETITION_NOTE_COMMAND = `${SPACED_REPETITION_PLUGIN_ID}:srs-review-flashcards-in-note`;
 const SPACED_REPETITION_TAB_VIEW = 'spaced-repetition-tab-view';
+const FLASHCARDS_PLUGIN_ID = 'flashcards-obsidian';
+const FLASHCARDS_GENERATE_COMMAND = `${FLASHCARDS_PLUGIN_ID}:generate-flashcard-current-file`;
 
 const READ_POINT_MARKER = '📍<!--ir-readpoint-->';
 const READ_POINT_RE = /(?:📍\s*)?<!--ir-readpoint-->/g;
@@ -374,6 +528,10 @@ const DEFAULT_SETTINGS = {
     initial_af_units_divisor: 10,
     extract_bump: 1.05,
   },
+  flashcards: {
+    backend: 'toolkit',
+  },
+  fsrs: { ...fsrsCore.DEFAULT_FSRS_SETTINGS },
   queue: {
     sidebar_enabled: true,
     default_tag_filter: '',
@@ -389,6 +547,11 @@ const DEFAULT_SETTINGS = {
     flashcardTag: 'flashcards/incremental-reading',
     multilineCardSeparator: '?',
     multilineReversedCardSeparator: '??',
+  },
+  anki: {
+    deck: 'Incremental Reading',
+    flashcardsTag: 'card',
+    syncOnCreate: true,
   },
   paths: {
     sources: 'Sources/Incremental Reading/Sources',
@@ -1000,6 +1163,98 @@ function askOcclusion(app, imageSrc) {
 }
 
 // ------------------------------------------------------------------
+class FlashcardModal extends Modal {
+  constructor(app, opts, resolve) {
+    super(app);
+    this.opts = opts;
+    this.resolve = resolve;
+    this.resolved = false;
+    this.renderComponent = new Component();
+  }
+
+  onOpen() {
+    this.titleEl.setText(this.opts.title || 'Review card');
+    this.modalEl.addClass('ir-fc-modal-el');
+    this.contentEl.empty();
+    this.contentEl.addClass('ir-fc-modal');
+    if (!this.opts.hideLabels) this.contentEl.createDiv({ cls: 'ir-fc-label', text: 'Question' });
+    const question = this.contentEl.createDiv({ cls: 'ir-fc-question ir-fc-box markdown-rendered' });
+    this._renderMarkdown(question, this.opts.questionMd || '');
+    this.answer = this.contentEl.createDiv({ cls: 'ir-fc-answer ir-fc-box ir-fc-answer-box markdown-rendered ir-hidden' });
+    this.buttons = this.contentEl.createDiv({ cls: 'ir-fc-btn-row' });
+    this.stage = 'question';
+    if (this.opts.directGrade) this._reveal();
+    else {
+      const show = this.buttons.createEl('button', { text: 'Show answer (Space)', cls: 'mod-cta ir-fc-show-btn' });
+      show.addEventListener('click', () => this._reveal());
+      window.setTimeout(() => show.focus(), 30);
+    }
+    this.keyHandler = event => {
+      if (this.resolved) return;
+      if (this.stage === 'question' && (event.key === ' ' || event.key === 'Enter')) {
+        event.preventDefault();
+        this._reveal();
+      } else if (this.stage === 'answer' && /^[1-4]$/.test(event.key)) {
+        event.preventDefault();
+        this._finish(Number(event.key));
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        this._finish(null);
+      }
+    };
+    this.contentEl.addEventListener('keydown', this.keyHandler);
+  }
+
+  _renderMarkdown(target, markdown) {
+    target.empty();
+    MarkdownRenderer.render(this.app, markdown, target, this.opts.sourcePath || '', this.renderComponent);
+  }
+
+  _reveal() {
+    if (this.stage !== 'question') return;
+    this.stage = 'answer';
+    if (this.opts.answerMd?.trim()) {
+      if (!this.opts.hideLabels) {
+        const label = this.contentEl.createDiv({ cls: 'ir-fc-label ir-fc-label-answer', text: 'Answer' });
+        this.contentEl.insertBefore(label, this.answer);
+      }
+      this.answer.removeClass('ir-hidden');
+      this._renderMarkdown(this.answer, this.opts.answerMd);
+    }
+    this.buttons.empty();
+    for (const [grade, label] of [[1, 'Again'], [2, 'Hard'], [3, 'Good'], [4, 'Easy']]) {
+      const button = this.buttons.createEl('button', {
+        cls: `ir-fc-grade-${grade} ir-fc-grade-btn${grade === 3 ? ' mod-cta' : ''}`,
+      });
+      button.createDiv({ cls: 'ir-fc-grade-label', text: label });
+      button.createDiv({ cls: 'ir-fc-grade-key', text: `(${grade})` });
+      button.addEventListener('click', () => this._finish(grade));
+    }
+    window.setTimeout(() => this.buttons.querySelector('.mod-cta')?.focus(), 30);
+  }
+
+  _finish(value) {
+    if (this.resolved) return;
+    this.resolved = true;
+    this.close();
+    this.resolve(value);
+  }
+
+  onClose() {
+    if (this.keyHandler) this.contentEl.removeEventListener('keydown', this.keyHandler);
+    this.renderComponent.unload();
+    this.contentEl.empty();
+    if (!this.resolved) {
+      this.resolved = true;
+      this.resolve(null);
+    }
+  }
+}
+
+function reviewCard(app, options) {
+  return new Promise(resolve => new FlashcardModal(app, options, resolve).open());
+}
+
 function askText(app, title, defaultValue = '') {
   return new Promise((res) => new TextPromptModal(app, title, defaultValue, res).open());
 }
@@ -1723,19 +1978,19 @@ class UserGuideModal extends Modal {
     const daily = root.createEl('ul');
     for (const text of [
       'Build today\'s session queue performs scheduling work; Next element opens the saved path and starts card review when needed.',
-      'Extracts remain reading topics; cards are reviewed in Spaced Repetition.',
+      'Extracts remain reading topics; cards use the backend stored on each note.',
       'Moving the Markdown read-point or advancing a page/timestamp counts as progress.',
       'Use Mercy to spread overdue work and Postpone subtree to move related material together.',
     ]) daily.createEl('li', { text });
 
     root.createEl('h3', { text: 'PDFs, cards, and dates' });
-    root.createEl('p', { text: 'Use the Toolkit PDF viewer for vault or external PDFs. Card algorithms and grades remain in Spaced Repetition, while the mixed session alternates their card notes with reading topics.' });
+    root.createEl('p', { text: 'Use the Toolkit PDF viewer for vault or external PDFs. Toolkit cards use built-in FSRS, Anki cards sync externally, and existing Spaced Repetition cards keep their plugin-owned schedule.' });
     root.createEl('p', { text: 'Choose DD-MM-YYYY, MM-DD-YYYY, or YYYY-MM-DD in General settings. Relative schedules such as +3d work with every format.' });
 
     root.createEl('h3', { text: 'Troubleshooting' });
     const trouble = root.createEl('ul');
     for (const text of [
-      'No cards in review: enable Spaced Repetition and keep #flashcards in its flashcard tags.',
+      'No cards in review: run setup check and confirm the backend stored on the card note.',
       'PDF will not open: confirm pdf_path points to an existing PDF, or use pdf_vault_path for a vault file.',
       'Ambiguous tree parent: rename files that share the same basename.',
       'For the full guide, open docs/USER-GUIDE.md in the GitHub repository from the Help link.',
@@ -1757,7 +2012,9 @@ class IncrementalReadingSettingTab extends PluginSettingTab {
     this._about(containerEl);
     this._scheduling(containerEl);
     this._queue(containerEl);
+    this._flashcards(containerEl);
     this._inlineCards(containerEl);
+    this._anki(containerEl);
     this._spacedRepetition(containerEl);
     this._knowledgeTree(containerEl);
     this._paths(containerEl);
@@ -1771,10 +2028,12 @@ class IncrementalReadingSettingTab extends PluginSettingTab {
       .setName('User guide')
       .setDesc('Open the quickstart, suggested hotkeys, daily workflow, and troubleshooting inside Obsidian.')
       .addButton(button => button.setButtonText('Open user guide').setCta().onClick(() => this.plugin.openUserGuide()));
-    const ready = this.plugin.isSpacedRepetitionReady();
+    const backend = this.plugin.cardBackend();
+    const ready = this.plugin.isCardBackendReady(backend);
+    const backendLabel = this.plugin.cardBackendLabel(backend);
     new Setting(sec)
       .setName('Setup status')
-      .setDesc(ready ? 'Spaced Repetition is ready for card review.' : 'Spaced Repetition is not ready; enable it before reviewing cards.')
+      .setDesc(ready ? `${backendLabel} is ready.` : `${backendLabel} needs attention; run the setup check for details.`)
       .addButton(button => button.setButtonText('Run setup check').onClick(() => this.plugin.runSetupCheck()));
   }
 
@@ -1847,7 +2106,7 @@ class IncrementalReadingSettingTab extends PluginSettingTab {
        .setValue(s.sort_key).onChange(v => { s.sort_key = v; save(); });
     });
     new Setting(sec).setName('Mix cards with topics')
-      .setDesc('Alternate card notes with reading topics in the daily learning stream. Spaced Repetition still grades and schedules the cards.')
+      .setDesc('Alternate locally reviewable Toolkit and Spaced Repetition cards with reading topics. Anki cards remain in Anki.')
       .addToggle(t => t.setValue(s.mix_cards !== false).onChange(v => { s.mix_cards = v; save(); }));
   }
 
@@ -1865,6 +2124,63 @@ class IncrementalReadingSettingTab extends PluginSettingTab {
     new Setting(sec).setName('Cloze regex')
       .setDesc('Advanced pattern for {{c1::answer::hint}} cards.')
       .addText(t => t.setValue(s.cloze_regex).onChange(v => { s.cloze_regex = v; save(); }));
+  }
+
+  _flashcards(root) {
+    const sec = root.createDiv({ cls: 'ir-settings-section' });
+    new Setting(sec).setName('Flashcards').setHeading();
+    const settings = this.plugin.settings.flashcards;
+    new Setting(sec)
+      .setName('Create cards with')
+      .setDesc('Choose where newly created cards are scheduled. Existing cards keep their original backend.')
+      .addDropdown(dropdown => dropdown
+        .addOption('toolkit', 'Toolkit (in-house)')
+        .addOption('anki', 'Anki via Flashcards')
+        .addOption('spaced_repetition', 'Spaced Repetition (compatibility)')
+        .setValue(this.plugin.cardBackend())
+        .onChange(async value => {
+          settings.backend = cardProviderCore.normalizeCardBackend(value);
+          await this.plugin.saveSettings();
+          this.display();
+        }));
+    const selected = this.plugin.cardBackend();
+    const descriptions = {
+      toolkit: 'Cards stay in the vault and use the Toolkit\'s built-in FSRS scheduler and review window.',
+      anki: 'Cards use Reuseman Flashcards syntax and sync to Anki through that plugin.',
+      spaced_repetition: 'Cards use native Markdown syntax owned by the Spaced Repetition community plugin.',
+    };
+    new Setting(sec).setName('Selected workflow').setDesc(descriptions[selected]);
+  }
+
+  _anki(root) {
+    const sec = root.createDiv({ cls: 'ir-settings-section' });
+    new Setting(sec).setName('Anki via Flashcards').setHeading();
+    const settings = this.plugin.settings.anki;
+    const save = () => this.plugin.saveSettings();
+    new Setting(sec)
+      .setName('Dependency')
+      .setDesc(this.plugin.isFlashcardsReady()
+        ? 'Ready. Flashcards can generate Anki cards from the Toolkit card notes.'
+        : 'Install and enable Flashcards by Reuseman. Anki and AnkiConnect must also be running when syncing.')
+      .addButton(button => button.setButtonText('Sync now').onClick(() => this.plugin.syncAnki()));
+    new Setting(sec).setName('Target deck')
+      .setDesc('Written to the cards-deck frontmatter field supported by Flashcards.')
+      .addText(text => text.setValue(settings.deck).onChange(value => {
+        settings.deck = value.trim() || 'Incremental Reading';
+        save();
+      }));
+    new Setting(sec).setName('Sync after creating cards')
+      .setDesc('Run Flashcards: Generate for the current file after creating card notes.')
+      .addToggle(toggle => toggle.setValue(settings.syncOnCreate !== false).onChange(value => {
+        settings.syncOnCreate = value;
+        save();
+      }));
+    new Setting(sec).setName('Flashcards tag')
+      .setDesc('Match the Flashcards plugin tag setting. Do not include the leading #.')
+      .addText(text => text.setValue(settings.flashcardsTag).onChange(value => {
+        settings.flashcardsTag = value.replace(/^#/, '').trim() || 'card';
+        save();
+      }));
   }
 
   _spacedRepetition(root) {
@@ -2213,7 +2529,7 @@ class MainDashboardView extends ItemView {
       const line = health.createDiv({ cls: 'ir-dashboard-health-row' });
       line.createSpan({ text: status }); line.createSpan({ text: String(count) });
     }
-    health.createEl('p', { cls: 'ir-dashboard-note', text: 'Topic intervals use progress-aware A-Factors. Card due dates and grades remain owned by Spaced Repetition.' });
+    health.createEl('p', { cls: 'ir-dashboard-note', text: 'Topic intervals use progress-aware A-Factors. Toolkit cards use FSRS; external card systems retain their own schedules.' });
 
     const analytics = root.createDiv({ cls: 'ir-dashboard-analytics' });
     analytics.createEl('h2', { text: 'Learning analytics' });
@@ -2719,9 +3035,15 @@ class KnowledgeTreeView extends ItemView {
 
 class IncrementalReadingPlugin extends Plugin {
   async onload() {
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+    const storedSettings = await this.loadData();
+    this.settings = Object.assign({}, DEFAULT_SETTINGS, storedSettings);
     for (const key of Object.keys(DEFAULT_SETTINGS)) {
       this.settings[key] = Object.assign({}, DEFAULT_SETTINGS[key], this.settings[key] || {});
+    }
+    // Versions through 1.1.8 created SR cards exclusively. Preserve that
+    // workflow on upgrade, while new installations start with in-house cards.
+    if (storedSettings?.spaced_repetition && !storedSettings?.flashcards) {
+      this.settings.flashcards.backend = 'spaced_repetition';
     }
     this.settings.session.types = { ...(this.settings.session.types || {}) };
     this.settings.session.readPoints = { ...(this.settings.session.readPoints || {}) };
@@ -2738,6 +3060,8 @@ class IncrementalReadingPlugin extends Plugin {
     this.spacedRepetitionCloseGeneration = 0;
     this.spacedRepetitionCloseAttempt = 0;
     this.sessionSaveTimer = null;
+    this.ankiSyncTimer = null;
+    this.pendingAnkiSyncPaths = new Set();
     this.treeIndexCache = null;
     this.duePoolCache = null;
     this.registerEvent(this.app.metadataCache.on('changed', file => {
@@ -2871,10 +3195,16 @@ class IncrementalReadingPlugin extends Plugin {
 
   onunload() {
     this._clearExcerptViews();
-    if (!this.sessionSaveTimer) return;
-    window.clearTimeout(this.sessionSaveTimer);
-    this.sessionSaveTimer = null;
-    this.saveData(this.settings).catch(error => console.error('[IR] final session persistence failed', error));
+    if (this.ankiSyncTimer) {
+      window.clearTimeout(this.ankiSyncTimer);
+      this.ankiSyncTimer = null;
+    }
+    this.pendingAnkiSyncPaths?.clear();
+    if (this.sessionSaveTimer) {
+      window.clearTimeout(this.sessionSaveTimer);
+      this.sessionSaveTimer = null;
+      this.saveData(this.settings).catch(error => console.error('[IR] final session persistence failed', error));
+    }
   }
 
   _refreshExcerptViews(file = null) {
@@ -2958,7 +3288,8 @@ class IncrementalReadingPlugin extends Plugin {
       { label: 'Split book into chapters', run: () => this.splitBook() },
       { label: 'New category', run: async () => { await this.createCategory(); this._refreshTreeViews(); } },
       { label: 'Move active element under…', run: async () => { await this.reparentActive(); this._refreshTreeViews(); } },
-      { label: 'Export inline cards to Spaced Repetition', run: () => this.seedInlineCards() },
+      { label: 'Export inline cards to selected card system', run: () => this.seedInlineCards() },
+      { label: 'Sync Anki cards with Flashcards', run: () => this.syncAnki() },
       { label: 'Migrate legacy cards to Spaced Repetition', run: () => this.migrateLegacyCards() },
       { label: 'Performance diagnostics', run: () => this.performanceDiagnostics() },
     ]);
@@ -2994,6 +3325,136 @@ class IncrementalReadingPlugin extends Plugin {
     );
   }
 
+  _cardBackendFor(frontmatter) {
+    return cardProviderCore.storedCardBackend(frontmatter);
+  }
+
+  async _nextCardName(parentTitle) {
+    const safeParent = slugifyForFolder(parentTitle) || 'Untitled';
+    const folder = this.cardsFolder();
+    const existing = filesInFolder(this.app, folder).filter(file =>
+      file.extension === 'md' && file.basename.startsWith(`${safeParent} - Card`));
+    let number = existing.length + 1;
+    let name = `${safeParent} - Card ${number}`;
+    while (this.app.vault.getAbstractFileByPath(`${folder}/${name}.md`)) {
+      name = `${safeParent} - Card ${++number}`;
+    }
+    return name;
+  }
+
+  async _createCard(parentFile, spec) {
+    const backend = this.cardBackend();
+    if (backend === 'anki') return this._createFlashcardsAnkiCard(parentFile, spec);
+    if (backend === 'spaced_repetition') return this._createSpacedRepetitionCard(parentFile, spec);
+    return this._createToolkitCard(parentFile, spec);
+  }
+
+  _toolkitCardBody(format, question, answer) {
+    const spacer = `<div style="height: 90vh;"></div>\n\n${BODY_MARKER}\n\n`;
+    if (format === 'cloze' || format === 'occlusion') return `${spacer}${question}\n`;
+    return `${spacer}${question}\n\n> [!answer]- Answer\n> ${String(answer || '').replace(/\n/g, '\n> ')}\n`;
+  }
+
+  async _createToolkitCard(parentFile, spec) {
+    if (spec.format === 'reverse') {
+      const forward = await this._createToolkitCard(parentFile, { ...spec, format: 'basic' });
+      const reverse = await this._createToolkitCard(parentFile, {
+        ...spec,
+        format: 'basic',
+        question: spec.answer,
+        answer: spec.question,
+      });
+      return { file: forward.file, files: [forward.file, reverse.file], name: `${forward.name} + ${reverse.name}` };
+    }
+    const folder = this.cardsFolder();
+    await ensureFolder(this.app, folder);
+    const name = await this._nextCardName(parentFile.basename);
+    const priority = getFm(this.app, parentFile)?.priority ?? 50;
+    const frontmatter = [
+      '---', 'type: card',
+      `source: ${JSON.stringify(`[[${parentFile.basename}]]`)}`,
+      'status: pending', `priority: ${priority}`,
+      `next_review: ${futureDateString(1, this.settings)}`, 'interval: 1',
+      'review_count: 0', 'last_reviewed:', 'last_grade:', 'last_retrievability:',
+      'stability:', 'difficulty:', `date_added: ${todayDateString(this.settings)}`,
+      `card_format: ${spec.format}`, 'ir_card_backend: toolkit',
+      ...(spec.extraFrontmatter || []),
+      'cssclasses:', '  - hide-answer', 'tags:',
+      '  - incremental-reading', '  - ir/card', '---', '',
+    ];
+    const file = await this.app.vault.create(
+      `${folder}/${name}.md`,
+      frontmatter.join('\n') + this._toolkitCardBody(spec.format, spec.question, spec.answer)
+    );
+    return { file, name };
+  }
+
+  async _createFlashcardsAnkiCard(parentFile, spec) {
+    const folder = this.cardsFolder();
+    await ensureFolder(this.app, folder);
+    const name = await this._nextCardName(parentFile.basename);
+    const deck = String(this.settings.anki.deck || 'Incremental Reading')
+      .replace(/\s*\r?\n\s*/g, ' ').trim() || 'Incremental Reading';
+    const frontmatter = [
+      '---', 'type: card',
+      `source: ${JSON.stringify(`[[${parentFile.basename}]]`)}`,
+      'status: active', `date_added: ${todayDateString(this.settings)}`,
+      `card_format: ${spec.format}`, 'ir_card_backend: anki', 'ir_anki: true',
+      ...(spec.extraFrontmatter || []),
+      `cards-deck: ${deck}`,
+      'tags:', '  - incremental-reading', '  - ir/card', '---', '',
+    ];
+    const body = cardProviderCore.flashcardsPluginBody(
+      spec.format, spec.question, spec.answer, this.settings.anki
+    );
+    const file = await this.app.vault.create(`${folder}/${name}.md`, frontmatter.join('\n') + body);
+    if (this.settings.anki.syncOnCreate !== false) this._scheduleAnkiSync(file.path);
+    return { file, name };
+  }
+
+  _scheduleAnkiSync(path) {
+    this.pendingAnkiSyncPaths.add(path);
+    if (this.ankiSyncTimer) window.clearTimeout(this.ankiSyncTimer);
+    this.ankiSyncTimer = window.setTimeout(() => {
+      this.ankiSyncTimer = null;
+      const paths = [...this.pendingAnkiSyncPaths];
+      this.pendingAnkiSyncPaths.clear();
+      this.syncAnki({ quiet: true, paths })
+        .catch(error => console.error('[IR] Flashcards auto-sync failed', error));
+    }, 750);
+  }
+
+  async syncAnki({ quiet = false, paths = null } = {}) {
+    if (!this.isFlashcardsReady()) {
+      if (!quiet) new Notice('Enable Flashcards by Reuseman before syncing.');
+      return false;
+    }
+    const targets = (paths || this.getIRRows()
+      .filter(row => row.fm.type === 'card' && this._cardBackendFor(row.fm) === 'anki')
+      .map(row => row.tfile.path))
+      .map(path => this.app.vault.getAbstractFileByPath(path))
+      .filter(file => file instanceof TFile);
+    if (!targets.length) {
+      if (!quiet) new Notice('No Flashcards-owned card notes found.');
+      return false;
+    }
+    const original = this.app.workspace.getActiveFile();
+    const leaf = this.app.workspace.getLeaf(false);
+    let started = 0;
+    try {
+      for (const file of targets) {
+        await leaf.openFile(file);
+        if (this.app.commands.executeCommandById(FLASHCARDS_GENERATE_COMMAND)) started++;
+      }
+    } finally {
+      if (original instanceof TFile && original.path !== this.app.workspace.getActiveFile()?.path) {
+        await leaf.openFile(original);
+      }
+    }
+    if (!quiet) new Notice(`Flashcards sync started for ${started} card note${started === 1 ? '' : 's'}.`);
+    return started > 0;
+  }
+
   async _createSpacedRepetitionCard(parentFile, { format, question, answer = '', extraFrontmatter = [] }) {
     const folder = this.cardsFolder();
     await ensureFolder(this.app, folder);
@@ -3012,6 +3473,7 @@ class IncrementalReadingPlugin extends Plugin {
       `source: ${JSON.stringify(`[[${parentTitle}]]`)}`,
       `date_added: ${todayDateString(this.settings)}`,
       `card_format: ${format}`,
+      'ir_card_backend: spaced_repetition',
       'ir_spaced_repetition: true',
       `ir_spaced_repetition_deck_tag: ${JSON.stringify(this._spacedRepetitionDeckTag())}`,
       ...extraFrontmatter,
@@ -3037,7 +3499,8 @@ class IncrementalReadingPlugin extends Plugin {
         ? fm.tags.map(String)
         : (typeof fm?.tags === 'string' ? fm.tags.split(/[\s,]+/).filter(Boolean) : []);
       const deckTag = this._spacedRepetitionDeckTag();
-      return fm?.type === 'card' && fm.ir_spaced_repetition !== true
+      return fm?.type === 'card' && !fm.ir_card_backend && fm.ir_anki !== true
+        && fm.ir_spaced_repetition !== true
         && !tags.some(tag => tag.replace(/^#/, '') === deckTag);
     });
   }
@@ -3107,10 +3570,91 @@ class IncrementalReadingPlugin extends Plugin {
     new Notice(`Migrated ${migrated} card${migrated === 1 ? '' : 's'} to Spaced Repetition${skipped ? `; skipped ${skipped}` : ''}.`);
   }
 
-  reviewCards() {
+  async reviewCards() {
+    const backend = this.cardBackend();
+    if (backend === 'anki') return this.syncAnki();
+    if (backend === 'toolkit') {
+      const today = todayDate();
+      const card = this.getIRRows().find(row =>
+        isActiveIR(row.fm)
+        && row.fm.type === 'card'
+        && this._cardBackendFor(row.fm) === 'toolkit'
+        && isDue(row.fm, today, this.settings));
+      if (!card) { new Notice('No Toolkit flashcards are due.'); return false; }
+      await this._openLearningFile(card.tfile, 'card');
+      return true;
+    }
     if (!this.app.commands.executeCommandById(SPACED_REPETITION_REVIEW_COMMAND)) {
       new Notice('Spaced Repetition is still starting. Reload Obsidian and try again.');
+      return false;
     }
+    return true;
+  }
+
+  async _reviewCardFile(file, frontmatter = getFm(this.app, file)) {
+    const backend = this._cardBackendFor(frontmatter);
+    if (backend === 'toolkit') return this._gradeToolkitCard(file, frontmatter);
+    if (backend === 'anki') {
+      this.syncAnki({ paths: [file.path] });
+      new Notice('This card is reviewed in Anki.');
+      return false;
+    }
+    return this.reviewCardsInNote(file);
+  }
+
+  async _gradeToolkitCard(file, frontmatter) {
+    const content = await this.app.vault.cachedRead(file);
+    let body = content.slice(frontmatterEndOffset(content));
+    const marker = body.indexOf(BODY_MARKER);
+    if (marker >= 0) body = body.slice(marker + BODY_MARKER.length);
+    body = body.trim();
+    let question = body;
+    let answer = body;
+    let hideLabels = false;
+    let directGrade = false;
+    if (frontmatter.card_format === 'occlusion') {
+      answer = frontmatter.occlusion_image ? `![[${frontmatter.occlusion_image}]]` : body;
+      hideLabels = true;
+      directGrade = true;
+    } else if (frontmatter.card_format === 'cloze') {
+      answer = body.replace(new RegExp(HL_CLOZE_SRC, 'g'), '**$1**');
+      question = body.replace(new RegExp(HL_CLOZE_SRC, 'g'), '**[ … ]**');
+    } else {
+      const match = body.match(/^([\s\S]*?)\n\n> \[!answer\][^\n]*\n([\s\S]*?)$/);
+      if (match) {
+        question = match[1].trim();
+        answer = match[2].replace(/^> ?/gm, '').trim();
+      }
+    }
+    const grade = await reviewCard(this.app, {
+      title: file.basename,
+      sourcePath: file.path,
+      questionMd: question,
+      answerMd: answer,
+      hideLabels,
+      directGrade,
+    });
+    if (!grade) return false;
+    const reviewedOn = todayDateString(this.settings);
+    const previous = parseDateValue(frontmatter.last_reviewed, this.settings);
+    const elapsed = previous ? Math.max(0, daysBetween(todayDate(), previous)) : 0;
+    const next = fsrsCore.scheduleFsrsReview(frontmatter, grade, elapsed, this.settings.fsrs);
+    await this.app.fileManager.processFrontMatter(file, current => {
+      current.ir_card_backend = 'toolkit';
+      current.stability = next.stability;
+      current.difficulty = next.difficulty;
+      current.last_grade = grade;
+      current.last_retrievability = next.retrievability;
+      current.last_reviewed = reviewedOn;
+      current.next_review = futureDateString(next.interval, this.settings);
+      current.interval = next.interval;
+      current.review_count = (Number(current.review_count) || 0) + 1;
+      if (current.status === 'pending' || current.status === 'inbox') current.status = 'active';
+    });
+    await this.consumeSessionItem(file.path, { background: true });
+    this._invalidateIRCollection();
+    new Notice(`Card reviewed · ${['', 'Again', 'Hard', 'Good', 'Easy'][grade]} · next in ${next.interval}d.`);
+    return true;
   }
 
   async reviewCardsInNote(file = this.app.workspace.getActiveFile()) {
@@ -3188,6 +3732,29 @@ class IncrementalReadingPlugin extends Plugin {
     new UserGuideModal(this.app).open();
   }
 
+  cardBackend() {
+    return cardProviderCore.normalizeCardBackend(this.settings.flashcards?.backend);
+  }
+
+  cardBackendLabel(backend = this.cardBackend()) {
+    return ({
+      toolkit: 'Toolkit in-house flashcards',
+      anki: 'Anki integration',
+      spaced_repetition: 'Spaced Repetition integration',
+    })[backend];
+  }
+
+  isCardBackendReady(backend = this.cardBackend()) {
+    if (backend === 'anki') return this.isFlashcardsReady();
+    if (backend === 'spaced_repetition') return this.isSpacedRepetitionReady();
+    return true;
+  }
+
+  isFlashcardsReady() {
+    const commands = this.app.commands.listCommands?.() || [];
+    return commands.some(command => command.id === FLASHCARDS_GENERATE_COMMAND);
+  }
+
   isSpacedRepetitionReady() {
     const commands = this.app.commands.listCommands?.() || [];
     const ids = new Set(commands.map(command => command.id));
@@ -3197,7 +3764,13 @@ class IncrementalReadingPlugin extends Plugin {
   runSetupCheck() {
     const issues = [];
     const notes = [];
-    if (!this.isSpacedRepetitionReady()) issues.push('Enable Spaced Repetition for card review.');
+    const backend = this.cardBackend();
+    if (backend === 'anki' && !this.isFlashcardsReady()) {
+      issues.push('Enable Flashcards by Reuseman. Anki and AnkiConnect must be running when you sync.');
+    }
+    if (backend === 'spaced_repetition' && !this.isSpacedRepetitionReady()) {
+      issues.push('Enable Spaced Repetition for card review.');
+    }
     const vaultPaths = [
       ['Sources', this.sourcesFolder()],
       ['Extracts', this.extractsFolder()],
@@ -3211,9 +3784,11 @@ class IncrementalReadingPlugin extends Plugin {
     if (!(Number(this.settings.scheduling.a_factor_max) >= Number(this.settings.scheduling.a_factor_min))) {
       issues.push('A-Factor maximum must be at least the minimum.');
     }
-    if (this._spacedRepetitionSettings().multilineCardSeparator === this._spacedRepetitionSettings().multilineReversedCardSeparator) {
+    if (backend === 'spaced_repetition'
+        && this._spacedRepetitionSettings().multilineCardSeparator === this._spacedRepetitionSettings().multilineReversedCardSeparator) {
       issues.push('Basic and bidirectional card separators must differ.');
     }
+    if (backend === 'anki' && !String(this.settings.anki.deck || '').trim()) issues.push('Anki target deck cannot be empty.');
     try {
       const inline = this.settings.inline_cards;
       const qa = new RegExp(inline.qa_regex);
@@ -3227,7 +3802,7 @@ class IncrementalReadingPlugin extends Plugin {
       return false;
     }
     const detail = notes.length ? `\n${notes.join('\n')}` : '';
-    new Notice(`Setup ready. Date format: ${configuredDateFormat(this.settings)}. Spaced Repetition is available.${detail}`, 8000);
+    new Notice(`Setup ready. Date format: ${configuredDateFormat(this.settings)}. ${this.cardBackendLabel()} is selected.${detail}`, 8000);
     return true;
   }
 
@@ -3328,6 +3903,20 @@ class IncrementalReadingPlugin extends Plugin {
     }
   }
 
+  _cardCanJoinQueue(frontmatter) {
+    if (this.settings.queue.mix_cards === false) return false;
+    const backend = this._cardBackendFor(frontmatter);
+    if (backend === 'anki') return false;
+    return backend !== 'spaced_repetition' || this.isSpacedRepetitionReady();
+  }
+
+  async _cardDueByBackend(item, today) {
+    const backend = this._cardBackendFor(item.fm);
+    if (backend === 'toolkit') return isDue(item.fm, today, this.settings);
+    if (backend === 'spaced_repetition') return this._cardIsDue(item.tfile, today);
+    return false;
+  }
+
   // ---- Next / Random -----------------------------------------------------
 
   async buildDuePool({ skipCurrent = true } = {}) {
@@ -3335,7 +3924,7 @@ class IncrementalReadingPlugin extends Plugin {
     const active = this.app.workspace.getActiveFile();
     const dateKey = todayDateString(this.settings);
     const mixCards = this.settings.queue.mix_cards !== false;
-    const srReady = mixCards && this.isSpacedRepetitionReady();
+    const srReady = this.isSpacedRepetitionReady();
     const key = `${dateKey}:${this.irCollectionRevision}:${mixCards}:${srReady}`;
     if (this.duePoolCache?.key !== key) {
       const promise = (async () => {
@@ -3343,13 +3932,13 @@ class IncrementalReadingPlugin extends Plugin {
         for (const { tfile: f, fm } of this.getIRRows()) {
           if (!isActiveIR(fm)) continue;
           if (fm.type === 'card') {
-            if (!srReady) continue;
+            if (!this._cardCanJoinQueue(fm)) continue;
           } else if (!isDue(fm, today, this.settings)) continue;
           candidates.push({ tfile: f, fm });
         }
         return filterAsyncConcurrent(candidates, async item => {
           if (item.fm.type !== 'card') return true;
-          return this._cardIsDue(item.tfile, today);
+          return this._cardDueByBackend(item, today);
         });
       })();
       this.duePoolCache = { key, promise };
@@ -3388,13 +3977,13 @@ class IncrementalReadingPlugin extends Plugin {
       if (!isActiveIR(f)) continue;
       if (f.last_reviewed === todayStr) continue;
       if (f.type === 'card') {
-        if (this.settings.queue.mix_cards === false || !this.isSpacedRepetitionReady()) continue;
+        if (!this._cardCanJoinQueue(f)) continue;
       } else if (!isDue(f, today, this.settings)) continue;
       candidates.push({ tfile: tf, fm: f });
     }
     return filterAsyncConcurrent(candidates, async item => {
       if (item.fm.type !== 'card') return true;
-      return this._cardIsDue(item.tfile, today);
+      return this._cardDueByBackend(item, today);
     });
   }
 
@@ -3506,7 +4095,7 @@ class IncrementalReadingPlugin extends Plugin {
       await this.app.workspace.getLeaf(false).openFile(file);
       window.setTimeout(() => {
         if (this.app.workspace.getActiveFile()?.path !== file.path) return;
-        if (type === 'card') this.reviewCardsInNote(file);
+        if (type === 'card') this._reviewCardFile(file);
         else if (type === 'source' && Number(readPointLine) > 0) {
           const editor = getEditorForFile(this.app, file);
           const line = Math.max(0, Number(readPointLine) - 1);
@@ -3563,8 +4152,12 @@ class IncrementalReadingPlugin extends Plugin {
   async gradeCurrent() {
     return this._withDeferredCollectionRenders(async () => {
       const active = this.app.workspace.getActiveFile();
-      if (getFm(this.app, active)?.type === 'card') {
-        new Notice('Cards finish automatically when Spaced Repetition accepts the review.');
+      const activeFrontmatter = getFm(this.app, active);
+      if (activeFrontmatter?.type === 'card') {
+        const backend = this._cardBackendFor(activeFrontmatter);
+        if (backend === 'toolkit') return this._gradeToolkitCard(active, activeFrontmatter);
+        if (backend === 'anki') new Notice('This card is reviewed in Anki.');
+        else new Notice('Cards finish automatically when Spaced Repetition accepts the review.');
         return false;
       }
       const graded = await this.endSession();
@@ -3579,19 +4172,20 @@ class IncrementalReadingPlugin extends Plugin {
     }, { flush: false });
   }
 
-  // ---- End Session (A-Factor topics; cards delegate to Spaced Repetition) -
+  // ---- End Session (A-Factor topics; Toolkit cards use in-house FSRS) -----
 
   async endSession() {
     const active = this.app.workspace.getActiveFile();
     if (!active || active.extension !== 'md') {
-      new Notice('Open an incremental reading source or extract first.');
+      new Notice('Open an incremental reading source, extract, or Toolkit card first.');
       return;
     }
     const fm = getFm(this.app, active);
-    if (!fm || (fm.type !== 'source' && fm.type !== 'extract')) {
-      new Notice('Active note is not a reading topic. Cards are graded automatically in Spaced Repetition.');
+    if (!fm || !['source', 'extract', 'card'].includes(fm.type)) {
+      new Notice('Active note is not an incremental reading element.');
       return;
     }
+    if (fm.type === 'card') return this._reviewCardFile(active, fm);
     const today = todayDateString(this.settings);
     return await this._gradeTopic(active, fm, today);
   }
@@ -4000,7 +4594,7 @@ class IncrementalReadingPlugin extends Plugin {
       const ok = await confirmDialog(
         this.app,
         `Reset ${label}?`,
-        'Sets status to active and clears scheduling history. Cards return to the Spaced Repetition deck as new cards.'
+        'Sets status to active and clears Toolkit scheduling history. Spaced Repetition cards return to their deck as new cards.'
       );
       if (!ok) return 0;
     }
@@ -4010,7 +4604,7 @@ class IncrementalReadingPlugin extends Plugin {
       await this.app.fileManager.processFrontMatter(file, fm => {
         statusCore.resetItemFrontmatter(fm, deckTag);
       });
-      if (isCard) {
+      if (isCard && this._cardBackendFor(getFm(this.app, file)) === 'spaced_repetition') {
         await this.app.vault.process(file, content => statusCore.clearSpacedRepetitionSchedule(content));
         this.cardDueCache.delete(file.path);
         this.cardScheduleSignatures.delete(file.path);
@@ -4065,7 +4659,7 @@ class IncrementalReadingPlugin extends Plugin {
           `==${text}==${hint ? `^[${hint}]` : ''}`
         );
       }
-      await this._createSpacedRepetitionCard(active, {
+      await this._createCard(active, {
         format,
         question,
         answer,
@@ -4075,7 +4669,7 @@ class IncrementalReadingPlugin extends Plugin {
       created++;
     }
     new Notice(created
-      ? `Exported ${created} inline card${created === 1 ? '' : 's'} to Spaced Repetition`
+      ? `Exported ${created} inline card${created === 1 ? '' : 's'} to ${this.cardBackendLabel()}`
       : 'All inline cards are already exported');
   }
 
@@ -4542,13 +5136,13 @@ ${body}
       }
     }
 
-    const created = await this._createSpacedRepetitionCard(parentFile, {
+    const created = await this._createCard(parentFile, {
       format: cardFormat,
       question: questionText,
       answer: answerText,
     });
     const kind = cardFormat === 'reverse' ? 'Bidirectional card' : (cardFormat === 'cloze' ? 'Cloze card' : 'Card');
-    new Notice(`${kind} created for Spaced Repetition: ${created.name}`);
+    new Notice(`${kind} created with ${this.cardBackendLabel()}: ${created.name}`);
   }
 
   // Build a basic image-based flashcard (image is the question, user supplies
@@ -4589,12 +5183,12 @@ ${body}
       ? `${caption.trim()}\n![[${imgPath}]]`
       : `![[${imgPath}]]`;
     const answerText = answer.trim();
-    const created = await this._createSpacedRepetitionCard(parentFile, {
+    const created = await this._createCard(parentFile, {
       format: 'basic',
       question: questionText,
       answer: answerText,
     });
-    new Notice(`Image card created for Spaced Repetition: ${created.name}`);
+    new Notice(`Image card created with ${this.cardBackendLabel()}: ${created.name}`);
   }
 
   // "Name this image" flashcard: image is the only thing on the front,
@@ -4749,6 +5343,11 @@ ${body}
     const cardSpecs = generateCardsFromRects(result.rects, result.mode);
     if (!cardSpecs || cardSpecs.length === 0) { new Notice('No cards generated.'); return; }
 
+    const useToolkitForOcclusion = this.cardBackend() === 'anki';
+    if (useToolkitForOcclusion) {
+      new Notice('Anki export does not render Toolkit occlusion blocks; these cards will use the in-house reviewer.');
+    }
+
     let written = 0;
 
     const yamlRects = result.rects
@@ -4766,7 +5365,7 @@ ${body}
         `question_index: ${spec.questionIndex}\n` +
         'rects:\n' + yamlRects + '\n' +
         '```\n';
-      await this._createSpacedRepetitionCard(r.tfile, {
+      const cardSpec = {
         format: 'occlusion',
         question,
         answer: `![[${resolvedPath}]]`,
@@ -4775,11 +5374,14 @@ ${body}
           `occlusion_mode: ${result.mode}`,
           `occlusion_question_index: ${spec.questionIndex}`,
         ],
-      });
+      };
+      if (useToolkitForOcclusion) await this._createToolkitCard(r.tfile, cardSpec);
+      else await this._createCard(r.tfile, cardSpec);
       written++;
     }
 
-    new Notice(`Occlusion: ${written} Spaced Repetition card(s) from ${result.rects.length} rect(s)`);
+    const label = useToolkitForOcclusion ? this.cardBackendLabel('toolkit') : this.cardBackendLabel();
+    new Notice(`Occlusion: ${written} ${label} card(s) from ${result.rects.length} rect(s)`);
   }
 
   // ---- New source / Import clipping --------------------------------------

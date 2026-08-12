@@ -4,7 +4,7 @@ title: Spaced Repetition integration
 
 # Spaced Repetition integration
 
-Incremental Reading Toolkit expects the actively maintained **Spaced Repetition** community plugin for card review.
+Incremental Reading Toolkit retains **Spaced Repetition** as a compatibility backend. Select it under **Flashcards → Create cards with** when you want that plugin to own newly created cards.
 
 When you create a card, the Toolkit:
 
@@ -13,6 +13,6 @@ When you create a card, the Toolkit:
 3. uses the configured question/answer or cloze form;
 4. preserves a link back to the relevant source where applicable.
 
-Spaced Repetition then owns card scheduling, grading, review UI, and card statistics. If it is unavailable, topic scheduling still works and card-review commands show an installation reminder.
+Spaced Repetition then owns card scheduling, grading, review UI, and card statistics. If it is unavailable, Toolkit-owned cards and topic scheduling still work.
 
-This integration is intentionally one-way at the algorithm boundary: the Toolkit prepares compatible cards; it does not duplicate Spaced Repetition’s scheduler.
+The card note stores `ir_card_backend: spaced_repetition`, so changing the creation setting later does not alter its schedule or reviewer.

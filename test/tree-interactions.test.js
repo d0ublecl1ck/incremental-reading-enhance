@@ -65,7 +65,7 @@ test('tree prunes selections that are no longer rendered', () => {
 });
 
 test('legacy migration preserves done state and records the managed deck tag', () => {
-  const migration = main.match(/async migrateLegacyCards\(\) \{([\s\S]*?)\n  \}\n\n  reviewCards/)?.[1] || '';
+  const migration = main.match(/async migrateLegacyCards\(\) \{([\s\S]*?)\n  \}\n\n  async reviewCards/)?.[1] || '';
   assert.match(migration, /const wasDone = next\.status === 'done'/);
   assert.match(migration, /ir_spaced_repetition_deck_tag/);
   assert.match(migration, /wasDone \? \[\] : \['status'\]/);

@@ -1,5 +1,14 @@
 # Incremental Reading Toolkit changelog
 
+## Unreleased
+
+### Added
+- Flashcard settings now let users create cards with the Toolkit's in-house FSRS reviewer or export them to Anki through Reuseman's Flashcards plugin. Target deck, card tag, and automatic per-file generation are configurable.
+- Card notes store their backend individually, so Toolkit, Anki, and existing Spaced Repetition cards can coexist without silent conversion.
+
+### Changed
+- Mixed sessions include Toolkit-owned and Spaced Repetition cards; Anki-owned cards remain in Anki's review queue.
+
 ## 1.1.8 — 2026-08-07
 
 ### Added
