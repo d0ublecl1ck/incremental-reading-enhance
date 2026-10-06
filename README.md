@@ -23,6 +23,40 @@
 
 ---
 
+<p align="center">
+  <b>简体中文汉化版</b> · fork 自 <a href="https://github.com/kja140/incremental-reading">kja140/incremental-reading</a>（MIT）
+</p>
+
+## 中文版说明
+
+本仓库是 [Incremental Reading Toolkit](https://github.com/kja140/incremental-reading) 的简体中文汉化 fork，插件 id 为 `incremental-reading-zh`，可与上游英文版并存安装。
+
+- 汉化范围：插件内面向用户的全部文案（命令、设置项、通知、弹窗、侧边栏、仪表盘、内置使用指南）。
+- 保持不变：笔记 frontmatter 键值、标签、文件夹路径、日期格式与正则表达式等数据格式与上游一致，因此中英文版本可以共用同一批笔记。
+- 与英文版的关系：不改动上游逻辑，只替换字符串；上游发新版本后可按下面的流程重新套用汉化。
+- 术语与译文规范见 [`i18n/GLOSSARY.md`](i18n/GLOSSARY.md)，译文存放于 [`i18n/zh-CN.jsonl`](i18n/zh-CN.jsonl)。
+- 中文使用指南：[`docs/USER-GUIDE.zh-CN.md`](docs/USER-GUIDE.zh-CN.md)（上游英文原文：[`docs/USER-GUIDE.md`](docs/USER-GUIDE.md)）；插件内「打开使用指南」弹窗也已是中文。
+
+### 安装
+
+1. 取得本仓库的 `main.js`、`manifest.json`、`styles.css`。
+2. 放入 `<你的库>/.obsidian/plugins/incremental-reading-zh/`。
+3. 在 Obsidian「设置 → 第三方插件」中启用「渐进阅读工具包（中文版）」。
+
+### 重新套用汉化 / 合并上游
+
+```bash
+git fetch upstream
+git checkout upstream/main -- main.js   # 取回英文 main.js
+npm run i18n:remap                      # 重建 i18n/keys.json，并按原文把译文重新对齐到新索引
+npm run i18n:apply                      # 把 i18n/zh-CN.jsonl 的译文写回 main.js
+npm run check                           # node --check + 发布元数据 + 译文校验 + 95 项测试
+```
+
+`npm run i18n:check` 会校验译文文件格式，并确认每条译文都已落到 `main.js`，已接入 `npm run check`。
+
+---
+
 Incremental Reading Toolkit helps you read long sources a little at a time, revisit them on a useful schedule, extract the parts that matter, and turn those extracts into flashcards. It works with Markdown notes, PDFs, clipboard content, and images.
 
 Topic scheduling uses a progress-aware **A-Factor**. For flashcards, choose the Toolkit's built-in FSRS review, export to Anki through Reuseman's [Flashcards](https://github.com/reuseman/flashcards-obsidian) plugin, or retain the existing [Spaced Repetition](https://github.com/st3v3nmw/obsidian-spaced-repetition) integration.

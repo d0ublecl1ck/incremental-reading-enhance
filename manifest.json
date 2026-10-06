@@ -1,11 +1,11 @@
 {
-  "id": "incremental-reading-toolkit",
-  "name": "Incremental Reading Toolkit",
+  "id": "incremental-reading-zh",
+  "name": "渐进阅读工具包（中文版）",
   "version": "1.1.8",
   "minAppVersion": "1.12.7",
-  "description": "Process long-form reading into scheduled topics, extracts, and flexible Toolkit or Anki flashcards.",
-  "author": "kiera",
+  "description": "把长文阅读拆成有排期的主题、摘录，并生成工具包或 Anki 卡片。Incremental Reading Toolkit 的简体中文汉化版。",
+  "author": "kiera（汉化：d0ublecl1ck）",
   "authorUrl": "https://github.com/kja140",
-  "helpUrl": "https://github.com/kja140/incremental-reading#readme",
+  "helpUrl": "https://github.com/d0ublecl1ck/incremental-reading-zh#readme",
   "isDesktopOnly": true
 }

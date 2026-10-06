@@ -549,7 +549,7 @@ const DEFAULT_SETTINGS = {
     multilineReversedCardSeparator: '??',
   },
   anki: {
-    deck: 'Incremental Reading',
+    deck: '渐进阅读',
     flashcardsTag: 'card',
     syncOnCreate: true,
   },
@@ -770,9 +770,9 @@ function parseInlineCards(filePath, body, settings) {
     qa = new RegExp(s.qa_regex);
     cloze = new RegExp(s.cloze_regex, 'g');
   } catch (error) {
-    throw new Error(`Invalid inline-card regular expression: ${error.message}`);
+    throw new Error(`行内卡片正则表达式无效：${error.message}`);
   }
-  if (qa.global) throw new Error('The Q::A regular expression must not use the global flag.');
+  if (qa.global) throw new Error('Q::A 正则表达式不得使用全局标志。');
 
   // The same literal (e.g. `==voltage angle==`) on two lines hashes to the same
   // id, colliding so only one card is gradable and the other sticks in the queue.
@@ -851,7 +851,7 @@ class TextPromptModal extends Modal {
     const row = contentEl.createDiv({ cls: 'modal-button-container' });
     const submit = row.createEl('button', { text: 'OK', cls: 'mod-cta' });
     submit.addEventListener('click', () => this._submit(input.value));
-    const cancel = row.createEl('button', { text: 'Cancel' });
+    const cancel = row.createEl('button', { text: '取消' });
     cancel.addEventListener('click', () => this._cancel());
     // Defer focus a tick so any closing modal above us releases focus first.
     window.setTimeout(() => { input.focus(); input.select(); }, 20);
@@ -929,7 +929,7 @@ class ConfirmModal extends Modal {
     const row = contentEl.createDiv({ cls: 'modal-button-container' });
     const yes = row.createEl('button', { text: 'OK', cls: 'mod-cta' });
     yes.addEventListener('click', () => this._answer(true));
-    const no = row.createEl('button', { text: 'Cancel' });
+    const no = row.createEl('button', { text: '取消' });
     no.addEventListener('click', () => this._answer(false));
     const onKey = (e) => {
       if (e.key === 'Enter') { e.preventDefault(); this._answer(true); }
@@ -970,7 +970,7 @@ class LongTextModal extends Modal {
     const row = contentEl.createDiv({ cls: 'modal-button-container' });
     const submit = row.createEl('button', { text: 'OK', cls: 'mod-cta' });
     submit.addEventListener('click', () => this._submit(ta.value));
-    const cancel = row.createEl('button', { text: 'Cancel' });
+    const cancel = row.createEl('button', { text: '取消' });
     cancel.addEventListener('click', () => this._cancel());
     window.setTimeout(() => ta.focus(), 20);
   }
@@ -1012,14 +1012,14 @@ class OcclusionModal extends Modal {
     this.dragNow = null;
   }
   onOpen() {
-    this.titleEl.setText('Occlusion: drag to draw rectangles');
+    this.titleEl.setText('遮挡：拖动以绘制矩形');
     const { contentEl } = this;
     contentEl.empty();
     contentEl.addClass('ir-occ-modal');
 
     contentEl.createEl('p', {
       cls: 'ir-occ-help',
-      text: 'Click-drag to add a rectangle. Right-click to remove. Shift+click a rect to set/clear its label. Choose mode at bottom to generate cards.'
+      text: '按住并拖动以添加矩形。右键单击以移除。Shift+单击矩形可设置或清除其标签。在底部选择模式以生成卡片。'
     });
 
     const wrap = contentEl.createDiv({ cls: 'ir-occ-wrap' });
@@ -1067,25 +1067,25 @@ class OcclusionModal extends Modal {
 
     const buttonRow = contentEl.createDiv({ cls: 'modal-button-container ir-occ-btnrow' });
 
-    const hideOneBtn = buttonRow.createEl('button', { text: 'Generate: hide-one (N cards)', cls: 'mod-cta' });
-    hideOneBtn.title = 'One card per rect; each card hides exactly that rect, reveals others.';
+    const hideOneBtn = buttonRow.createEl('button', { text: '生成：隐藏一个（N 张卡片）', cls: 'mod-cta' });
+    hideOneBtn.title = '每个矩形一张卡片；每张卡片只隐藏该矩形，显示其余部分。';
     hideOneBtn.addEventListener('click', () => this._commit('hide-one'));
 
-    const showOneBtn = buttonRow.createEl('button', { text: 'Generate: show-one (N cards)' });
-    showOneBtn.title = 'One card per rect; each card shows only that rect, hides others.';
+    const showOneBtn = buttonRow.createEl('button', { text: '生成：显示一个（N 张卡片）' });
+    showOneBtn.title = '每个矩形一张卡片；每张卡片只显示该矩形，隐藏其余部分。';
     showOneBtn.addEventListener('click', () => this._commit('show-one'));
 
-    const clearBtn = buttonRow.createEl('button', { text: 'Clear' });
+    const clearBtn = buttonRow.createEl('button', { text: '清除' });
     clearBtn.addEventListener('click', () => { this.rects = []; this._renderRects(); });
 
-    const cancelBtn = buttonRow.createEl('button', { text: 'Cancel' });
+    const cancelBtn = buttonRow.createEl('button', { text: '取消' });
     cancelBtn.addEventListener('click', () => this._cancel());
 
     this.statusEl = contentEl.createDiv({ cls: 'ir-occ-status' });
     this._updateStatus();
   }
   _updateStatus() {
-    if (this.statusEl) this.statusEl.setText(`${this.rects.length} rectangle(s) drawn`);
+    if (this.statusEl) this.statusEl.setText(`${this.rects.length} 个矩形已绘制`);
   }
   _renderRects() {
     if (!this.overlay) return;
@@ -1100,7 +1100,7 @@ class OcclusionModal extends Modal {
       div.style.setProperty('--ir-cover-bg', color);
       if (idx != null) {
         const labelSuffix = r.label ? ` — "${r.label}"` : '';
-        div.title = `Rect ${idx + 1}${labelSuffix} · shift+click=label · right-click=remove`;
+        div.title = `矩形 ${idx + 1}${labelSuffix} · shift+click=标签 · right-click=移除`;
         div.addEventListener('contextmenu', (e) => {
           e.preventDefault();
           this.rects.splice(idx, 1);
@@ -1111,7 +1111,7 @@ class OcclusionModal extends Modal {
           e.preventDefault();
           e.stopPropagation();
           const cur = this.rects[idx]?.label || '';
-          const next = await askText(this.app, `Label for rect ${idx + 1} (empty = clear)`, cur);
+          const next = await askText(this.app, `矩形 ${idx + 1} 的标签（留空 = 清除）`, cur);
           if (next === null) return;
           if (next.trim() === '') delete this.rects[idx].label;
           else this.rects[idx].label = next.trim();
@@ -1136,7 +1136,7 @@ class OcclusionModal extends Modal {
   }
   _commit(mode) {
     if (this._resolved) return;
-    if (this.rects.length === 0) { new Notice('Draw at least one rectangle first.'); return; }
+    if (this.rects.length === 0) { new Notice('请先绘制至少一个矩形。'); return; }
     this._resolved = true;
     this.close();
     this.resolve({ rects: this.rects.slice(), mode });
@@ -1173,11 +1173,11 @@ class FlashcardModal extends Modal {
   }
 
   onOpen() {
-    this.titleEl.setText(this.opts.title || 'Review card');
+    this.titleEl.setText(this.opts.title || '复习卡片');
     this.modalEl.addClass('ir-fc-modal-el');
     this.contentEl.empty();
     this.contentEl.addClass('ir-fc-modal');
-    if (!this.opts.hideLabels) this.contentEl.createDiv({ cls: 'ir-fc-label', text: 'Question' });
+    if (!this.opts.hideLabels) this.contentEl.createDiv({ cls: 'ir-fc-label', text: '问题' });
     const question = this.contentEl.createDiv({ cls: 'ir-fc-question ir-fc-box markdown-rendered' });
     this._renderMarkdown(question, this.opts.questionMd || '');
     this.answer = this.contentEl.createDiv({ cls: 'ir-fc-answer ir-fc-box ir-fc-answer-box markdown-rendered ir-hidden' });
@@ -1185,7 +1185,7 @@ class FlashcardModal extends Modal {
     this.stage = 'question';
     if (this.opts.directGrade) this._reveal();
     else {
-      const show = this.buttons.createEl('button', { text: 'Show answer (Space)', cls: 'mod-cta ir-fc-show-btn' });
+      const show = this.buttons.createEl('button', { text: '显示答案（Space）', cls: 'mod-cta ir-fc-show-btn' });
       show.addEventListener('click', () => this._reveal());
       window.setTimeout(() => show.focus(), 30);
     }
@@ -1215,14 +1215,14 @@ class FlashcardModal extends Modal {
     this.stage = 'answer';
     if (this.opts.answerMd?.trim()) {
       if (!this.opts.hideLabels) {
-        const label = this.contentEl.createDiv({ cls: 'ir-fc-label ir-fc-label-answer', text: 'Answer' });
+        const label = this.contentEl.createDiv({ cls: 'ir-fc-label ir-fc-label-answer', text: '答案' });
         this.contentEl.insertBefore(label, this.answer);
       }
       this.answer.removeClass('ir-hidden');
       this._renderMarkdown(this.answer, this.opts.answerMd);
     }
     this.buttons.empty();
-    for (const [grade, label] of [[1, 'Again'], [2, 'Hard'], [3, 'Good'], [4, 'Easy']]) {
+    for (const [grade, label] of [[1, '重来'], [2, '困难'], [3, '良好'], [4, '简单']]) {
       const button = this.buttons.createEl('button', {
         cls: `ir-fc-grade-${grade} ir-fc-grade-btn${grade === 3 ? ' mod-cta' : ''}`,
       });
@@ -1443,22 +1443,22 @@ async function ensureFolder(app, path) {
 // Resolve source TFile + fm from active. Returns { tfile, fm } or null.
 async function resolveSourceFromActive(app, settings) {
   const active = app.workspace.getActiveFile();
-  if (!active) { new Notice('No active file.'); return null; }
+  if (!active) { new Notice('没有活动文件。'); return null; }
 
   if (active.extension === 'md') {
     const fm = getFm(app, active);
     if (fm?.type === 'source') return { tfile: active, fm };
-    new Notice('Active note is not an incremental reading source.');
+    new Notice('活动笔记不是渐进阅读来源。');
     return null;
   }
 
   if (active.extension !== 'pdf') {
-    new Notice('Active file must be a source note or PDF.');
+    new Notice('活动文件必须是来源笔记或 PDF。');
     return null;
   }
 
   const absPath = vaultAbsPath(app, active.path);
-  if (!absPath) { new Notice('Cannot resolve filesystem path.'); return null; }
+  if (!absPath) { new Notice('无法解析文件系统路径。'); return null; }
 
   // Match by:
   //   1. exact filesystem path equality for an external PDF
@@ -1481,7 +1481,7 @@ async function resolveSourceFromActive(app, settings) {
     }
   }
   if (candidates.length === 0) {
-    new Notice('No source note links to this PDF via pdf_path or pdf_vault_path.');
+    new Notice('没有来源笔记通过 pdf_path 或 pdf_vault_path 链接到此 PDF。');
     return null;
   }
   if (candidates.length === 1) return candidates[0];
@@ -1506,7 +1506,7 @@ async function resolveSourceFromActive(app, settings) {
     app,
     candidates,
     c => `${c.tfile.basename}${(c.fm.page_start != null && c.fm.page_end != null) ? `  p.${c.fm.page_start}–${c.fm.page_end}` : ''}`,
-    'Pick the source for this PDF',
+    '为此 PDF 选择来源',
   );
 }
 
@@ -1516,7 +1516,7 @@ async function resolveSourceFromActive(app, settings) {
 // work when invoked from inside a card during review.
 async function resolveSourceOrExtractFromActive(app, settings) {
   const active = app.workspace.getActiveFile();
-  if (!active) { new Notice('No active file.'); return null; }
+  if (!active) { new Notice('没有活动文件。'); return null; }
 
   if (active.extension === 'md') {
     const fm = getFm(app, active);
@@ -1525,23 +1525,23 @@ async function resolveSourceOrExtractFromActive(app, settings) {
     }
     if (fm?.type === 'card') {
       const m = String(fm.source || '').match(/\[\[([^\]|#]+)/);
-      if (!m) { new Notice('Card has no source link.'); return null; }
+      if (!m) { new Notice('卡片没有来源链接。'); return null; }
       const parentName = m[1].trim();
       const parentTf = app.metadataCache.getFirstLinkpathDest(parentName, active.path)
         || getAllIRFiles(app, settings).find(f => f.basename === parentName);
-      if (!parentTf) { new Notice(`Parent not found: ${parentName}`); return null; }
+      if (!parentTf) { new Notice(`未找到父级：${parentName}`); return null; }
       const parentFm = getFm(app, parentTf);
       if (!parentFm || (parentFm.type !== 'source' && parentFm.type !== 'extract')) {
-        new Notice('Card parent is not a source/extract.'); return null;
+        new Notice('卡片的父级不是来源或摘录。'); return null;
       }
       return { tfile: parentTf, fm: parentFm };
     }
-    new Notice('Active note is not an incremental reading source, extract, or card.');
+    new Notice('活动笔记不是渐进阅读的来源、摘录或卡片。');
     return null;
   }
 
   if (active.extension === 'pdf') return await resolveSourceFromActive(app, settings);
-  new Notice('Active file must be an incremental reading element or PDF.');
+  new Notice('活动文件必须是渐进阅读元素或 PDF。');
   return null;
 }
 
@@ -1549,12 +1549,12 @@ async function resolveSourceOrExtractFromActive(app, settings) {
 // to source-resolution when active is a PDF.
 async function resolveIRFromActive(app, settings, { allowCard = true, allowPdfFallback = true } = {}) {
   const active = app.workspace.getActiveFile();
-  if (!active) { new Notice('No active file.'); return null; }
+  if (!active) { new Notice('没有活动文件。'); return null; }
   if (active.extension === 'md') {
     const fm = getFm(app, active);
-    if (!fm) { new Notice('No frontmatter on active note.'); return null; }
+    if (!fm) { new Notice('活动笔记没有 frontmatter。'); return null; }
     if (fm.type !== 'source' && fm.type !== 'extract' && (!allowCard || fm.type !== 'card')) {
-      new Notice(`Active note is not an IR ${allowCard ? 'source/extract/card' : 'source/extract'}.`);
+      new Notice(`活动笔记不是渐进阅读的${allowCard ? '来源/摘录/卡片' : '来源/摘录'}。`);
       return null;
     }
     return { tfile: active, fm };
@@ -1562,7 +1562,7 @@ async function resolveIRFromActive(app, settings, { allowCard = true, allowPdfFa
   if (active.extension === 'pdf' && allowPdfFallback) {
     return await resolveSourceFromActive(app, settings);
   }
-  new Notice('Active file must be an incremental reading element or linked PDF.');
+  new Notice('活动文件必须是渐进阅读元素或已链接的 PDF。');
   return null;
 }
 
@@ -1655,7 +1655,7 @@ class IRQueueView extends ItemView {
   }
 
   getViewType() { return IR_QUEUE_VIEW_TYPE; }
-  getDisplayText() { return 'Reading queue'; }
+  getDisplayText() { return '阅读队列'; }
   getIcon() { return 'list-checks'; }
 
   async onOpen() {
@@ -1750,12 +1750,12 @@ class IRQueueView extends ItemView {
     root.empty();
     root.addClass('ir-queue-root');
 
-    root.createDiv({ cls: 'ir-queue-header', text: 'Reading queue' });
+    root.createDiv({ cls: 'ir-queue-header', text: '阅读队列' });
 
     const filterInput = root.createEl('input', {
       cls: 'ir-queue-filter',
       type: 'text',
-      placeholder: 'Filter by tag or title…',
+      placeholder: '按标签或标题筛选…',
     });
     filterInput.value = this.filter;
     filterInput.addEventListener('input', e => {
@@ -1838,10 +1838,10 @@ class IRQueueView extends ItemView {
       const cache = this.plugin.app.metadataCache.getFileCache(r.tfile);
       return !this._filterMiss(cache, r.tfile);
     }).map(r => ({ ...r, file: r.tfile }));
-    this._renderSection(sectionsEl, "Today's Session", sessionFiltered);
-    this._renderSection(sectionsEl, 'Overdue (not in session)', model.groups.overdue.filter(matchesFilter));
-    this._renderSection(sectionsEl, 'New', model.groups.newItems.filter(matchesFilter));
-    this._renderSection(sectionsEl, 'Active (no due)', model.groups.active.filter(matchesFilter));
+    this._renderSection(sectionsEl, "今日会话", sessionFiltered);
+    this._renderSection(sectionsEl, '逾期（不在会话中）', model.groups.overdue.filter(matchesFilter));
+    this._renderSection(sectionsEl, '新建', model.groups.newItems.filter(matchesFilter));
+    this._renderSection(sectionsEl, '活动（无到期）', model.groups.active.filter(matchesFilter));
     const elapsed = (window.performance?.now?.() ?? Date.now()) - started;
     this.plugin._dbg('queue render', { reason, elapsed_ms: Math.round(elapsed * 10) / 10 });
   }
@@ -1869,7 +1869,7 @@ class IRQueueView extends ItemView {
     if (rows.length > limit) {
       const more = sec.createEl('button', {
         cls: 'ir-queue-show-more',
-        text: `Show ${Math.min(100, rows.length - limit)} more`,
+        text: `显示另外 ${Math.min(100, rows.length - limit)} 项`,
       });
       more.addEventListener('click', () => {
         this.sectionLimits.set(title, limit + 100);
@@ -1910,7 +1910,7 @@ class IRQueueView extends ItemView {
     if (!isActiveIR(fm)) return;
 
     const panel = root.createDiv({ cls: 'ir-timeline-panel' });
-    panel.createEl('div', { cls: 'ir-queue-section-title', text: `Timeline: ${active.basename}` });
+    panel.createEl('div', { cls: 'ir-queue-section-title', text: `时间线：${active.basename}` });
 
     for (const c of (fm.checkpoints || [])) {
       const row = panel.createDiv({ cls: 'ir-timeline-row' });
@@ -1923,7 +1923,7 @@ class IRQueueView extends ItemView {
       });
     }
 
-    const input = panel.createEl('input', { type: 'text', cls: 'ir-queue-filter', placeholder: 'New checkpoint (Nd:: optional)' });
+    const input = panel.createEl('input', { type: 'text', cls: 'ir-queue-filter', placeholder: '新建检查点（Nd:: 可选）' });
     input.addEventListener('keydown', async (e) => {
       if (e.key === 'Enter' && input.value.trim()) {
         await this.plugin.addCheckpoint(input.value.trim());
@@ -1940,60 +1940,60 @@ class IRQueueView extends ItemView {
 
 class UserGuideModal extends Modal {
   onOpen() {
-    this.setTitle('Incremental Reading Toolkit guide');
+    this.setTitle('渐进阅读工具包指南');
     const root = this.contentEl;
     root.addClass('ir-guide-modal');
 
-    root.createEl('h3', { text: 'Quickstart' });
+    root.createEl('h3', { text: '快速上手' });
     const quick = root.createEl('ol');
     for (const text of [
-      'Open an article note and run Import clipping, or create a source with New source.',
-      'Run Build today\'s session queue once, then use Next element to move through it.',
-      'Select important text and run Extract selection.',
-      'Leave the cursor where you stopped, then run Grade current reading topic.',
-      'Create recall material with Flashcard from clipboard.',
-      'Next element opens card review automatically; the answer finishes that queue item.',
+      '打开一篇文章笔记并运行「导入剪藏」，或用「新建来源」创建来源。',
+      '运行一次「构建今日会话队列」，然后用「下一元素」在队列中前进。',
+      '选中重要文本并运行「摘录选中内容」。',
+      '把光标停在中断处，然后运行「为当前阅读主题评级」。',
+      '用「从剪贴板制作卡片」创建回忆材料。',
+      '「下一元素」会自动打开卡片复习；给出答案即完成该队列项。',
     ]) quick.createEl('li', { text });
 
-    root.createEl('h3', { text: 'Recommended hotkeys' });
-    root.createEl('p', { text: 'Open Settings -> Hotkeys and search for Incremental Reading Toolkit. These are suggestions, not defaults.' });
+    root.createEl('h3', { text: '推荐快捷键' });
+    root.createEl('p', { text: '打开「设置 -> 快捷键」并搜索 渐进阅读工具包。这些只是建议，不是默认值。' });
     const table = root.createEl('table');
     const head = table.createEl('thead').createEl('tr');
-    head.createEl('th', { text: 'Command' });
-    head.createEl('th', { text: 'Suggested hotkey' });
+    head.createEl('th', { text: '命令' });
+    head.createEl('th', { text: '建议快捷键' });
     const body = table.createEl('tbody');
     for (const [command, hotkey] of [
-      ['Next element', 'Cmd/Ctrl+Shift+J'],
-      ['Grade current reading topic', 'Cmd/Ctrl+Shift+Enter'],
-      ['Extract selection', 'Cmd/Ctrl+Shift+E'],
-      ['Flashcard from clipboard', 'Cmd/Ctrl+Shift+F'],
-      ['Current element actions…', 'Cmd/Ctrl+Shift+A'],
+      ['下一元素', 'Cmd/Ctrl+Shift+J'],
+      ['为当前阅读主题评级', 'Cmd/Ctrl+Shift+Enter'],
+      ['摘录选中内容', 'Cmd/Ctrl+Shift+E'],
+      ['从剪贴板制作卡片', 'Cmd/Ctrl+Shift+F'],
+      ['当前元素操作…', 'Cmd/Ctrl+Shift+A'],
     ]) {
       const row = body.createEl('tr');
       row.createEl('td', { text: command });
       row.createEl('td').createEl('code', { text: hotkey });
     }
 
-    root.createEl('h3', { text: 'Daily reading loop' });
+    root.createEl('h3', { text: '每日阅读循环' });
     const daily = root.createEl('ul');
     for (const text of [
-      'Build today\'s session queue performs scheduling work; Next element opens the saved path and starts card review when needed.',
-      'Extracts remain reading topics; cards use the backend stored on each note.',
-      'Moving the Markdown read-point or advancing a page/timestamp counts as progress.',
-      'Use Mercy to spread overdue work and Postpone subtree to move related material together.',
+      '「构建今日会话队列」负责排期工作；「下一元素」会打开保存的位置，并在需要时开始卡片复习。',
+      '摘录仍是阅读主题；卡片使用各笔记上存储的后端。',
+      '移动 Markdown 阅读位置或推进页码/时间戳都算作进度。',
+      '用「宽限（分散逾期）」分摊逾期内容，用「推迟子树」一起移动相关材料。',
     ]) daily.createEl('li', { text });
 
-    root.createEl('h3', { text: 'PDFs, cards, and dates' });
-    root.createEl('p', { text: 'Use the Toolkit PDF viewer for vault or external PDFs. Toolkit cards use built-in FSRS, Anki cards sync externally, and existing Spaced Repetition cards keep their plugin-owned schedule.' });
-    root.createEl('p', { text: 'Choose DD-MM-YYYY, MM-DD-YYYY, or YYYY-MM-DD in General settings. Relative schedules such as +3d work with every format.' });
+    root.createEl('h3', { text: 'PDF、卡片与日期' });
+    root.createEl('p', { text: '库内或外部 PDF 请使用工具包 PDF 阅读器。工具包卡片使用内置 FSRS，Anki 卡片在外部同步，已有的 Spaced Repetition 卡片保持其插件自有的排期。' });
+    root.createEl('p', { text: '在「通用」设置中选择 DD-MM-YYYY、MM-DD-YYYY 或 YYYY-MM-DD。像 +3d 这样的相对排期适用于所有格式。' });
 
-    root.createEl('h3', { text: 'Troubleshooting' });
+    root.createEl('h3', { text: '故障排查' });
     const trouble = root.createEl('ul');
     for (const text of [
-      'No cards in review: run setup check and confirm the backend stored on the card note.',
-      'PDF will not open: confirm pdf_path points to an existing PDF, or use pdf_vault_path for a vault file.',
-      'Ambiguous tree parent: rename files that share the same basename.',
-      'For the full guide, open docs/USER-GUIDE.md in the GitHub repository from the Help link.',
+      '复习中没有卡片：运行配置检查，并确认卡片笔记上存储的后端。',
+      'PDF 无法打开：确认 pdf_path 指向存在的 PDF，或对库内文件使用 pdf_vault_path。',
+      '知识树父级不明确：请重命名同名的文件。',
+      '完整指南请通过帮助链接打开 GitHub 仓库中的 docs/USER-GUIDE.md。',
     ]) trouble.createEl('li', { text });
   }
 
@@ -2023,18 +2023,18 @@ class IncrementalReadingSettingTab extends PluginSettingTab {
 
   _about(root) {
     const sec = root.createDiv({ cls: 'ir-settings-section' });
-    new Setting(sec).setName(`Incremental Reading Toolkit ${this.plugin.manifest.version}`).setHeading();
+    new Setting(sec).setName(`渐进阅读工具包 ${this.plugin.manifest.version}`).setHeading();
     new Setting(sec)
-      .setName('User guide')
-      .setDesc('Open the quickstart, suggested hotkeys, daily workflow, and troubleshooting inside Obsidian.')
-      .addButton(button => button.setButtonText('Open user guide').setCta().onClick(() => this.plugin.openUserGuide()));
+      .setName('用户指南')
+      .setDesc('在 Obsidian 内打开快速上手、推荐快捷键、日常工作流和故障排查。')
+      .addButton(button => button.setButtonText('打开用户指南').setCta().onClick(() => this.plugin.openUserGuide()));
     const backend = this.plugin.cardBackend();
     const ready = this.plugin.isCardBackendReady(backend);
     const backendLabel = this.plugin.cardBackendLabel(backend);
     new Setting(sec)
-      .setName('Setup status')
-      .setDesc(ready ? `${backendLabel} is ready.` : `${backendLabel} needs attention; run the setup check for details.`)
-      .addButton(button => button.setButtonText('Run setup check').onClick(() => this.plugin.runSetupCheck()));
+      .setName('配置状态')
+      .setDesc(ready ? `${backendLabel} 已就绪。` : `${backendLabel} 需要处理；运行配置检查了解详情。`)
+      .addButton(button => button.setButtonText('运行配置检查').onClick(() => this.plugin.runSetupCheck()));
   }
 
   _numberSetting(section, name, description, target, key, { min, max, step = 'any' } = {}) {
@@ -2059,70 +2059,70 @@ class IncrementalReadingSettingTab extends PluginSettingTab {
 
   _scheduling(root) {
     const sec = root.createDiv({ cls: 'ir-settings-section' });
-    new Setting(sec).setName('Reading schedule').setHeading();
+    new Setting(sec).setName('阅读排期').setHeading();
     const s = this.plugin.settings.scheduling;
     const save = () => this.plugin.saveSettings();
 
     new Setting(sec)
-      .setName('Progress-aware A-Factor')
-      .setDesc('Adjust intervals from the pages or media time still remaining. Recommended for books, PDFs, and videos.')
+      .setName('进度感知 A 因子')
+      .setDesc('根据剩余页数或媒体时间调整间隔。推荐用于书籍、PDF 和视频。')
       .addToggle(t => t.setValue(s.progress_aware).onChange(v => { s.progress_aware = v; save(); }));
 
     new Setting(sec)
-      .setName('Stall guard')
-      .setDesc('Prevent intervals from growing when the page, timestamp, or Markdown read-point does not move.')
+      .setName('停滞保护')
+      .setDesc('当页码、时间戳或 Markdown 阅读位置不再推进时，阻止间隔增长。')
       .addToggle(t => t.setValue(s.stall_guard).onChange(v => { s.stall_guard = v; save(); }));
 
-    this._numberSetting(sec, 'Minimum A-Factor', 'Smallest interval-growth multiplier. Values just above 1 keep material in frequent rotation.', s, 'a_factor_min', { min: 1.01, max: 10, step: 0.01 });
-    this._numberSetting(sec, 'Maximum A-Factor', 'Largest interval-growth multiplier allowed for nearly finished material.', s, 'a_factor_max', { min: 1.01, max: 10, step: 0.01 });
+    this._numberSetting(sec, '最小 A 因子', '最小的间隔增长倍率。略大于 1 的取值会让材料保持频繁轮换。', s, 'a_factor_min', { min: 1.01, max: 10, step: 0.01 });
+    this._numberSetting(sec, '最大 A 因子', '接近完成的材料所允许的最大间隔增长倍率。', s, 'a_factor_max', { min: 1.01, max: 10, step: 0.01 });
 
-    new Setting(sec).setName('Review pace adjustments').setHeading();
-    this._numberSetting(sec, 'Hold multiplier', 'Applied when choosing Hold. Use 1 to keep the current A-Factor.', s, 'quality_hold', { min: 0.1, max: 3, step: 0.01 });
-    this._numberSetting(sec, 'See sooner multiplier', 'Applied when choosing Speed up. Values below 1 shorten future growth.', s, 'quality_speed_up', { min: 0.1, max: 3, step: 0.01 });
-    this._numberSetting(sec, 'Push out multiplier', 'Applied when choosing Slow down. Values above 1 lengthen future growth.', s, 'quality_slow_down', { min: 0.1, max: 3, step: 0.01 });
+    new Setting(sec).setName('复习节奏调整').setHeading();
+    this._numberSetting(sec, '保持倍率', '选择「保持」时应用。用 1 可保持当前 A 因子。', s, 'quality_hold', { min: 0.1, max: 3, step: 0.01 });
+    this._numberSetting(sec, '提前复习倍率', '选择「加快」时应用。小于 1 的取值会缩短未来的增长。', s, 'quality_speed_up', { min: 0.1, max: 3, step: 0.01 });
+    this._numberSetting(sec, '推后倍率', '选择「放慢」时应用。大于 1 的取值会延长未来的增长。', s, 'quality_slow_down', { min: 0.1, max: 3, step: 0.01 });
 
-    new Setting(sec).setName('Initial interval model').setHeading();
-    this._numberSetting(sec, 'Base A-Factor', 'Starting multiplier before source length is considered.', s, 'initial_af_base', { min: 1.01, max: 10, step: 0.01 });
-    this._numberSetting(sec, 'Length sensitivity', 'How strongly longer sources receive smaller A-Factors.', s, 'initial_af_slope', { min: 0, max: 3, step: 0.01 });
-    this._numberSetting(sec, 'Length scale', 'Pages, or minutes for media, treated as the neutral source size.', s, 'initial_af_units_divisor', { min: 1, max: 10000, step: 1 });
-    this._numberSetting(sec, 'Extract bump', 'Multiplier applied to the parent A-Factor after creating an extract.', s, 'extract_bump', { min: 0.1, max: 3, step: 0.01 });
+    new Setting(sec).setName('初始间隔模型').setHeading();
+    this._numberSetting(sec, '基础 A 因子', '在考虑来源长度之前的起始倍率。', s, 'initial_af_base', { min: 1.01, max: 10, step: 0.01 });
+    this._numberSetting(sec, '长度敏感度', '较长的来源获得较小 A 因子的强度。', s, 'initial_af_slope', { min: 0, max: 3, step: 0.01 });
+    this._numberSetting(sec, '长度基准', '作为中性来源大小的页数，媒体则为分钟数。', s, 'initial_af_units_divisor', { min: 1, max: 10000, step: 1 });
+    this._numberSetting(sec, '摘录加成', '创建摘录后应用于父级 A 因子的倍率。', s, 'extract_bump', { min: 0.1, max: 3, step: 0.01 });
   }
 
   _queue(root) {
     const sec = root.createDiv({ cls: 'ir-settings-section' });
-    new Setting(sec).setName('Queue').setHeading();
+    new Setting(sec).setName('队列').setHeading();
     const s = this.plugin.settings.queue;
     const save = () => this.plugin.saveSettings();
-    new Setting(sec).setName('Sidebar enabled')
-      .setDesc('Allow the reading queue to open in the sidebar and refresh as notes change.')
+    new Setting(sec).setName('启用侧边栏')
+      .setDesc('允许阅读队列在侧边栏中打开，并随笔记变化刷新。')
       .addToggle(t => t.setValue(s.sidebar_enabled).onChange(v => { s.sidebar_enabled = v; save(); }));
-    new Setting(sec).setName('Default tag filter')
-      .setDesc('Initial sidebar filter. Leave empty to show every scheduled topic.')
+    new Setting(sec).setName('默认标签筛选')
+      .setDesc('侧边栏的初始筛选。留空则显示所有已排期主题。')
       .addText(t => t.setValue(s.default_tag_filter).onChange(v => { s.default_tag_filter = v; save(); }));
-    new Setting(sec).setName('Supplementary list order')
-      .setDesc('Controls overdue, new, and unscheduled sections. Today\'s session keeps its scheduled order.')
+    new Setting(sec).setName('补充列表顺序')
+      .setDesc('控制逾期、新建和未排期分组的顺序。今日会话保持其排期顺序。')
       .addDropdown(d => {
-      d.addOption('urgency', 'Urgency').addOption('priority', 'Priority').addOption('due_date', 'Due date')
+      d.addOption('urgency', '紧急度').addOption('priority', '优先级').addOption('due_date', '到期日')
        .setValue(s.sort_key).onChange(v => { s.sort_key = v; save(); });
     });
-    new Setting(sec).setName('Mix cards with topics')
-      .setDesc('Alternate locally reviewable Toolkit and Spaced Repetition cards with reading topics. Anki cards remain in Anki.')
+    new Setting(sec).setName('卡片与主题混合')
+      .setDesc('把可在本地复习的工具包和 Spaced Repetition 卡片与阅读主题交替排列。Anki 卡片仍留在 Anki 中。')
       .addToggle(t => t.setValue(s.mix_cards !== false).onChange(v => { s.mix_cards = v; save(); }));
   }
 
   _inlineCards(root) {
     const sec = root.createDiv({ cls: 'ir-settings-section' });
-    new Setting(sec).setName('Inline card export').setHeading();
+    new Setting(sec).setName('行内卡片导出').setHeading();
     const s = this.plugin.settings.inline_cards;
     const save = () => this.plugin.saveSettings();
-    new Setting(sec).setName('Enabled')
-      .setDesc('Allow Export inline cards to recognize question/answer, cloze, and highlighted-text forms.')
+    new Setting(sec).setName('启用')
+      .setDesc('允许「导出行内卡片」识别问答、填空和高亮文本形式。')
       .addToggle(t => t.setValue(s.enabled).onChange(v => { s.enabled = v; save(); }));
-    new Setting(sec).setName('Q::A regex')
-      .setDesc('Advanced pattern for one-line Q::question::A::answer cards.')
+    new Setting(sec).setName('Q::A 正则表达式')
+      .setDesc('用于单行 Q::问题::A::答案 卡片的高级模式。')
       .addText(t => t.setValue(s.qa_regex).onChange(v => { s.qa_regex = v; save(); }));
-    new Setting(sec).setName('Cloze regex')
-      .setDesc('Advanced pattern for {{c1::answer::hint}} cards.')
+    new Setting(sec).setName('填空正则表达式')
+      .setDesc('用于 {{c1::答案::提示}} 卡片的高级模式。')
       .addText(t => t.setValue(s.cloze_regex).onChange(v => { s.cloze_regex = v; save(); }));
   }
 
@@ -2131,12 +2131,12 @@ class IncrementalReadingSettingTab extends PluginSettingTab {
     new Setting(sec).setName('Flashcards').setHeading();
     const settings = this.plugin.settings.flashcards;
     new Setting(sec)
-      .setName('Create cards with')
-      .setDesc('Choose where newly created cards are scheduled. Existing cards keep their original backend.')
+      .setName('卡片创建方式')
+      .setDesc('选择新建卡片的排期位置。已有卡片保持其原有的后端。')
       .addDropdown(dropdown => dropdown
-        .addOption('toolkit', 'Toolkit (in-house)')
-        .addOption('anki', 'Anki via Flashcards')
-        .addOption('spaced_repetition', 'Spaced Repetition (compatibility)')
+        .addOption('toolkit', '工具包（内置）')
+        .addOption('anki', '通过 Flashcards 使用 Anki')
+        .addOption('spaced_repetition', 'Spaced Repetition（兼容）')
         .setValue(this.plugin.cardBackend())
         .onChange(async value => {
           settings.backend = cardProviderCore.normalizeCardBackend(value);
@@ -2145,38 +2145,38 @@ class IncrementalReadingSettingTab extends PluginSettingTab {
         }));
     const selected = this.plugin.cardBackend();
     const descriptions = {
-      toolkit: 'Cards stay in the vault and use the Toolkit\'s built-in FSRS scheduler and review window.',
-      anki: 'Cards use Reuseman Flashcards syntax and sync to Anki through that plugin.',
-      spaced_repetition: 'Cards use native Markdown syntax owned by the Spaced Repetition community plugin.',
+      toolkit: '卡片保留在库中，并使用工具包内置的 FSRS 排期器和复习窗口。',
+      anki: '卡片使用 Reuseman Flashcards 语法，并通过该插件同步到 Anki。',
+      spaced_repetition: '卡片使用 Spaced Repetition 社区插件自有的原生 Markdown 语法。',
     };
-    new Setting(sec).setName('Selected workflow').setDesc(descriptions[selected]);
+    new Setting(sec).setName('所选工作流').setDesc(descriptions[selected]);
   }
 
   _anki(root) {
     const sec = root.createDiv({ cls: 'ir-settings-section' });
-    new Setting(sec).setName('Anki via Flashcards').setHeading();
+    new Setting(sec).setName('通过 Flashcards 使用 Anki').setHeading();
     const settings = this.plugin.settings.anki;
     const save = () => this.plugin.saveSettings();
     new Setting(sec)
-      .setName('Dependency')
+      .setName('依赖')
       .setDesc(this.plugin.isFlashcardsReady()
-        ? 'Ready. Flashcards can generate Anki cards from the Toolkit card notes.'
-        : 'Install and enable Flashcards by Reuseman. Anki and AnkiConnect must also be running when syncing.')
-      .addButton(button => button.setButtonText('Sync now').onClick(() => this.plugin.syncAnki()));
-    new Setting(sec).setName('Target deck')
-      .setDesc('Written to the cards-deck frontmatter field supported by Flashcards.')
+        ? '已就绪。Flashcards 可以从工具包卡片笔记生成 Anki 卡片。'
+        : '安装并启用 Reuseman 的 Flashcards。同步时 Anki 和 AnkiConnect 也必须正在运行。')
+      .addButton(button => button.setButtonText('立即同步').onClick(() => this.plugin.syncAnki()));
+    new Setting(sec).setName('目标牌组')
+      .setDesc('写入 Flashcards 支持的 cards-deck frontmatter 字段。')
       .addText(text => text.setValue(settings.deck).onChange(value => {
-        settings.deck = value.trim() || 'Incremental Reading';
+        settings.deck = value.trim() || '渐进阅读';
         save();
       }));
-    new Setting(sec).setName('Sync after creating cards')
-      .setDesc('Run Flashcards: Generate for the current file after creating card notes.')
+    new Setting(sec).setName('创建卡片后同步')
+      .setDesc('创建卡片笔记后对当前文件运行 Flashcards: Generate。')
       .addToggle(toggle => toggle.setValue(settings.syncOnCreate !== false).onChange(value => {
         settings.syncOnCreate = value;
         save();
       }));
-    new Setting(sec).setName('Flashcards tag')
-      .setDesc('Match the Flashcards plugin tag setting. Do not include the leading #.')
+    new Setting(sec).setName('Flashcards 标签')
+      .setDesc('与 Flashcards 插件的标签设置保持一致。不要包含开头的 #。')
       .addText(text => text.setValue(settings.flashcardsTag).onChange(value => {
         settings.flashcardsTag = value.replace(/^#/, '').trim() || 'card';
         save();
@@ -2189,27 +2189,27 @@ class IncrementalReadingSettingTab extends PluginSettingTab {
     const s = this.plugin.settings.spaced_repetition;
     const save = () => this.plugin.saveSettings();
     new Setting(sec)
-      .setName('Dependency')
+      .setName('依赖')
       .setDesc(this.plugin.isSpacedRepetitionReady()
-        ? 'Ready. Card review commands will open Spaced Repetition.'
-        : 'Not ready. Install and enable the Spaced Repetition community plugin.');
+        ? '已就绪。卡片复习命令将打开 Spaced Repetition。'
+        : '未就绪。请安装并启用 Spaced Repetition 社区插件。');
     new Setting(sec)
-      .setName('Flashcard deck tag')
-      .setDesc('Match a flashcard tag configured in Spaced Repetition. Do not include the leading #.')
+      .setName('卡片牌组标签')
+      .setDesc('与 Spaced Repetition 中配置的卡片标签保持一致。不要包含开头的 #。')
       .addText(t => t.setValue(s.flashcardTag).onChange(v => {
         s.flashcardTag = v.replace(/^#/, '').trim() || 'flashcards/incremental-reading';
         save();
       }));
     new Setting(sec)
-      .setName('Multiline card separator')
-      .setDesc('Match the multiline separator configured in Spaced Repetition.')
+      .setName('多行卡片分隔符')
+      .setDesc('与 Spaced Repetition 中配置的多行分隔符保持一致。')
       .addText(t => t.setValue(s.multilineCardSeparator).onChange(v => {
         s.multilineCardSeparator = v.trim() || '?';
         save();
       }));
     new Setting(sec)
-      .setName('Bidirectional card separator')
-      .setDesc('Match the multiline reversed separator configured in Spaced Repetition.')
+      .setName('双向卡片分隔符')
+      .setDesc('与 Spaced Repetition 中配置的多行反向分隔符保持一致。')
       .addText(t => t.setValue(s.multilineReversedCardSeparator).onChange(v => {
         s.multilineReversedCardSeparator = v.trim() || '??';
         save();
@@ -2218,17 +2218,17 @@ class IncrementalReadingSettingTab extends PluginSettingTab {
 
   _knowledgeTree(root) {
     const sec = root.createDiv({ cls: 'ir-settings-section' });
-    new Setting(sec).setName('Knowledge tree').setHeading();
+    new Setting(sec).setName('知识树').setHeading();
     this._numberSetting(
       sec,
-      'Large branch warning',
-      'Highlight a category child count after it exceeds this number.',
+      '大分支警告',
+      '当分类的子项数量超过此数值后高亮显示。',
       this.plugin.settings.tree,
       'child_warn_threshold',
       { min: 1, max: 100000, step: 1 },
     );
-    new Setting(sec).setName('Show completed material')
-      .setDesc('Include done and dismissed topics in the knowledge tree.')
+    new Setting(sec).setName('显示已完成材料')
+      .setDesc('在知识树中包含已完成和已搁置的主题。')
       .addToggle(t => t.setValue(this.plugin.settings.tree.show_completed).onChange(v => {
         this.plugin.settings.tree.show_completed = v; this.plugin.saveSettings(); this.plugin._refreshTreeViews();
       }));
@@ -2236,20 +2236,20 @@ class IncrementalReadingSettingTab extends PluginSettingTab {
 
   _paths(root) {
     const sec = root.createDiv({ cls: 'ir-settings-section' });
-    new Setting(sec).setName('Paths').setHeading();
+    new Setting(sec).setName('路径').setHeading();
     const s = this.plugin.settings.paths;
     const save = () => {
       this.plugin._invalidateIRCollection(true);
       return this.plugin.saveSettings();
     };
     const paths = [
-      ['sources', 'Sources folder', 'Source notes and local video files.'],
-      ['extracts', 'Extracts folder', 'Passages scheduled as separate reading topics.'],
-      ['cards', 'Cards folder', 'Markdown cards consumed by Spaced Repetition.'],
-      ['attachments', 'Attachments folder', 'Clipboard images and visual-learning assets.'],
-      ['categories', 'Categories folder', 'Knowledge-tree category notes.'],
-      ['dashboard', 'Dashboard note', 'Optional session snapshot and dashboard note path.'],
-      ['review_log', 'Review log', 'Markdown table containing completed topic reviews.'],
+      ['sources', '来源文件夹', '来源笔记和本地视频文件。'],
+      ['extracts', '摘录文件夹', '作为独立阅读主题排期的段落。'],
+      ['cards', '卡片文件夹', '由 Spaced Repetition 读取的 Markdown 卡片。'],
+      ['attachments', '附件文件夹', '剪贴板图片和视觉学习素材。'],
+      ['categories', '分类文件夹', '知识树的分类笔记。'],
+      ['dashboard', '仪表盘笔记', '可选的会话快照和仪表盘笔记路径。'],
+      ['review_log', '复习日志', '包含已完成主题复习的 Markdown 表格。'],
     ];
     for (const [key, name, description] of paths) {
       new Setting(sec).setName(name).setDesc(description)
@@ -2259,7 +2259,7 @@ class IncrementalReadingSettingTab extends PluginSettingTab {
           .onChange(v => { s[key] = v.trim() || DEFAULT_SETTINGS.paths[key]; save(); }))
         .addExtraButton(button => button
           .setIcon('rotate-ccw')
-          .setTooltip(`Reset ${name.toLowerCase()}`)
+          .setTooltip(`重置 ${name.toLowerCase()}`)
           .onClick(async () => {
             s[key] = DEFAULT_SETTINGS.paths[key];
             await save();
@@ -2270,11 +2270,11 @@ class IncrementalReadingSettingTab extends PluginSettingTab {
 
   _misc(root) {
     const sec = root.createDiv({ cls: 'ir-settings-section' });
-    new Setting(sec).setName('General').setHeading();
+    new Setting(sec).setName('通用').setHeading();
     const s = this.plugin.settings.misc;
     const save = () => this.plugin.saveSettings();
-    new Setting(sec).setName('Date format')
-      .setDesc('Used for scheduling fields, prompts, checkpoints, and the review log.')
+    new Setting(sec).setName('日期格式')
+      .setDesc('用于排期字段、提示、检查点和复习日志。')
       .addDropdown(d => {
         for (const format of dateCore.SUPPORTED_DATE_FORMATS) d.addOption(format, format);
         d.setValue(configuredDateFormat(this.plugin.settings)).onChange(async (value) => {
@@ -2284,14 +2284,14 @@ class IncrementalReadingSettingTab extends PluginSettingTab {
             const changed = await this.plugin.migrateDateFormat(previous, value);
             s.date_format = value;
             await save();
-            new Notice(`Date format changed to ${value}; migrated ${changed} stored date${changed === 1 ? '' : 's'}.`);
+            new Notice(`日期格式已改为 ${value}；已迁移 ${changed} 个已存日期${changed === 1 ? '' : 's'}。`);
           } catch (error) {
-            new Notice(`Date migration failed: ${error.message}`);
+            new Notice(`日期迁移失败：${error.message}`);
           }
         });
       });
-    new Setting(sec).setName('Extract highlight colour')
-      .setDesc('Accent used for extracted source passages and extract notes in editing and reading views.')
+    new Setting(sec).setName('摘录高亮颜色')
+      .setDesc('编辑和阅读视图中用于摘录的来源段落和摘录笔记的强调色。')
       .addColorPicker(picker => picker
         .setValue(normalizedExtractHighlightColor(s.extract_highlight_color))
         .onChange(async value => {
@@ -2301,16 +2301,16 @@ class IncrementalReadingSettingTab extends PluginSettingTab {
         }))
       .addExtraButton(button => button
         .setIcon('rotate-ccw')
-        .setTooltip('Reset extract highlight colour')
+        .setTooltip('重置摘录高亮颜色')
         .onClick(async () => {
           s.extract_highlight_color = DEFAULT_EXTRACT_HIGHLIGHT_COLOR;
           await save();
           this.plugin._refreshExcerptViews();
           this.display();
         }));
-    new Setting(sec).setName('Diagnostics').setHeading();
-    new Setting(sec).setName('Debug logging')
-      .setDesc('Write additional details to the developer console. Keep disabled during normal use.')
+    new Setting(sec).setName('诊断').setHeading();
+    new Setting(sec).setName('调试日志')
+      .setDesc('将额外详情写入开发者控制台。正常使用时保持关闭。')
       .addToggle(t => t.setValue(s.debug).onChange(v => { s.debug = v; save(); }));
   }
 }
@@ -2332,7 +2332,7 @@ class MainDashboardView extends ItemView {
     this.needsRender = false;
   }
   getViewType() { return MAIN_DASHBOARD_VIEW_TYPE; }
-  getDisplayText() { return 'Learning dashboard'; }
+  getDisplayText() { return '学习仪表盘'; }
   getIcon() { return 'layout-dashboard'; }
   async onOpen() {
     this.collectionRevision = this.plugin.irCollectionRevision;
@@ -2386,7 +2386,7 @@ class MainDashboardView extends ItemView {
     const max = Math.max(1, ...days.map(day => day.count));
     const chart = parent.createDiv({ cls: 'ir-dashboard-activity-chart' });
     chart.setAttribute('role', 'img');
-    chart.setAttribute('aria-label', `Topic reviews over the last ${days.length} days`);
+    chart.setAttribute('aria-label', `过去 ${days.length} 天的主题复习`);
     for (const [index, day] of days.entries()) {
       const column = chart.createDiv({ cls: 'ir-dashboard-activity-column' });
       const value = column.createDiv({ cls: 'ir-dashboard-activity-value', text: String(day.count) });
@@ -2394,10 +2394,10 @@ class MainDashboardView extends ItemView {
       const track = column.createDiv({ cls: 'ir-dashboard-activity-track' });
       const bar = track.createDiv({ cls: 'ir-dashboard-activity-bar' });
       bar.style.height = `${day.count ? Math.max(8, day.count / max * 100) : 2}%`;
-      bar.title = `${day.label}: ${day.count} review${day.count === 1 ? '' : 's'}`;
+      bar.title = `${day.label}：${day.count} 条复习${day.count === 1 ? '' : ''}`;
       const label = column.createDiv({
         cls: 'ir-dashboard-activity-label',
-        text: index === days.length - 1 ? 'Today' : (index % 2 === 0 ? day.shortLabel : ''),
+        text: index === days.length - 1 ? '今天' : (index % 2 === 0 ? day.shortLabel : ''),
       });
       label.title = day.label;
     }
@@ -2486,34 +2486,34 @@ class MainDashboardView extends ItemView {
 
     const head = root.createDiv({ cls: 'ir-dashboard-head' });
     const title = head.createDiv();
-    title.createEl('h1', { text: 'Incremental learning' });
-    title.createEl('p', { text: `${today.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })} · mixed topics and cards` });
+    title.createEl('h1', { text: '渐进学习' });
+    title.createEl('p', { text: `${today.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })} · 主题与卡片混合` });
     const actions = head.createDiv({ cls: 'ir-dashboard-actions' });
     for (const [label, action, cta] of [
-      ['Start mixed session', () => this.plugin.buildSessionQueue({ openFirst: true }), true],
-      ['Review cards', () => this.plugin.reviewCards(), false],
-      ['Knowledge tree', () => this.plugin._activateKnowledgeTree(), false],
+      ['开始混合会话', () => this.plugin.buildSessionQueue({ openFirst: true }), true],
+      ['复习卡片', () => this.plugin.reviewCards(), false],
+      ['知识树', () => this.plugin._activateKnowledgeTree(), false],
     ]) {
       const button = actions.createEl('button', { text: label });
       if (cta) button.addClass('mod-cta');
       button.onclick = action;
     }
     const metrics = root.createDiv({ cls: 'ir-dashboard-metrics' });
-    this._metric(metrics, due.length, 'Due topics', due.length ? 'is-warning' : '');
-    this._metric(metrics, overdue.length, 'Overdue', overdue.length ? 'is-danger' : '');
-    this._metric(metrics, reviewsToday, 'Reviewed today', 'is-success');
-    this._metric(metrics, reviewsThisWeek, 'Reviews · 7 days');
-    this._metric(metrics, cards.length, 'Card notes');
-    this._metric(metrics, active.length, 'Active topics');
+    this._metric(metrics, due.length, '到期主题', due.length ? 'is-warning' : '');
+    this._metric(metrics, overdue.length, '逾期', overdue.length ? 'is-danger' : '');
+    this._metric(metrics, reviewsToday, '今日已复习', 'is-success');
+    this._metric(metrics, reviewsThisWeek, '复习 · 7 天');
+    this._metric(metrics, cards.length, '卡片笔记');
+    this._metric(metrics, active.length, '活跃主题');
 
     const grid = root.createDiv({ cls: 'ir-dashboard-grid' });
     const sessionPanel = grid.createDiv({ cls: 'ir-dashboard-panel' });
-    sessionPanel.createEl('h2', { text: 'Next mixed session' });
+    sessionPanel.createEl('h2', { text: '下次混合会话' });
     const savedSession = await this.plugin.readSessionSnapshot();
     const session = savedSession
       || this.plugin.buildInterleavedQueue(await this.plugin.buildDuePool({ skipCurrent: false }), today);
     if (generation !== this.renderGeneration) return;
-    if (!session.length) sessionPanel.createEl('p', { text: 'Nothing due — you are caught up.' });
+    if (!session.length) sessionPanel.createEl('p', { text: '没有到期内容，你已全部跟上。' });
     for (const row of session.slice(0, 12)) {
       const item = sessionPanel.createDiv({ cls: 'ir-dashboard-session-row' });
       item.createSpan({ text: TREE_ICONS[row.fm.type] || '•' });
@@ -2522,41 +2522,41 @@ class MainDashboardView extends ItemView {
       item.onclick = () => this.plugin.openLearningItem(row);
     }
     const health = grid.createDiv({ cls: 'ir-dashboard-panel' });
-    health.createEl('h2', { text: 'Collection health' });
+    health.createEl('h2', { text: '材料库健康度' });
     const statusCounts = new Map();
     for (const row of topics) statusCounts.set(row.fm.status || 'active', (statusCounts.get(row.fm.status || 'active') || 0) + 1);
     for (const [status, count] of [...statusCounts.entries()].sort((a, b) => b[1] - a[1])) {
       const line = health.createDiv({ cls: 'ir-dashboard-health-row' });
       line.createSpan({ text: status }); line.createSpan({ text: String(count) });
     }
-    health.createEl('p', { cls: 'ir-dashboard-note', text: 'Topic intervals use progress-aware A-Factors. Toolkit cards use FSRS; external card systems retain their own schedules.' });
+    health.createEl('p', { cls: 'ir-dashboard-note', text: '主题间隔使用进度感知的 A 因子。工具包卡片使用 FSRS；外部卡片系统保留各自的排期。' });
 
     const analytics = root.createDiv({ cls: 'ir-dashboard-analytics' });
-    analytics.createEl('h2', { text: 'Learning analytics' });
+    analytics.createEl('h2', { text: '学习分析' });
     const analyticsGrid = analytics.createDiv({ cls: 'ir-dashboard-analytics-grid' });
     const activityPanel = analyticsGrid.createDiv({ cls: 'ir-dashboard-panel ir-dashboard-panel-wide' });
     const activityHead = activityPanel.createDiv({ cls: 'ir-dashboard-chart-head' });
-    activityHead.createEl('h3', { text: 'Review activity' });
-    activityHead.createSpan({ text: `${reviewsThisWeek} this week · ${lifetimeReviews} lifetime` });
+    activityHead.createEl('h3', { text: '复习活动' });
+    activityHead.createSpan({ text: `本周 ${reviewsThisWeek} 次 · 累计 ${lifetimeReviews} 次` });
     this._activityChart(activityPanel, activity);
 
     const workloadPanel = analyticsGrid.createDiv({ cls: 'ir-dashboard-panel' });
-    workloadPanel.createEl('h3', { text: 'Queue workload' });
+    workloadPanel.createEl('h3', { text: '队列负载' });
     this._distributionChart(workloadPanel, [
-      { label: 'Overdue', value: overdue.length, tone: 'is-danger' },
-      { label: 'Due today', value: dueToday, tone: 'is-warning' },
-      { label: 'Unscheduled', value: unscheduled, tone: 'is-accent' },
-      { label: 'Upcoming', value: upcoming, tone: 'is-success' },
+      { label: '逾期', value: overdue.length, tone: 'is-danger' },
+      { label: '今日到期', value: dueToday, tone: 'is-warning' },
+      { label: '未排期', value: unscheduled, tone: 'is-accent' },
+      { label: '即将到期', value: upcoming, tone: 'is-success' },
     ]);
 
     const mixPanel = analyticsGrid.createDiv({ cls: 'ir-dashboard-panel' });
-    mixPanel.createEl('h3', { text: 'Collection mix' });
+    mixPanel.createEl('h3', { text: '材料库构成' });
     this._distributionChart(mixPanel, [
-      { label: 'Sources', value: topics.filter(row => row.fm.type === 'source').length, tone: 'is-accent' },
-      { label: 'Extracts', value: topics.filter(row => row.fm.type === 'extract').length, tone: 'is-warning' },
-      { label: 'Card notes', value: cards.length, tone: 'is-success' },
+      { label: '来源', value: topics.filter(row => row.fm.type === 'source').length, tone: 'is-accent' },
+      { label: '摘录', value: topics.filter(row => row.fm.type === 'extract').length, tone: 'is-warning' },
+      { label: '卡片笔记', value: cards.length, tone: 'is-success' },
     ]);
-    mixPanel.createEl('p', { cls: 'ir-dashboard-note', text: 'Card review history remains available in the Spaced Repetition plugin.' });
+    mixPanel.createEl('p', { cls: 'ir-dashboard-note', text: '卡片复习历史仍可在 Spaced Repetition 插件中查看。' });
 
     if (this.scrollToStatsOnRender) {
       this.scrollToStatsOnRender = false;
@@ -2568,29 +2568,29 @@ class MainDashboardView extends ItemView {
 class PdfViewerView extends ItemView {
   constructor(leaf, plugin) { super(leaf); this.plugin = plugin; this.state = {}; }
   getViewType() { return PDF_VIEW_TYPE; }
-  getDisplayText() { return this.state.title ? `PDF: ${this.state.title}` : 'PDF reader'; }
+  getDisplayText() { return this.state.title ? `PDF：${this.state.title}` : 'PDF 阅读器'; }
   getIcon() { return 'file-text'; }
   async setState(state) { this.state = { ...state }; this.render(); }
   getState() { return this.state; }
   async onOpen() { this.render(); }
   render() {
     const root = this.containerEl.children[1]; root.empty(); root.addClass('ir-pdf-root');
-    if (!this.state.url) { root.createEl('p', { text: 'Open a PDF source to begin.' }); return; }
+    if (!this.state.url) { root.createEl('p', { text: '打开一个 PDF 来源即可开始。' }); return; }
     const bar = root.createDiv({ cls: 'ir-pdf-toolbar' });
     bar.createSpan({ cls: 'ir-pdf-title', text: this.state.title || 'PDF' });
-    bar.createSpan({ text: 'Page' });
+    bar.createSpan({ text: '页' });
     const page = bar.createEl('input', { type: 'number', cls: 'ir-pdf-page' });
     page.min = '1'; page.value = String(this.state.page || 1);
-    const frame = root.createEl('iframe', { cls: 'ir-pdf-frame', attr: { title: this.state.title || 'PDF viewer' } });
+    const frame = root.createEl('iframe', { cls: 'ir-pdf-frame', attr: { title: this.state.title || 'PDF 查看器' } });
     const load = () => { this.state.page = Math.max(1, Number(page.value) || 1); frame.src = `${this.state.url}#page=${this.state.page}&view=FitH`; };
     page.onchange = load;
-    const save = bar.createEl('button', { text: 'Save read point' });
+    const save = bar.createEl('button', { text: '保存阅读位置' });
     save.onclick = async () => {
       if (this.state.sourcePath) {
         const source = this.plugin.app.vault.getAbstractFileByPath(this.state.sourcePath);
         if (source) await this.plugin.app.fileManager.processFrontMatter(source, fm => { fm.read_point = Math.max(1, Number(page.value) || 1); });
       }
-      new Notice(`PDF read point saved at page ${Math.max(1, Number(page.value) || 1)}`);
+      new Notice(`PDF 阅读位置已保存到第 ${Math.max(1, Number(page.value) || 1)} 页`);
     };
     load();
   }
@@ -2614,7 +2614,7 @@ class KnowledgeTreeView extends ItemView {
   }
 
   getViewType() { return this.mode === 'sidebar' ? KNOWLEDGE_TREE_SIDEBAR_TYPE : KNOWLEDGE_TREE_VIEW_TYPE; }
-  getDisplayText() { return 'Knowledge tree'; }
+  getDisplayText() { return '知识树'; }
   getIcon() { return 'folder-tree'; }
 
   async onOpen() {
@@ -2669,21 +2669,21 @@ class KnowledgeTreeView extends ItemView {
 
     const bar = root.createDiv({ cls: 'ir-tree-toolbar' });
     if (this.mode === 'main') {
-      const b1 = bar.createEl('button', { text: '+ Category' });
+      const b1 = bar.createEl('button', { text: '+ 分类' });
       b1.onclick = async () => { await this.plugin.createCategory(); this._renderBody(); };
-      const b2 = bar.createEl('button', { text: 'Expand all' });
+      const b2 = bar.createEl('button', { text: '全部展开' });
       b2.onclick = () => { this._setExpandAll(true); this._renderBody(); };
-      const b3 = bar.createEl('button', { text: 'Collapse all' });
+      const b3 = bar.createEl('button', { text: '全部折叠' });
       b3.onclick = () => { this._setExpandAll(false); this._renderBody(); };
-      const refresh = bar.createEl('button', { text: 'Refresh' });
+      const refresh = bar.createEl('button', { text: '刷新' });
       refresh.onclick = () => this._renderBody();
     }
-    const fi = bar.createEl('input', { cls: 'ir-tree-filter', type: 'text', placeholder: 'Filter by title or tag…' });
+    const fi = bar.createEl('input', { cls: 'ir-tree-filter', type: 'text', placeholder: '按标题或标签筛选…' });
     fi.value = this.filter;
     fi.oninput = (e) => { this.filter = e.target.value; this._renderBody(); };
     if (this.mode === 'main') {
       const type = bar.createEl('select', { cls: 'ir-tree-type-filter' });
-      for (const [value, label] of [['all', 'All types'], ['category', 'Categories'], ['source', 'Sources'], ['extract', 'Extracts'], ['card', 'Cards']]) type.createEl('option', { value, text: label });
+      for (const [value, label] of [['all', '所有类型'], ['category', '分类'], ['source', '来源'], ['extract', '摘录'], ['card', '卡片']]) type.createEl('option', { value, text: label });
       type.value = this.typeFilter;
       type.onchange = () => { this.typeFilter = type.value; this._renderBody(); };
     }
@@ -2776,7 +2776,7 @@ class KnowledgeTreeView extends ItemView {
     }
     for (const [type, label] of [['category', 'categories'], ['source', 'sources'], ['extract', 'extracts'], ['card', 'cards']]) {
       const chip = summary.createEl('button', { text: `${TREE_ICONS[type]} ${counts[type]} ${label}` });
-      chip.title = `Show ${label}`;
+      chip.title = `显示 ${label}`;
       chip.onclick = () => { this.typeFilter = this.typeFilter === type ? 'all' : type; this._render(); };
     }
   }
@@ -2786,11 +2786,11 @@ class KnowledgeTreeView extends ItemView {
     const count = this.selectedPaths.size;
     this._bulkBar.empty();
     this._bulkBar.toggleClass('is-active', count > 0);
-    this._bulkBar.createSpan({ cls: 'ir-tree-bulk-count', text: `${count} selected` });
+    this._bulkBar.createSpan({ cls: 'ir-tree-bulk-count', text: `已选 ${count}` });
 
     const rendered = this.renderedSelectablePaths;
     const allVisibleSelected = rendered.length > 0 && rendered.every(path => this.selectedPaths.has(path));
-    const visible = this._bulkBar.createEl('button', { text: allVisibleSelected ? 'Unselect visible' : 'Select visible' });
+    const visible = this._bulkBar.createEl('button', { text: allVisibleSelected ? '取消选择可见项' : '选择可见项' });
     visible.type = 'button';
     visible.disabled = rendered.length === 0;
     visible.onclick = () => {
@@ -2802,17 +2802,17 @@ class KnowledgeTreeView extends ItemView {
       this._renderBody();
     };
 
-    const done = this._bulkBar.createEl('button', { text: 'Done' });
+    const done = this._bulkBar.createEl('button', { text: '已完成' });
     done.type = 'button'; done.disabled = count === 0;
-    done.title = 'Mark selected sources, extracts, and cards done';
+    done.title = '将选中的来源、摘录和卡片标记为已完成';
     done.onclick = () => this._runBulkAction('done');
 
-    const reset = this._bulkBar.createEl('button', { text: 'Reset' });
+    const reset = this._bulkBar.createEl('button', { text: '重置' });
     reset.type = 'button'; reset.disabled = count === 0;
-    reset.title = 'Make selected items active and clear their scheduling history';
+    reset.title = '将选中项设为活跃并清除其排期历史';
     reset.onclick = () => this._runBulkAction('reset');
 
-    const clear = this._bulkBar.createEl('button', { text: 'Clear' });
+    const clear = this._bulkBar.createEl('button', { text: '清除' });
     clear.type = 'button'; clear.disabled = count === 0;
     clear.onclick = () => { this.selectedPaths.clear(); this.lastSelectedPath = null; this._renderBody(); };
   }
@@ -2879,7 +2879,7 @@ class KnowledgeTreeView extends ItemView {
       const checkbox = row.createEl('input', { cls: 'ir-tree-select', type: 'checkbox' });
       checkbox.checked = this.selectedPaths.has(page.path);
       checkbox.draggable = false;
-      checkbox.setAttribute('aria-label', `Select ${page.basename}`);
+      checkbox.setAttribute('aria-label', `选择 ${page.basename}`);
       checkbox.onpointerdown = event => event.stopPropagation();
       checkbox.onclick = event => {
         event.preventDefault();
@@ -2895,7 +2895,7 @@ class KnowledgeTreeView extends ItemView {
     const parentName = treeCore.effectiveParent(page.fm);
     if (parentName && !this.index.byName.has(parentName.toLowerCase())) {
       const w = row.createSpan({ cls: 'ir-tree-warn', text: '⚠' });
-      w.title = `Parent not found: ${parentName}`;
+      w.title = `未找到父级：${parentName}`;
     }
 
     if (this.mode === 'main') {
@@ -2907,7 +2907,7 @@ class KnowledgeTreeView extends ItemView {
         if (children.length > this.plugin.settings.tree.child_warn_threshold) cc.addClass('ir-tree-count-warn');
       }
       const status = row.createSpan({ cls: `ir-tree-status is-${page.fm.status || 'active'}`, text: page.fm.status || 'active' });
-      status.title = page.fm.next_review ? `Next review: ${page.fm.next_review}` : 'No review date';
+      status.title = page.fm.next_review ? `下次复习：${page.fm.next_review}` : '无复习日期';
       this._attachDrag(row, page);
       this._attachActions(row, page);
     }
@@ -2953,7 +2953,7 @@ class KnowledgeTreeView extends ItemView {
     const tw = row.createSpan({ cls: 'ir-tree-twisty', text: expanded ? '▼' : '▶' });
     tw.onclick = (e) => { e.stopPropagation(); this.plugin.toggleExpanded(key); this._renderBody(); };
     row.createSpan({ cls: 'ir-tree-icon', text: '📥' });
-    row.createSpan({ cls: 'ir-tree-title', text: `Unfiled (${visible.length})` });
+    row.createSpan({ cls: 'ir-tree-title', text: `未归档（${visible.length}）` });
     if (expanded) for (const p of visible) this._renderNode(body, p, 1);
   }
 
@@ -3003,31 +3003,31 @@ class KnowledgeTreeView extends ItemView {
     const actions = row.createDiv({ cls: 'ir-tree-actions' });
     actions.addEventListener('pointerdown', event => event.stopPropagation());
     actions.addEventListener('click', event => event.stopPropagation());
-    const move = actions.createEl('button', { text: 'Move' });
-    move.type = 'button'; move.draggable = false; move.title = 'Move under another node';
+    const move = actions.createEl('button', { text: '移动' });
+    move.type = 'button'; move.draggable = false; move.title = '移动到其他节点下';
     move.onclick = async (e) => { e.preventDefault(); e.stopPropagation(); await this.plugin.reparentPath(page.path); this._renderBody(); };
     const up = actions.createEl('button', { text: '↑' });
-    up.type = 'button'; up.draggable = false; up.title = 'Move up';
+    up.type = 'button'; up.draggable = false; up.title = '上移';
     up.onclick = async (e) => { e.preventDefault(); e.stopPropagation(); await this.plugin.reorderSibling(page.path, -1); this._renderBody(); };
     const down = actions.createEl('button', { text: '↓' });
-    down.type = 'button'; down.draggable = false; down.title = 'Move down';
+    down.type = 'button'; down.draggable = false; down.title = '下移';
     down.onclick = async (e) => { e.preventDefault(); e.stopPropagation(); await this.plugin.reorderSibling(page.path, +1); this._renderBody(); };
     const ren = actions.createEl('button', { text: '✎' });
-    ren.type = 'button'; ren.draggable = false; ren.title = 'Rename';
+    ren.type = 'button'; ren.draggable = false; ren.title = '重命名';
     ren.onclick = async (e) => { e.preventDefault(); e.stopPropagation(); await this.plugin.renameTreeNode(page.path); this._renderBody(); };
     if (['source', 'extract', 'card'].includes(page.fm.type)) {
       if (page.fm.status !== 'done') {
         const done = actions.createEl('button', { text: '✓' });
-        done.type = 'button'; done.draggable = false; done.title = 'Mark done';
+        done.type = 'button'; done.draggable = false; done.title = '标记为已完成';
         done.onclick = async (e) => { e.preventDefault(); e.stopPropagation(); await this.plugin.markPathsDone([page.path]); this._renderBody(); };
       }
       const reset = actions.createEl('button', { text: '↺' });
-      reset.type = 'button'; reset.draggable = false; reset.title = 'Reset scheduling and make active';
+      reset.type = 'button'; reset.draggable = false; reset.title = '重置排期并设为活跃';
       reset.onclick = async (e) => { e.preventDefault(); e.stopPropagation(); await this.plugin.resetPaths([page.path]); this._renderBody(); };
     }
     if (page.fm.type !== 'card') {
       const dis = actions.createEl('button', { text: '✕' });
-      dis.type = 'button'; dis.draggable = false; dis.title = 'Dismiss';
+      dis.type = 'button'; dis.draggable = false; dis.title = '搁置';
       dis.onclick = async (e) => { e.preventDefault(); e.stopPropagation(); await this.plugin.dismissTreeNode(page.path); this._renderBody(); };
     }
   }
@@ -3121,11 +3121,11 @@ class IncrementalReadingPlugin extends Plugin {
       let data;
       try { data = parseYaml(source) || {}; }
       catch (e) {
-        el.createEl('div', { text: `[ir-occlusion] yaml parse error: ${e.message}` });
+        el.createEl('div', { text: `[ir-occlusion] YAML 解析错误：${e.message}` });
         return;
       }
       if (!data.image || !Array.isArray(data.rects) || data.rects.length === 0) {
-        el.createEl('div', { text: '[ir-occlusion] missing image or rects' });
+        el.createEl('div', { text: '[ir-occlusion] 缺少图片或矩形区域' });
         return;
       }
       const mode = data.mode || 'hide-one';
@@ -3134,7 +3134,7 @@ class IncrementalReadingPlugin extends Plugin {
       const tf = this.app.vault.getAbstractFileByPath(data.image)
         || this.app.metadataCache.getFirstLinkpathDest(data.image, ctx.sourcePath);
       if (!tf) {
-        el.createEl('div', { text: `[ir-occlusion] image not found: ${data.image}` });
+        el.createEl('div', { text: `[ir-occlusion] 未找到图片：${data.image}` });
         return;
       }
       const src = this.app.vault.adapter.getResourcePath(tf.path);
@@ -3165,31 +3165,31 @@ class IncrementalReadingPlugin extends Plugin {
       });
 
       const btnRow = el.createDiv({ cls: 'ir-occ-btn-row' });
-      const btn = btnRow.createEl('button', { text: 'Show answer' });
+      const btn = btnRow.createEl('button', { text: '显示答案' });
       let revealed = false;
       btn.addEventListener('click', () => {
         revealed = !revealed;
         overlay.toggleClass('ir-occ-revealed', revealed);
-        btn.setText(revealed ? 'Hide Answer' : 'Show Answer');
+        btn.setText(revealed ? '隐藏答案' : '显示答案');
       });
     });
 
     // Core review loop
-    cmd('build-session-queue','Build today\'s session queue',    () => this.buildSessionQueue());
-    cmd('next-element',       'Next element',                    () => this.nextElement());
-    cmd('end-session',        'Grade current reading topic',     () => this.gradeCurrent());
+    cmd('build-session-queue','构建今日会话队列',    () => this.buildSessionQueue());
+    cmd('next-element',       '下一元素',                    () => this.nextElement());
+    cmd('end-session',        '为当前阅读主题评级',     () => this.gradeCurrent());
     // Keep the two highest-frequency capture actions directly hotkeyable.
-    cmd('extract-selection',  'Extract selection',               () => this.extractSelection());
-    cmd('flashcard-clipboard','Flashcard from clipboard',        () => this.flashcardClipboard());
+    cmd('extract-selection',  '摘录选中内容',               () => this.extractSelection());
+    cmd('flashcard-clipboard','从剪贴板制作卡片',        () => this.flashcardClipboard());
     // Less frequent functionality is grouped to keep the command palette small.
-    cmd('capture-more',       'Capture or create…',               () => this.captureOrCreate());
-    cmd('current-actions',    'Current element actions…',         () => this.currentElementActions());
-    cmd('open-toolkit-view',  'Open Toolkit view…',               () => this.openToolkitView());
-    cmd('advanced-tools',     'Advanced tools…',                  () => this.advancedTools());
+    cmd('capture-more',       '捕获或创建…',               () => this.captureOrCreate());
+    cmd('current-actions',    '当前元素操作…',         () => this.currentElementActions());
+    cmd('open-toolkit-view',  '打开工具包视图…',               () => this.openToolkitView());
+    cmd('advanced-tools',     '高级工具…',                  () => this.advancedTools());
     this.app.workspace.onLayoutReady(() => {
       this._refreshExcerptViews();
       const count = this._legacyCardFiles().length;
-      if (count) new Notice(`Incremental Reading Toolkit: ${count} legacy card${count === 1 ? '' : 's'} found. Open Advanced tools and choose "Migrate legacy cards to Spaced Repetition".`, 10000);
+      if (count) new Notice(`渐进阅读工具包：发现 ${count} 个旧版卡片${count === 1 ? '' : ''}。打开高级工具，选择「将旧版卡片迁移到 Spaced Repetition」。`, 10000);
     });
   }
 
@@ -3241,57 +3241,57 @@ class IncrementalReadingPlugin extends Plugin {
   }
 
   captureOrCreate() {
-    return this._runActionMenu('Capture or create', [
-      { label: 'New source', run: () => this.newSource() },
-      { label: 'Import clipping (active note)', run: () => this.importClipping() },
-      { label: 'Extract from clipboard (PDF-aware)', run: () => this.extractClipboard() },
-      { label: 'Flashcard: name this image', run: () => this.flashcardImageName() },
-      { label: 'Image extract from clipboard', run: () => this.imageExtractClipboard() },
-      { label: 'Occlusion: create cards from image', run: () => this.occlusionCreate() },
+    return this._runActionMenu('捕获或创建', [
+      { label: '新建来源', run: () => this.newSource() },
+      { label: '导入剪藏（当前笔记）', run: () => this.importClipping() },
+      { label: '从剪贴板摘录（支持 PDF）', run: () => this.extractClipboard() },
+      { label: '卡片：为此图片命名', run: () => this.flashcardImageName() },
+      { label: '从剪贴板摘录图片', run: () => this.imageExtractClipboard() },
+      { label: '遮挡：从图片创建卡片', run: () => this.occlusionCreate() },
     ]);
   }
 
   currentElementActions() {
-    return this._runActionMenu('Current element actions', [
-      { label: 'Done', run: () => this.markDone() },
-      { label: 'Reset', run: () => this.resetCurrent() },
-      { label: 'Dismiss', run: () => this.dismiss() },
-      { label: 'Postpone', run: () => this.postpone() },
-      { label: 'Schedule (manual date)', run: () => this.schedule() },
-      { label: 'Set priority', run: () => this.setPriority() },
-      { label: 'Boost priority', run: () => this.boost() },
-      { label: 'Open parent', run: () => this.openParent() },
-      { label: 'Open PDF (Toolkit viewer)', run: () => this.openPdf() },
-      { label: 'Toggle read-point', run: () => this.toggleReadPoint() },
-      { label: 'Jump to read-point', run: () => this.jumpToReadPoint() },
-      { label: 'Add timeline checkpoint', run: () => this.addCheckpoint() },
+    return this._runActionMenu('当前元素操作', [
+      { label: '已完成', run: () => this.markDone() },
+      { label: '重置', run: () => this.resetCurrent() },
+      { label: '搁置', run: () => this.dismiss() },
+      { label: '推迟', run: () => this.postpone() },
+      { label: '排期（手动日期）', run: () => this.schedule() },
+      { label: '设置优先级', run: () => this.setPriority() },
+      { label: '提升优先级', run: () => this.boost() },
+      { label: '打开父节点', run: () => this.openParent() },
+      { label: '打开 PDF（工具包查看器）', run: () => this.openPdf() },
+      { label: '切换阅读位置', run: () => this.toggleReadPoint() },
+      { label: '跳转到阅读位置', run: () => this.jumpToReadPoint() },
+      { label: '添加时间线检查点', run: () => this.addCheckpoint() },
     ]);
   }
 
   openToolkitView() {
-    return this._runActionMenu('Open Toolkit view', [
-      { label: 'Dashboard', run: () => this.openDashboard() },
-      { label: 'Stats and analytics', run: () => this.openDashboard('stats') },
-      { label: 'Reading queue sidebar', run: () => this._activateQueueView() },
-      { label: 'Knowledge tree', run: () => this._activateKnowledgeTree() },
-      { label: 'Knowledge tree sidebar', run: () => this._activateKnowledgeTreeSidebar() },
-      { label: 'User guide', run: () => this.openUserGuide() },
+    return this._runActionMenu('打开工具包视图', [
+      { label: '仪表盘', run: () => this.openDashboard() },
+      { label: '统计与分析', run: () => this.openDashboard('stats') },
+      { label: '阅读队列侧边栏', run: () => this._activateQueueView() },
+      { label: '知识树', run: () => this._activateKnowledgeTree() },
+      { label: '知识树侧边栏', run: () => this._activateKnowledgeTreeSidebar() },
+      { label: '用户指南', run: () => this.openUserGuide() },
     ]);
   }
 
   advancedTools() {
-    return this._runActionMenu('Advanced tools', [
-      { label: 'Subset review', run: () => this.subsetReview() },
-      { label: 'Mercy (spread overdue)', run: () => this.mercy() },
-      { label: 'Postpone subtree', run: () => this.postponeSubtree() },
-      { label: 'Split article on H2 headings', run: () => this.splitArticle() },
-      { label: 'Split book into chapters', run: () => this.splitBook() },
-      { label: 'New category', run: async () => { await this.createCategory(); this._refreshTreeViews(); } },
-      { label: 'Move active element under…', run: async () => { await this.reparentActive(); this._refreshTreeViews(); } },
-      { label: 'Export inline cards to selected card system', run: () => this.seedInlineCards() },
-      { label: 'Sync Anki cards with Flashcards', run: () => this.syncAnki() },
-      { label: 'Migrate legacy cards to Spaced Repetition', run: () => this.migrateLegacyCards() },
-      { label: 'Performance diagnostics', run: () => this.performanceDiagnostics() },
+    return this._runActionMenu('高级工具', [
+      { label: '子集复习', run: () => this.subsetReview() },
+      { label: '宽限（分散逾期）', run: () => this.mercy() },
+      { label: '推迟子树', run: () => this.postponeSubtree() },
+      { label: '按 H2 标题拆分文章', run: () => this.splitArticle() },
+      { label: '将书籍拆分为章节', run: () => this.splitBook() },
+      { label: '新建分类', run: async () => { await this.createCategory(); this._refreshTreeViews(); } },
+      { label: '将活跃元素移动到…下', run: async () => { await this.reparentActive(); this._refreshTreeViews(); } },
+      { label: '将行内卡片导出到选定的卡片系统', run: () => this.seedInlineCards() },
+      { label: '将 Anki 卡片与 Flashcards 同步', run: () => this.syncAnki() },
+      { label: '将旧版卡片迁移到 Spaced Repetition', run: () => this.migrateLegacyCards() },
+      { label: '性能诊断', run: () => this.performanceDiagnostics() },
     ]);
   }
 
@@ -3330,14 +3330,14 @@ class IncrementalReadingPlugin extends Plugin {
   }
 
   async _nextCardName(parentTitle) {
-    const safeParent = slugifyForFolder(parentTitle) || 'Untitled';
+    const safeParent = slugifyForFolder(parentTitle) || '未命名';
     const folder = this.cardsFolder();
     const existing = filesInFolder(this.app, folder).filter(file =>
-      file.extension === 'md' && file.basename.startsWith(`${safeParent} - Card`));
+      file.extension === 'md' && file.basename.startsWith(`${safeParent} - 卡片`));
     let number = existing.length + 1;
-    let name = `${safeParent} - Card ${number}`;
+    let name = `${safeParent} - 卡片 ${number}`;
     while (this.app.vault.getAbstractFileByPath(`${folder}/${name}.md`)) {
-      name = `${safeParent} - Card ${++number}`;
+      name = `${safeParent} - 卡片 ${++number}`;
     }
     return name;
   }
@@ -3393,8 +3393,8 @@ class IncrementalReadingPlugin extends Plugin {
     const folder = this.cardsFolder();
     await ensureFolder(this.app, folder);
     const name = await this._nextCardName(parentFile.basename);
-    const deck = String(this.settings.anki.deck || 'Incremental Reading')
-      .replace(/\s*\r?\n\s*/g, ' ').trim() || 'Incremental Reading';
+    const deck = String(this.settings.anki.deck || '渐进阅读')
+      .replace(/\s*\r?\n\s*/g, ' ').trim() || '渐进阅读';
     const frontmatter = [
       '---', 'type: card',
       `source: ${JSON.stringify(`[[${parentFile.basename}]]`)}`,
@@ -3426,7 +3426,7 @@ class IncrementalReadingPlugin extends Plugin {
 
   async syncAnki({ quiet = false, paths = null } = {}) {
     if (!this.isFlashcardsReady()) {
-      if (!quiet) new Notice('Enable Flashcards by Reuseman before syncing.');
+      if (!quiet) new Notice('同步前请先启用 Flashcards by Reuseman。');
       return false;
     }
     const targets = (paths || this.getIRRows()
@@ -3435,7 +3435,7 @@ class IncrementalReadingPlugin extends Plugin {
       .map(path => this.app.vault.getAbstractFileByPath(path))
       .filter(file => file instanceof TFile);
     if (!targets.length) {
-      if (!quiet) new Notice('No Flashcards-owned card notes found.');
+      if (!quiet) new Notice('未找到 Flashcards 管理的卡片笔记。');
       return false;
     }
     const original = this.app.workspace.getActiveFile();
@@ -3451,7 +3451,7 @@ class IncrementalReadingPlugin extends Plugin {
         await leaf.openFile(original);
       }
     }
-    if (!quiet) new Notice(`Flashcards sync started for ${started} card note${started === 1 ? '' : 's'}.`);
+    if (!quiet) new Notice(`已开始同步 ${started} 个 Flashcards 卡片笔记${started === 1 ? '' : ''}。`);
     return started > 0;
   }
 
@@ -3459,13 +3459,13 @@ class IncrementalReadingPlugin extends Plugin {
     const folder = this.cardsFolder();
     await ensureFolder(this.app, folder);
     const parentTitle = parentFile.basename;
-    const safeParent = slugifyForFolder(parentTitle) || 'Untitled';
+    const safeParent = slugifyForFolder(parentTitle) || '未命名';
     const existing = filesInFolder(this.app, folder).filter(f =>
-      f.extension === 'md' && f.basename.startsWith(safeParent + ' - Card'));
+      f.extension === 'md' && f.basename.startsWith(safeParent + ' - 卡片'));
     let cardNum = existing.length + 1;
-    let name = `${safeParent} - Card ${cardNum}`;
+    let name = `${safeParent} - 卡片 ${cardNum}`;
     while (this.app.vault.getAbstractFileByPath(`${folder}/${name}.md`)) {
-      name = `${safeParent} - Card ${++cardNum}`;
+      name = `${safeParent} - 卡片 ${++cardNum}`;
     }
     const fm = [
       '---',
@@ -3507,11 +3507,11 @@ class IncrementalReadingPlugin extends Plugin {
 
   async migrateLegacyCards() {
     const files = this._legacyCardFiles();
-    if (!files.length) { new Notice('No legacy IR cards to migrate.'); return; }
+    if (!files.length) { new Notice('没有可迁移的旧版 IR 卡片。'); return; }
     const ok = await confirmDialog(
       this.app,
-      `Migrate ${files.length} legacy card${files.length === 1 ? '' : 's'}?`,
-      'Card content will be converted to Spaced Repetition syntax. IR scheduling fields will be removed.'
+      `要迁移 ${files.length} 个旧版卡片${files.length === 1 ? '' : ''}吗？`,
+      '卡片内容将转换为 Spaced Repetition 语法。IR 排期字段将被移除。'
     );
     if (!ok) return;
 
@@ -3567,7 +3567,7 @@ class IncrementalReadingPlugin extends Plugin {
       );
       migrated++;
     }
-    new Notice(`Migrated ${migrated} card${migrated === 1 ? '' : 's'} to Spaced Repetition${skipped ? `; skipped ${skipped}` : ''}.`);
+    new Notice(`已迁移 ${migrated} 张卡片到 Spaced Repetition${skipped ? '；跳过 ' + skipped + ' 张' : ''}。`);
   }
 
   async reviewCards() {
@@ -3580,12 +3580,12 @@ class IncrementalReadingPlugin extends Plugin {
         && row.fm.type === 'card'
         && this._cardBackendFor(row.fm) === 'toolkit'
         && isDue(row.fm, today, this.settings));
-      if (!card) { new Notice('No Toolkit flashcards are due.'); return false; }
+      if (!card) { new Notice('没有到期的工具包卡片。'); return false; }
       await this._openLearningFile(card.tfile, 'card');
       return true;
     }
     if (!this.app.commands.executeCommandById(SPACED_REPETITION_REVIEW_COMMAND)) {
-      new Notice('Spaced Repetition is still starting. Reload Obsidian and try again.');
+      new Notice('Spaced Repetition 仍在启动中。请重新加载 Obsidian 后重试。');
       return false;
     }
     return true;
@@ -3596,7 +3596,7 @@ class IncrementalReadingPlugin extends Plugin {
     if (backend === 'toolkit') return this._gradeToolkitCard(file, frontmatter);
     if (backend === 'anki') {
       this.syncAnki({ paths: [file.path] });
-      new Notice('This card is reviewed in Anki.');
+      new Notice('此卡片在 Anki 中复习。');
       return false;
     }
     return this.reviewCardsInNote(file);
@@ -3653,7 +3653,7 @@ class IncrementalReadingPlugin extends Plugin {
     });
     await this.consumeSessionItem(file.path, { background: true });
     this._invalidateIRCollection();
-    new Notice(`Card reviewed · ${['', 'Again', 'Hard', 'Good', 'Easy'][grade]} · next in ${next.interval}d.`);
+    new Notice(`卡片已复习 · ${['', '重来', '困难', '良好', '简单'][grade]} · 下次在 ${next.interval} 天后。`);
     return true;
   }
 
@@ -3676,7 +3676,7 @@ class IncrementalReadingPlugin extends Plugin {
       : null;
     if (!this.app.commands.executeCommandById(SPACED_REPETITION_NOTE_COMMAND)) {
       this.pendingSpacedRepetitionReview = null;
-      new Notice('Open a card note, then try again after Spaced Repetition has initialized.');
+      new Notice('打开一篇卡片笔记，待 Spaced Repetition 初始化后重试。');
     }
   }
 
@@ -3720,7 +3720,7 @@ class IncrementalReadingPlugin extends Plugin {
         if (pending?.reviewed) this.consumeSessionItem(pending.path, { background: true });
         if (pending) this.pendingSpacedRepetitionReview = null;
         this.spacedRepetitionCloseGeneration++;
-        if (pending?.reviewed) new Notice('Card reviewed. Run Next element when you are ready.');
+        if (pending?.reviewed) new Notice('卡片已复习。准备好后运行「下一元素」。');
         return;
       }
       if (Date.now() < deadline) window.setTimeout(check, 50);
@@ -3738,9 +3738,9 @@ class IncrementalReadingPlugin extends Plugin {
 
   cardBackendLabel(backend = this.cardBackend()) {
     return ({
-      toolkit: 'Toolkit in-house flashcards',
-      anki: 'Anki integration',
-      spaced_repetition: 'Spaced Repetition integration',
+      toolkit: '工具包内置卡片',
+      anki: 'Anki 集成',
+      spaced_repetition: 'Spaced Repetition 集成',
     })[backend];
   }
 
@@ -3766,43 +3766,43 @@ class IncrementalReadingPlugin extends Plugin {
     const notes = [];
     const backend = this.cardBackend();
     if (backend === 'anki' && !this.isFlashcardsReady()) {
-      issues.push('Enable Flashcards by Reuseman. Anki and AnkiConnect must be running when you sync.');
+      issues.push('启用 Flashcards by Reuseman。同步时 Anki 与 AnkiConnect 必须处于运行状态。');
     }
     if (backend === 'spaced_repetition' && !this.isSpacedRepetitionReady()) {
-      issues.push('Enable Spaced Repetition for card review.');
+      issues.push('启用 Spaced Repetition 以进行卡片复习。');
     }
     const vaultPaths = [
-      ['Sources', this.sourcesFolder()],
-      ['Extracts', this.extractsFolder()],
-      ['Cards', this.cardsFolder()],
-      ['Attachments', this.attachmentsFolder()],
-      ['Categories', this.categoriesFolder()],
+      ['来源', this.sourcesFolder()],
+      ['摘录', this.extractsFolder()],
+      ['卡片', this.cardsFolder()],
+      ['附件', this.attachmentsFolder()],
+      ['分类', this.categoriesFolder()],
     ];
     const normalized = vaultPaths.map(([, path]) => path.toLowerCase());
-    if (new Set(normalized).size !== normalized.length) issues.push('Vault folders must use distinct paths.');
-    if (!(Number(this.settings.scheduling.a_factor_min) > 1)) issues.push('A-Factor minimum must be greater than 1.');
+    if (new Set(normalized).size !== normalized.length) issues.push('库文件夹必须使用不同的路径。');
+    if (!(Number(this.settings.scheduling.a_factor_min) > 1)) issues.push('A 因子最小值必须大于 1。');
     if (!(Number(this.settings.scheduling.a_factor_max) >= Number(this.settings.scheduling.a_factor_min))) {
-      issues.push('A-Factor maximum must be at least the minimum.');
+      issues.push('A 因子最大值不得小于最小值。');
     }
     if (backend === 'spaced_repetition'
         && this._spacedRepetitionSettings().multilineCardSeparator === this._spacedRepetitionSettings().multilineReversedCardSeparator) {
-      issues.push('Basic and bidirectional card separators must differ.');
+      issues.push('基础卡片和双向卡片的分隔符必须不同。');
     }
-    if (backend === 'anki' && !String(this.settings.anki.deck || '').trim()) issues.push('Anki target deck cannot be empty.');
+    if (backend === 'anki' && !String(this.settings.anki.deck || '').trim()) issues.push('Anki 目标牌组不能为空。');
     try {
       const inline = this.settings.inline_cards;
       const qa = new RegExp(inline.qa_regex);
       new RegExp(inline.cloze_regex, 'g');
-      if (qa.global) issues.push('The inline Q::A regular expression must not use the global flag.');
+      if (qa.global) issues.push('行内 Q::A 正则表达式不得使用全局标志。');
     } catch (error) {
-      issues.push(`Inline-card regular expression is invalid: ${error.message}`);
+      issues.push(`行内卡片正则表达式无效：${error.message}`);
     }
     if (issues.length) {
-      new Notice(`Setup needs attention:\n- ${issues.join('\n- ')}`, 12000);
+      new Notice(`配置需要处理：\n- ${issues.join('\n- ')}`, 12000);
       return false;
     }
     const detail = notes.length ? `\n${notes.join('\n')}` : '';
-    new Notice(`Setup ready. Date format: ${configuredDateFormat(this.settings)}. ${this.cardBackendLabel()} is selected.${detail}`, 8000);
+    new Notice(`配置就绪。日期格式：${configuredDateFormat(this.settings)}。已选择 ${this.cardBackendLabel()}。${detail}`, 8000);
     return true;
   }
 
@@ -4117,15 +4117,15 @@ class IncrementalReadingPlugin extends Plugin {
     await this.persistSessionSnapshot(queue);
     this._markCollectionViewsStale();
     this._flushDeferredCollectionRenders();
-    if (!queue.length) { new Notice('✨ Nothing due. Caught up.'); return; }
-    new Notice(`Built today's queue with ${queue.length} element${queue.length === 1 ? '' : 's'}.`);
+    if (!queue.length) { new Notice('✨ 没有到期内容，已全部跟上。'); return; }
+    new Notice(`已构建今日队列，共 ${queue.length} 个元素${queue.length === 1 ? '' : ''}。`);
     if (openFirst) await this.nextElement({ fromStart: true });
   }
 
   async nextElement({ fromStart = false } = {}) {
     const session = this.settings.session;
     if (session?.date !== todayDateString(this.settings) || !Array.isArray(session.paths)) {
-      new Notice("No saved queue for today. Run Build today's session queue first.");
+      new Notice("今日没有已保存的队列。请先运行「构建今日会话队列」。");
       return;
     }
     const activePath = this.app.workspace.getActiveFile()?.path;
@@ -4133,7 +4133,7 @@ class IncrementalReadingPlugin extends Plugin {
     const next = candidates
       .map(path => this.app.vault.getAbstractFileByPath(path))
       .find(file => file instanceof TFile);
-    if (!next) { new Notice('✨ Caught up.'); return; }
+    if (!next) { new Notice('✨ 已全部跟上。'); return; }
     const nextType = session.types?.[next.path] || getFm(this.app, next)?.type;
     const readPointLine = session.readPoints?.[next.path] || 0;
 
@@ -4142,11 +4142,11 @@ class IncrementalReadingPlugin extends Plugin {
 
   async randomDue() {
     const pool = await this.buildDuePool();
-    if (pool.length === 0) { new Notice('✨ Nothing due. Caught up.'); return; }
+    if (pool.length === 0) { new Notice('✨ 没有到期内容，已全部跟上。'); return; }
     const pick = pool[Math.floor(Math.random() * pool.length)];
     await this.openLearningItem(pick);
-    const action = pick.fm.type === 'card' ? '🃏 Review' : (pick.fm.type === 'source' ? '📖 Read' : '📝 Process');
-    new Notice(`🎲 ${action}: ${pick.tfile.basename} · p${pick.fm.priority ?? '—'} (1 of ${pool.length} due)`);
+    const action = pick.fm.type === 'card' ? '🃏 复习' : (pick.fm.type === 'source' ? '📖 阅读' : '📝 处理');
+    new Notice(`🎲 ${action}：${pick.tfile.basename} · p${pick.fm.priority ?? '—'}（${pool.length} 个到期中的第 1 个）`);
   }
 
   async gradeCurrent() {
@@ -4156,14 +4156,14 @@ class IncrementalReadingPlugin extends Plugin {
       if (activeFrontmatter?.type === 'card') {
         const backend = this._cardBackendFor(activeFrontmatter);
         if (backend === 'toolkit') return this._gradeToolkitCard(active, activeFrontmatter);
-        if (backend === 'anki') new Notice('This card is reviewed in Anki.');
-        else new Notice('Cards finish automatically when Spaced Repetition accepts the review.');
+        if (backend === 'anki') new Notice('此卡片在 Anki 中复习。');
+        else new Notice('当 Spaced Repetition 接受复习后，卡片会自动完成。');
         return false;
       }
       const graded = await this.endSession();
       if (graded) {
         if (active) this.consumeSessionItem(active.path, { background: true });
-        new Notice('Element graded. Run Next element when you are ready.');
+        new Notice('元素已评级。准备好后运行「下一元素」。');
       }
       // Let metadata notifications land while collection rendering is still
       // deferred. Views remain stale until a later explicit refresh.
@@ -4177,12 +4177,12 @@ class IncrementalReadingPlugin extends Plugin {
   async endSession() {
     const active = this.app.workspace.getActiveFile();
     if (!active || active.extension !== 'md') {
-      new Notice('Open an incremental reading source, extract, or Toolkit card first.');
+      new Notice('请先打开一个渐进阅读来源、摘录或工具包卡片。');
       return;
     }
     const fm = getFm(this.app, active);
     if (!fm || !['source', 'extract', 'card'].includes(fm.type)) {
-      new Notice('Active note is not an incremental reading element.');
+      new Notice('当前笔记不是渐进阅读元素。');
       return;
     }
     if (fm.type === 'card') return this._reviewCardFile(active, fm);
@@ -4198,16 +4198,16 @@ class IncrementalReadingPlugin extends Plugin {
     const isVideo = fm.type === 'source'
       && (fm.source_type === 'youtube' || fm.source_type === 'video' || fm.read_point_seconds != null);
     if (fm.type === 'source' && fm.read_point != null && !isVideo) {
-      const rp = await askText(this.app, 'Page you stopped at', String(fm.read_point));
+      const rp = await askText(this.app, '你停在第几页', String(fm.read_point));
       if (rp === null) return;
-      if (!/^[1-9]\d*$/.test(rp.trim())) { new Notice('Enter a positive whole page number.'); return; }
+      if (!/^[1-9]\d*$/.test(rp.trim())) { new Notice('请输入正整数页码。'); return; }
       newReadPoint = Number(rp);
     } else if (isVideo) {
       const cur = formatSeconds(Number(fm.read_point_seconds) || 0);
-      const raw = await askText(this.app, 'Timestamp you stopped at (mm:ss or hh:mm:ss)', cur);
+      const raw = await askText(this.app, '你停止处的时间戳（mm:ss 或 hh:mm:ss）', cur);
       if (raw === null) return;
       const parsed = parseTimeInput(raw);
-      if (parsed == null) { new Notice('Invalid timestamp — use mm:ss or hh:mm:ss.'); return; }
+      if (parsed == null) { new Notice('时间戳无效，请使用 mm:ss 或 hh:mm:ss。'); return; }
       newReadPointSeconds = parsed;
     }
 
@@ -4219,7 +4219,7 @@ class IncrementalReadingPlugin extends Plugin {
       const editor = getEditorForFile(this.app, file);
       const cursor = editor?.getCursor?.();
       if (editor && cursor) {
-        const updateMarker = await confirmDialog(this.app, `Update 📍 to line ${cursor.line + 1}?`);
+        const updateMarker = await confirmDialog(this.app, `将 📍 更新到第 ${cursor.line + 1} 行？`);
         if (updateMarker) {
           newReadPointLine = cursor.line + 1;
           await this.app.vault.process(file, (content) => {
@@ -4238,7 +4238,7 @@ class IncrementalReadingPlugin extends Plugin {
             }
             return stripped.slice(0, insertAt) + READ_POINT_MARKER + stripped.slice(insertAt);
           });
-          new Notice(`📍 moved to line ${cursor.line + 1}`);
+          new Notice(`📍 已移动到第 ${cursor.line + 1} 行`);
         }
       }
     }
@@ -4259,11 +4259,11 @@ class IncrementalReadingPlugin extends Plugin {
 
     const qualityFactor = await pickFromList(
       this.app,
-      ['Hold (no change)',
-       `Speed up (×${s.quality_speed_up} — see sooner)`,
-       `Slow down (×${s.quality_slow_down} — push out)`],
+      ['保持（不变）',
+       `加快（×${s.quality_speed_up}，更早再见）`,
+       `减慢（×${s.quality_slow_down}，往后推）`],
       [s.quality_hold, s.quality_speed_up, s.quality_slow_down],
-      'Topic quality?'
+      '主题质量？'
     );
     if (qualityFactor == null) return;
     const aFactor = clampAFactor(this.settings, baseAF * qualityFactor);
@@ -4300,7 +4300,7 @@ class IncrementalReadingPlugin extends Plugin {
     const reachedVideo = isVideo && vidTarget && newReadPointSeconds != null && newReadPointSeconds >= vidTarget;
     if (reachedPages || reachedVideo) {
       const unit = reachedVideo ? 'video' : (chapterEnd ? 'chapter' : 'source');
-      markedDone = await confirmDialog(this.app, `Mark ${unit} as done?`);
+      markedDone = await confirmDialog(this.app, `将 ${unit} 标记为已完成？`);
     }
 
     await this.app.fileManager.processFrontMatter(file, (fmw) => {
@@ -4333,12 +4333,12 @@ class IncrementalReadingPlugin extends Plugin {
         .catch(error => console.error('[IR] background review-log append failed', error));
     }
 
-    const typeLabel = fm.type === 'source' ? 'Source' : 'Extract';
+    const typeLabel = fm.type === 'source' ? '来源' : '摘录';
     if (markedDone) {
       this.consumeSessionItem(file.path, { background: true });
-      new Notice(`${typeLabel} marked done. Future reviews cleared.`);
+      new Notice(`${typeLabel} 已标记为已完成。后续复习已清除。`);
     } else {
-      new Notice(`${typeLabel}: priority ${priority} a=${round4(aFactor)} → next in ${interval}d (${nextReview})`);
+      new Notice(`${typeLabel}：优先级 ${priority} a=${round4(aFactor)} → ${interval} 天后（${nextReview}）`);
     }
     return true;
   }
@@ -4359,7 +4359,7 @@ class IncrementalReadingPlugin extends Plugin {
 
   async _activateQueueView() {
     if (!this.settings.queue.sidebar_enabled) {
-      new Notice('Sidebar disabled in Incremental Reading Toolkit settings');
+      new Notice('已在渐进阅读工具包设置中禁用侧边栏');
       return;
     }
     const leaves = this.app.workspace.getLeavesOfType(IR_QUEUE_VIEW_TYPE);
@@ -4423,30 +4423,30 @@ class IncrementalReadingPlugin extends Plugin {
   }
 
   async createCategory(parentName = null) {
-    const name = await askText(this.app, 'Category name', '');
+    const name = await askText(this.app, '分类名称', '');
     if (!name) return null;
     const safe = slugifyForFolder(name);
-    if (!safe) { new Notice('Invalid category name'); return null; }
+    if (!safe) { new Notice('分类名称无效'); return null; }
     await ensureFolder(this.app, this.categoriesFolder());
     const path = `${this.categoriesFolder()}/${safe}.md`;
-    if (this.app.vault.getAbstractFileByPath(path)) { new Notice('Category already exists'); return null; }
+    if (this.app.vault.getAbstractFileByPath(path)) { new Notice('分类已存在'); return null; }
     const fm = ['---', 'type: category'];
     if (parentName) fm.push(`parent: ${JSON.stringify(`[[${parentName}]]`)}`);
     fm.push('tree_order: 0', 'tags:', '  - incremental-reading', '  - ir/category', '---', '', `# ${name}`, '');
     const file = await this.app.vault.create(path, fm.join('\n'));
-    new Notice(`Category created: ${name}`);
+    new Notice(`已创建分类：${name}`);
     return file;
   }
 
   async reparent(childPath, newParentName) {
     const child = this.app.vault.getAbstractFileByPath(childPath);
-    if (!child) { new Notice('Node not found'); return; }
+    if (!child) { new Notice('未找到节点'); return; }
     const idx = this.buildTreeIndex();
     if (newParentName && idx.duplicates.has(newParentName.toLowerCase())) {
-      new Notice(`Refused: more than one node is named "${newParentName}"`); return;
+      new Notice(`已拒绝：有多个节点名为「${newParentName}」`); return;
     }
     if (newParentName && treeCore.wouldCreateCycle(idx, child.basename, newParentName)) {
-      new Notice('Refused: would create a cycle'); return;
+      new Notice('已拒绝：会形成循环'); return;
     }
     await this.app.fileManager.processFrontMatter(child, (fm) => {
       if (newParentName) {
@@ -4457,22 +4457,22 @@ class IncrementalReadingPlugin extends Plugin {
         fm.tree_root = true;
       }
     });
-    new Notice(newParentName ? `Moved under ${newParentName}` : 'Moved to top level');
+    new Notice(newParentName ? `已移动到 ${newParentName} 下` : '已移动到顶层');
     this._refreshTreeViews();
   }
 
   async reparentActive() {
     const active = this.app.workspace.getActiveFile();
-    if (!active || active.extension !== 'md') { new Notice('No active markdown element'); return; }
+    if (!active || active.extension !== 'md') { new Notice('没有活跃的 Markdown 元素'); return; }
     return await this.reparentPath(active.path);
   }
 
   async reparentPath(path) {
     const active = this.app.vault.getAbstractFileByPath(path);
-    if (!active || active.extension !== 'md') { new Notice('Tree node not found'); return false; }
+    if (!active || active.extension !== 'md') { new Notice('未找到树节点'); return false; }
     const fm = getFm(this.app, active);
     if (!fm || !['category', 'source', 'extract', 'card'].includes(fm.type)) {
-      new Notice('Node is not an incremental reading element'); return false;
+      new Notice('节点不是渐进阅读元素'); return false;
     }
     const idx = this.buildTreeIndex();
     const candidates = idx.pages.filter(p =>
@@ -4481,7 +4481,7 @@ class IncrementalReadingPlugin extends Plugin {
     const values = candidates.map(p => p.basename);
     displays.unshift('⤴ (top level / Unfiled)');
     values.unshift('::root::');
-    const picked = await pickFromList(this.app, displays, values, 'Move under…');
+    const picked = await pickFromList(this.app, displays, values, '移动到…下');
     if (picked == null) return false;
     await this.reparent(active.path, picked === '::root::' ? null : picked);
     return true;
@@ -4492,7 +4492,7 @@ class IncrementalReadingPlugin extends Plugin {
     if (!f) return;
     const idx = this.buildTreeIndex();
     const page = treeCore.pageByPath(idx, path);
-    if (!page) { new Notice('Tree node not found'); return false; }
+    if (!page) { new Notice('未找到树节点'); return false; }
     const parentName = treeCore.effectiveParent(page.fm);
     let siblings;
     if (parentName) {
@@ -4507,10 +4507,10 @@ class IncrementalReadingPlugin extends Plugin {
     }
     const order = siblings.map(s => ({ path: s.path, tree_order: s.fm && s.fm.tree_order }));
     const curIdx = order.findIndex(s => s.path === path);
-    if (curIdx < 0) { new Notice('Could not locate this node among its siblings'); return false; }
+    if (curIdx < 0) { new Notice('无法在同级节点中定位此节点'); return false; }
     const targetIndex = curIdx + dir;
     if (targetIndex < 0 || targetIndex >= order.length) {
-      new Notice(dir < 0 ? 'Already the first sibling' : 'Already the last sibling');
+      new Notice(dir < 0 ? '已经是第一个同级节点' : '已经是最后一个同级节点');
       return false;
     }
     const writes = treeCore.computeReorder(order, path, targetIndex);
@@ -4525,15 +4525,15 @@ class IncrementalReadingPlugin extends Plugin {
   async renameTreeNode(path) {
     const f = this.app.vault.getAbstractFileByPath(path);
     if (!f) return;
-    const next = await askText(this.app, 'New name', f.basename);
+    const next = await askText(this.app, '新名称', f.basename);
     if (!next || next === f.basename) return;
     const safe = slugifyForFolder(next);
-    if (!safe) { new Notice('Invalid name'); return; }
+    if (!safe) { new Notice('名称无效'); return; }
     const dir = f.parent ? f.parent.path : '';
     const newPath = (dir ? dir + '/' : '') + safe + '.md';
-    if (this.app.vault.getAbstractFileByPath(newPath)) { new Notice('A file with that name exists'); return; }
+    if (this.app.vault.getAbstractFileByPath(newPath)) { new Notice('已存在同名文件'); return; }
     await this.app.fileManager.renameFile(f, newPath);
-    new Notice(`Renamed to ${safe}`);
+    new Notice(`已重命名为 ${safe}`);
     this._refreshTreeViews();
   }
 
@@ -4541,14 +4541,14 @@ class IncrementalReadingPlugin extends Plugin {
     const f = this.app.vault.getAbstractFileByPath(path);
     if (!f) return;
     if (getFm(this.app, f)?.type === 'card') {
-      new Notice('Card review state is managed by Spaced Repetition.');
+      new Notice('卡片复习状态由 Spaced Repetition 管理。');
       return;
     }
-    const ok = await confirmDialog(this.app, `Dismiss "${f.basename}"?`,
-      'Sets status: dismissed (kept in the tree, removed from the review queue).');
+    const ok = await confirmDialog(this.app, `搁置「${f.basename}」？`,
+      '将状态设为：已搁置（保留在知识树中，从复习队列中移除）。');
     if (!ok) return;
     await this.app.fileManager.processFrontMatter(f, (fm) => { fm.status = 'dismissed'; });
-    new Notice('Dismissed');
+    new Notice('已搁置');
     this._refreshTreeViews();
   }
 
@@ -4557,13 +4557,13 @@ class IncrementalReadingPlugin extends Plugin {
       .map(path => this.app.vault.getAbstractFileByPath(path))
       .filter(file => file instanceof TFile && ['source', 'extract', 'card'].includes(getFm(this.app, file)?.type));
     const pending = files.filter(file => getFm(this.app, file)?.status !== 'done');
-    if (!pending.length) { new Notice('The selected items are already done.'); return 0; }
+    if (!pending.length) { new Notice('所选项均已完成。'); return 0; }
     if (confirm) {
-      const label = pending.length === 1 ? `"${pending[0].basename}"` : `${pending.length} selected items`;
+      const label = pending.length === 1 ? `"${pending[0].basename}"` : `${pending.length} 个所选项`;
       const ok = await confirmDialog(
         this.app,
-        `Mark ${label} as done?`,
-        'Future review dates will be cleared. Cards will also leave the Spaced Repetition deck.'
+        `将 ${label} 标记为已完成？`,
+        '未来的复习日期将被清除。卡片也会离开 Spaced Repetition 牌组。'
       );
       if (!ok) return 0;
     }
@@ -4580,7 +4580,7 @@ class IncrementalReadingPlugin extends Plugin {
     }
     this._invalidateIRCollection();
     this._refreshTreeViews();
-    new Notice(`${pending.length} item${pending.length === 1 ? '' : 's'} marked done. Future reviews cleared.`);
+    new Notice(`${pending.length} 项${pending.length === 1 ? '' : 's'}已标记为已完成。未来复习已清除。`);
     return pending.length;
   }
 
@@ -4588,13 +4588,13 @@ class IncrementalReadingPlugin extends Plugin {
     const files = [...new Set(paths || [])]
       .map(path => this.app.vault.getAbstractFileByPath(path))
       .filter(file => file instanceof TFile && ['source', 'extract', 'card'].includes(getFm(this.app, file)?.type));
-    if (!files.length) { new Notice('No resettable items selected.'); return 0; }
+    if (!files.length) { new Notice('未选择可重置的项。'); return 0; }
     if (confirm) {
-      const label = files.length === 1 ? `"${files[0].basename}"` : `${files.length} selected items`;
+      const label = files.length === 1 ? `"${files[0].basename}"` : `${files.length} 个所选项`;
       const ok = await confirmDialog(
         this.app,
-        `Reset ${label}?`,
-        'Sets status to active and clears Toolkit scheduling history. Spaced Repetition cards return to their deck as new cards.'
+        `重置 ${label}？`,
+        '将状态设为 active 并清除工具包排期历史。Spaced Repetition 卡片会作为新卡片回到自己的牌组。'
       );
       if (!ok) return 0;
     }
@@ -4612,17 +4612,17 @@ class IncrementalReadingPlugin extends Plugin {
     }
     this._invalidateIRCollection();
     this._refreshTreeViews();
-    new Notice(`${files.length} item${files.length === 1 ? '' : 's'} reset.`);
+    new Notice(`${files.length} 项${files.length === 1 ? '' : 's'}已重置。`);
     return files.length;
   }
 
   async seedInlineCards() {
     const active = this.app.workspace.getActiveFile();
-    if (!active) { new Notice('No active file'); return; }
+    if (!active) { new Notice('没有活动文件'); return; }
     const cache = this.app.metadataCache.getFileCache(active);
     const fm = cache?.frontmatter;
     if (!fm || (fm.type !== 'source' && fm.type !== 'extract')) {
-      new Notice('Active file is not a source/extract');
+      new Notice('当前活动文件不是来源/摘录');
       return;
     }
     const body = await this.app.vault.cachedRead(active);
@@ -4633,7 +4633,7 @@ class IncrementalReadingPlugin extends Plugin {
       new Notice(error.message, 8000);
       return;
     }
-    if (!parsed.length) { new Notice('No inline cards found'); return; }
+    if (!parsed.length) { new Notice('未找到行内卡片'); return; }
 
     const grouped = new Map();
     for (const card of parsed) {
@@ -4669,22 +4669,22 @@ class IncrementalReadingPlugin extends Plugin {
       created++;
     }
     new Notice(created
-      ? `Exported ${created} inline card${created === 1 ? '' : 's'} to ${this.cardBackendLabel()}`
-      : 'All inline cards are already exported');
+      ? `已导出 ${created} 张行内卡片${created === 1 ? '' : 's'}到 ${this.cardBackendLabel()}`
+      : '所有行内卡片均已导出');
   }
 
   async addCheckpoint(noteOverride) {
     const active = this.app.workspace.getActiveFile();
-    if (!active) { new Notice('No active file'); return; }
+    if (!active) { new Notice('没有活动文件'); return; }
     const cache = this.app.metadataCache.getFileCache(active);
     if (!isActiveIR(cache?.frontmatter) || cache.frontmatter.type === 'card') {
-      new Notice('Checkpoints apply to sources and extracts only.'); return;
+      new Notice('检查点仅适用于来源和摘录。'); return;
     }
 
     let note = noteOverride;
     if (note == null) {
       note = await new Promise(resolve => {
-        new TextPromptModal(this.app, 'Checkpoint note (prefix with Nd:: to override interval)', '', resolve).open();
+        new TextPromptModal(this.app, '检查点备注（以 Nd:: 开头可覆盖间隔）', '', resolve).open();
       });
     }
     if (note == null) return;
@@ -4711,7 +4711,7 @@ class IncrementalReadingPlugin extends Plugin {
       }
     });
 
-    new Notice(interval != null ? `Checkpoint saved, next in ${interval}d` : 'Checkpoint saved');
+    new Notice(interval != null ? `检查点已保存，下次在 ${interval} 天后` : '检查点已保存');
   }
 
   // ---- Done / Dismiss / Postpone / Schedule ------------------------------
@@ -4720,7 +4720,7 @@ class IncrementalReadingPlugin extends Plugin {
     const r = await resolveIRFromActive(this.app, this.settings, { allowCard: true, allowPdfFallback: true });
     if (!r) return;
     const { tfile, fm } = r;
-    if (fm.status === 'done') { new Notice('Already done.'); return; }
+    if (fm.status === 'done') { new Notice('已完成。'); return; }
     await this.markPathsDone([tfile.path]);
   }
 
@@ -4734,12 +4734,12 @@ class IncrementalReadingPlugin extends Plugin {
     const r = await resolveIRFromActive(this.app, this.settings, { allowCard: false, allowPdfFallback: true });
     if (!r) return;
     const { tfile, fm } = r;
-    if (fm.status === 'dismissed') { new Notice('Already dismissed.'); return; }
+    if (fm.status === 'dismissed') { new Notice('已搁置。'); return; }
     await this.app.fileManager.processFrontMatter(tfile, (fmw) => {
       fmw.status = 'dismissed';
       fmw.date_dismissed = todayDateString(this.settings);
     });
-    new Notice('Dismissed. Set status: active to restore.');
+    new Notice('已搁置。将 status 设为 active 可恢复。');
   }
 
   async postpone() {
@@ -4747,9 +4747,9 @@ class IncrementalReadingPlugin extends Plugin {
     if (!r) return;
     const choice = await pickFromList(
       this.app,
-      ['Tomorrow (+1d)', '+3 days', '+1 week', '+2 weeks'],
+      ['明天（+1 天）', '+3 days', '+1 week', '+2 weeks'],
       [1, 3, 7, 14],
-      'Postpone how long?'
+      '推迟多久？'
     );
     if (!choice) return;
     const newDate = futureDateString(choice, this.settings);
@@ -4757,7 +4757,7 @@ class IncrementalReadingPlugin extends Plugin {
       fmw.next_review = newDate;
       fmw.interval = choice;
     });
-    new Notice(`Postponed +${choice}d · Next review: ${newDate}`);
+    new Notice(`已推迟 +${choice} 天 · 下次复习：${newDate}`);
   }
 
   async schedule() {
@@ -4765,7 +4765,7 @@ class IncrementalReadingPlugin extends Plugin {
     if (!r) return;
     const cur = r.fm.next_review || '(unscheduled)';
     const dateFormat = configuredDateFormat(this.settings);
-    const raw = await askText(this.app, `Schedule (${dateFormat} or +Nd/-Nd; current: ${cur})`, '');
+    const raw = await askText(this.app, `排期（${dateFormat} 或 +Nd/-Nd；当前：${cur}）`, '');
     if (!raw || raw.trim() === '') return;
     const input = raw.trim();
 
@@ -4776,7 +4776,7 @@ class IncrementalReadingPlugin extends Plugin {
       newDate = futureDateString(sign * parseInt(offset[2], 10), this.settings);
     } else {
       const parsed = dateCore.parseDateExact(input, dateFormat);
-      if (!parsed) { new Notice(`Invalid ${dateFormat} date: ${input}`); return; }
+      if (!parsed) { new Notice(`${dateFormat} 日期无效：${input}`); return; }
       newDate = formatDateValue(parsed, this.settings);
     }
     const newParsed = parseDateValue(newDate, this.settings);
@@ -4785,7 +4785,7 @@ class IncrementalReadingPlugin extends Plugin {
       fmw.next_review = newDate;
       if (newInterval != null) fmw.interval = newInterval;
     });
-    new Notice(`Scheduled: ${cur} → ${newDate}`);
+    new Notice(`已排期：${cur} → ${newDate}`);
   }
 
   // ---- Set Priority / Boost ---------------------------------------------
@@ -4794,13 +4794,13 @@ class IncrementalReadingPlugin extends Plugin {
     const r = await resolveIRFromActive(this.app, this.settings, { allowCard: false, allowPdfFallback: true });
     if (!r) return;
     const cur = r.fm.priority ?? 50;
-    const raw = await askText(this.app, 'New priority (1-100, 1=highest)', String(cur));
+    const raw = await askText(this.app, '新优先级（1-100，1 为最高）', String(cur));
     if (raw === null) return;
-    if (!/^\d+$/.test(raw.trim())) { new Notice('Invalid priority — integer 1-100.'); return; }
+    if (!/^\d+$/.test(raw.trim())) { new Notice('优先级无效 — 请输入 1-100 的整数。'); return; }
     const p = Number(raw);
-    if (!Number.isInteger(p) || p < 1 || p > 100) { new Notice('Invalid priority — integer 1-100.'); return; }
+    if (!Number.isInteger(p) || p < 1 || p > 100) { new Notice('优先级无效 — 请输入 1-100 的整数。'); return; }
     await this.app.fileManager.processFrontMatter(r.tfile, (fmw) => { fmw.priority = p; });
-    new Notice(`Priority → ${p} (next_review unchanged — A-Factor-driven)`);
+    new Notice(`优先级 → ${p}（next_review 不变 — 由 A 因子驱动）`);
   }
 
   async boost() {
@@ -4808,22 +4808,22 @@ class IncrementalReadingPlugin extends Plugin {
     if (!r) return;
     const amount = await pickFromList(
       this.app,
-      ['Small (-5)', 'Medium (-15)', 'Strong (-30)', 'Custom'],
+      ['小（-5）', '中（-15）', '强（-30）', '自定义'],
       [5, 15, 30, 'custom'],
-      'Boost amount'
+      '提升幅度'
     );
     if (!amount) return;
     let delta;
     if (amount === 'custom') {
-      const raw = await askText(this.app, 'Boost amount (1-99)', '10');
+      const raw = await askText(this.app, '提升幅度（1-99）', '10');
       if (!raw) return;
-      if (!/^\d+$/.test(raw.trim())) { new Notice('Invalid amount.'); return; }
+      if (!/^\d+$/.test(raw.trim())) { new Notice('提升幅度无效。'); return; }
       const n = Number(raw);
-      if (!Number.isInteger(n) || n < 1 || n > 99) { new Notice('Invalid amount.'); return; }
+      if (!Number.isInteger(n) || n < 1 || n > 99) { new Notice('提升幅度无效。'); return; }
       delta = n;
     } else { delta = amount; }
 
-    const cascade = await confirmDialog(this.app, 'Cascade boost to all descendants in subtree?');
+    const cascade = await confirmDialog(this.app, '是否将提升级联到子树中的所有后代？');
     const orig = r.fm.priority ?? 50;
     const newPri = Math.max(1, orig - delta);
     await this.app.fileManager.processFrontMatter(r.tfile, (fmw) => {
@@ -4848,8 +4848,8 @@ class IncrementalReadingPlugin extends Plugin {
         }
       }
     }
-    const cmsg = cascade ? ` + ${cascaded} descendant${cascaded === 1 ? '' : 's'}` : '';
-    new Notice(`Boosted: ${orig} → ${newPri}${cmsg}. boost_from preserved.`);
+    const cmsg = cascade ? ` + ${cascaded} 个后代${cascaded === 1 ? '' : 's'}` : '';
+    new Notice(`已提升：${orig} → ${newPri}${cmsg}。boost_from 已保留。`);
   }
 
   // ---- Subset Review / Mercy / Postpone Subtree --------------------------
@@ -4859,9 +4859,9 @@ class IncrementalReadingPlugin extends Plugin {
     if (!r) return;
     const filter = await pickFromList(
       this.app,
-      ['All topics', 'Due / overdue only'],
+      ['所有主题', '仅到期/逾期'],
       ['all', 'due'],
-      'Filter subtree by'
+      '筛选子树的依据'
     );
     if (!filter) return;
 
@@ -4873,7 +4873,7 @@ class IncrementalReadingPlugin extends Plugin {
       .filter(p => p.tfile.path !== r.tfile.path);
     if (filter === 'due') subset = subset.filter(p => isDue(p.fm, today, this.settings));
     subset = subset.filter(p => p.fm.status !== 'done' && p.fm.status !== 'container' && p.fm.status !== 'dismissed');
-    if (subset.length === 0) { new Notice(`No descendants match.`); return; }
+    if (subset.length === 0) { new Notice(`没有匹配的后代。`); return; }
 
     subset.sort((a, b) => urgency(b.fm, today, this.settings) - urgency(a.fm, today, this.settings));
     const statusIcon = (fm) => {
@@ -4889,7 +4889,7 @@ class IncrementalReadingPlugin extends Plugin {
         const t = p.fm.type === 'source' ? '📖' : '📝';
         return `${t} ${statusIcon(p.fm)} p${p.fm.priority ?? '—'} u${urgency(p.fm, today, this.settings).toFixed(0)}  ${p.tfile.basename}`;
       },
-      `Subset (${r.tfile.basename})`
+      `子集（${r.tfile.basename}）`
     );
     if (!picked) return;
     await this.app.workspace.getLeaf(false).openFile(picked.tfile);
@@ -4897,7 +4897,7 @@ class IncrementalReadingPlugin extends Plugin {
 
   async mercy() {
     const choice = await pickFromList(
-      this.app, ['3 days', '7 days', '14 days', '30 days'], [3, 7, 14, 30], 'Spread window'
+      this.app, ['3 days', '7 days', '14 days', '30 days'], [3, 7, 14, 30], '分摊窗口'
     );
     if (!choice) return;
     const today = todayDate();
@@ -4907,7 +4907,7 @@ class IncrementalReadingPlugin extends Plugin {
       if (!isPastDue(fm, today, this.settings)) continue;
       overdue.push({ tfile: f, fm });
     }
-    if (overdue.length === 0) { new Notice('Nothing overdue.'); return; }
+    if (overdue.length === 0) { new Notice('没有逾期项。'); return; }
     overdue.sort((a, b) => urgency(b.fm, today, this.settings) - urgency(a.fm, today, this.settings));
     let updated = 0;
     for (let rank = 0; rank < overdue.length; rank++) {
@@ -4917,7 +4917,7 @@ class IncrementalReadingPlugin extends Plugin {
       await this.app.fileManager.processFrontMatter(overdue[rank].tfile, (fmw) => { fmw.next_review = newDate; fmw.interval = Math.max(1, off); });
       updated++;
     }
-    new Notice(`Mercy: ${updated} overdue spread across ${choice}d.`);
+    new Notice(`宽限：${updated} 个逾期项分摊到 ${choice} 天。`);
   }
 
   async postponeSubtree() {
@@ -4927,7 +4927,7 @@ class IncrementalReadingPlugin extends Plugin {
       this.app,
       ['+1d', '+3d', '+1 week', '+2 weeks', '+1 month'],
       [1, 3, 7, 14, 30],
-      'Postpone subtree by'
+      '将子树推迟多久'
     );
     if (!choice) return;
     const subtree = walkSubtree(this.app, this.settings, r.tfile.basename, r.tfile.path, { rows: this.getIRRows() });
@@ -4947,7 +4947,7 @@ class IncrementalReadingPlugin extends Plugin {
       await this.app.fileManager.processFrontMatter(p.tfile, (fmw) => { fmw.next_review = newDate; });
       postponed++;
     }
-    new Notice(`Subtree postponed +${choice}d · ${postponed} element${postponed === 1 ? '' : 's'}.`);
+    new Notice(`子树已推迟 +${choice} 天 · ${postponed} 个元素${postponed === 1 ? '' : 's'}。`);
   }
 
   // ---- Extract / Flashcard ------------------------------------------------
@@ -4959,21 +4959,21 @@ class IncrementalReadingPlugin extends Plugin {
   async extractSelection() {
     const active = this.app.workspace.getActiveFile();
     if (!active || active.extension !== 'md') {
-      new Notice('Extract Selection requires an open markdown source.');
+      new Notice('摘录所选内容需要打开一个 Markdown 来源。');
       return;
     }
     const fm = getFm(this.app, active);
-    if (fm?.type !== 'source') { new Notice('Run from a source note.'); return; }
+    if (fm?.type !== 'source') { new Notice('请从来源笔记中运行。'); return; }
     const editor = getEditorForFile(this.app, active);
     const selection = editor?.getSelection?.() || '';
-    if (!selection.trim()) { new Notice('No text selected.'); return; }
+    if (!selection.trim()) { new Notice('未选择文本。'); return; }
     const from = editor.getCursor('from');
     const to = editor.getCursor('to');
     const selectedText = selection.trim();
     const created = await this._writeExtract(active, fm, selectedText);
     if (!created) return;
     if (editor.getRange(from, to).trim() !== selectedText) {
-      new Notice('Extract created, but the source changed before its passage could be highlighted.');
+      new Notice('已创建摘录，但来源在其段落被高亮之前发生了变化。');
       return;
     }
     editor.replaceRange(excerptHighlightMarkup(editor.getRange(from, to)), from, to);
@@ -4984,31 +4984,31 @@ class IncrementalReadingPlugin extends Plugin {
     if (!r) return;
     let clip = '';
     try { clip = (await navigator.clipboard.readText()).trim(); }
-    catch (e) { new Notice('Could not read clipboard.'); return; }
-    if (!clip) { new Notice('Clipboard empty.'); return; }
+    catch (e) { new Notice('无法读取剪贴板。'); return; }
+    if (!clip) { new Notice('剪贴板为空。'); return; }
     await this._writeExtract(r.tfile, r.fm, clip);
   }
 
   async _writeExtract(sourceFile, fm, body) {
     const sourceTitle = sourceFile.basename;
-    const safeSourceTitle = slugifyForFolder(sourceTitle) || 'Untitled';
+    const safeSourceTitle = slugifyForFolder(sourceTitle) || '未命名';
     const extractsFolder = this.extractsFolder();
     await ensureFolder(this.app, extractsFolder);
     const priority = fm.priority ?? 50;
     const today = todayDateString(this.settings);
     const existing = filesInFolder(this.app, extractsFolder).filter(f =>
-      f.extension === 'md' && f.basename.startsWith(safeSourceTitle + ' - Extract'));
+      f.extension === 'md' && f.basename.startsWith(safeSourceTitle + ' - 摘录'));
     let n = existing.length + 1;
-    let name = `${safeSourceTitle} - Extract ${n}`;
+    let name = `${safeSourceTitle} - 摘录 ${n}`;
     while (this.app.vault.getAbstractFileByPath(`${extractsFolder}/${name}.md`)) {
-      name = `${safeSourceTitle} - Extract ${++n}`;
+      name = `${safeSourceTitle} - 摘录 ${++n}`;
     }
     const autoInterval = priorityToInterval(priority);
 
-    const customStr = await askText(this.app, `First interval in days (blank for auto: ${autoInterval}d)`, '');
+    const customStr = await askText(this.app, `首次间隔天数（留空则自动：${autoInterval} 天）`, '');
     if (customStr === null) return false;
     if (customStr.trim() && !/^[1-9]\d*$/.test(customStr.trim())) {
-      new Notice('Invalid interval — enter a positive whole number of days.'); return false;
+      new Notice('间隔无效 — 请输入正整数天数。'); return false;
     }
     const interval = customStr.trim() ? Number(customStr) : autoInterval;
     const nextReview = futureDateString(interval, this.settings);
@@ -5033,7 +5033,7 @@ ${body}
 `;
     const path = `${extractsFolder}/${name}.md`;
     if (this.app.vault.getAbstractFileByPath(path)) {
-      new Notice(`Extract already exists at ${path}`); return false;
+      new Notice(`摘录已存在于 ${path}`); return false;
     }
     await this.app.vault.create(path, content);
     const decayCap = Math.min(100, priority + 30);
@@ -5043,7 +5043,7 @@ ${body}
     }
     const bump = await this._bumpAFactor(sourceFile, fm, this.settings.scheduling.extract_bump);
     const bumpMsg = bump ? ` · a ${bump.from}→${bump.to}` : '';
-    new Notice(`Extract: ${name} · p${priority}→${newPri} · review +${interval}d (${nextReview})${bumpMsg}`);
+    new Notice(`摘录：${name} · p${priority}→${newPri} · 复习 +${interval} 天（${nextReview}）${bumpMsg}`);
     return true;
   }
 
@@ -5062,8 +5062,8 @@ ${body}
 
     let clip = '';
     try { clip = (await navigator.clipboard.readText()).trim(); }
-    catch (e) { new Notice('Could not read clipboard.'); return; }
-    if (!clip) { new Notice('Clipboard empty (no text or image).'); return; }
+    catch (e) { new Notice('无法读取剪贴板。'); return; }
+    if (!clip) { new Notice('剪贴板为空（无文本或图片）。'); return; }
     this._dbg('flashcard: clip length', clip.length, 'inline-match', /^[^\n]+::[^\n]+$/.test(clip));
 
     const parentTitle = parentFile.basename;
@@ -5084,17 +5084,17 @@ ${body}
     } else {
       cardFormat = await pickFromList(
         this.app,
-        ['Cloze deletion (Wozniak rule 5 — recommended)',
-         'Basic Q&A (question + hidden answer)',
-         'Basic reversed (vocab pair)'],
+        ['填空删除（Wozniak 第 5 条规则 — 推荐）',
+         '基础问答（问题 + 隐藏答案）',
+         '基础反向（词汇对）'],
         ['cloze', 'basic', 'reverse'],
-        'Card format'
+        '卡片格式'
       );
       this._dbg('flashcard: cardFormat =', JSON.stringify(cardFormat));
       if (!cardFormat) return;
       if (cardFormat === 'cloze') {
         this._dbg('flashcard: about to open cloze keyword prompt');
-        const kw = await askText(this.app, 'Word(s) to cloze (comma-separated; empty = manual edit)', '');
+        const kw = await askText(this.app, '要填空的单词（逗号分隔；留空 = 手动编辑）', '');
         this._dbg('flashcard: kw returned =', JSON.stringify(kw));
         if (kw === null) return;
         let text = clip;
@@ -5108,19 +5108,19 @@ ${body}
             text = text.replace(re, `==${w}==`);
           }
           if (missing.length === keywords.length) {
-            const edited = await askText(this.app, 'Edit text — wrap word(s) with ==marks==', clip);
+            const edited = await askText(this.app, '编辑文本 — 用 ==标记== 包住单词', clip);
             if (!edited) return;
             text = edited;
           }
         } else {
-          const edited = await askText(this.app, 'Edit text — wrap word(s) with ==marks==', clip);
+          const edited = await askText(this.app, '编辑文本 — 用 ==标记== 包住单词', clip);
           if (!edited) return;
           text = edited;
         }
-        if (!new RegExp(HL_CLOZE_SRC).test(text)) { new Notice('No ==marks== — aborted.'); return; }
+        if (!new RegExp(HL_CLOZE_SRC).test(text)) { new Notice('没有 ==标记== — 已中止。'); return; }
         questionText = text;
       } else {
-        answerText = await askText(this.app, 'Answer (rule 4: keep it short)', '');
+        answerText = await askText(this.app, '答案（第 4 条规则：保持简短）', '');
         if (!answerText || !answerText.trim()) return;
         questionText = clip.replace(/\n+/g, ' ');
         answerText = answerText.trim();
@@ -5128,7 +5128,7 @@ ${body}
     }
 
     if (cardFormat !== 'cloze') {
-      const prefix = await askText(this.app, "Context label (optional, e.g. 'bioch:' — rule 16)", '');
+      const prefix = await askText(this.app, "上下文标签（可选，例如 'bioch:' — 第 16 条规则）", '');
       if (prefix === null) return;
       if (prefix.trim()) {
         const pfx = prefix.trim().replace(/:?\s*$/, ':');
@@ -5141,8 +5141,8 @@ ${body}
       question: questionText,
       answer: answerText,
     });
-    const kind = cardFormat === 'reverse' ? 'Bidirectional card' : (cardFormat === 'cloze' ? 'Cloze card' : 'Card');
-    new Notice(`${kind} created with ${this.cardBackendLabel()}: ${created.name}`);
+    const kind = cardFormat === 'reverse' ? '双向卡片' : (cardFormat === 'cloze' ? '填空卡片' : '卡片');
+    new Notice(`${kind} 已使用 ${this.cardBackendLabel()} 创建：${created.name}`);
   }
 
   // Build a basic image-based flashcard (image is the question, user supplies
@@ -5167,17 +5167,17 @@ ${body}
     } else if (vaultPath) {
       imgPath = vaultPath;
     } else {
-      new Notice('No image provided.');
+      new Notice('未提供图片。');
       return;
     }
 
     let caption = '';
     if (!skipCaption) {
-      caption = await askText(this.app, 'Question caption (optional, shown above image)', '');
+      caption = await askText(this.app, '问题标题（可选，显示在图片上方）', '');
       if (caption === null) return;
     }
-    const answer = await askText(this.app, 'Answer — name what this is', '');
-    if (answer === null || !answer.trim()) { new Notice('Answer required.'); return; }
+    const answer = await askText(this.app, '答案 — 说明这是什么', '');
+    if (answer === null || !answer.trim()) { new Notice('必须填写答案。'); return; }
 
     const questionText = caption && caption.trim()
       ? `${caption.trim()}\n![[${imgPath}]]`
@@ -5188,7 +5188,7 @@ ${body}
       question: questionText,
       answer: answerText,
     });
-    new Notice(`Image card created with ${this.cardBackendLabel()}: ${created.name}`);
+    new Notice(`图片卡片已使用 ${this.cardBackendLabel()} 创建：${created.name}`);
   }
 
   // "Name this image" flashcard: image is the only thing on the front,
@@ -5227,13 +5227,13 @@ ${body}
 
     const list = Array.from(candidates.values());
     if (list.length === 0) {
-      new Notice('No image on clipboard and no images linked to this note.');
+      new Notice('剪贴板中没有图片，此笔记也没有链接任何图片。');
       return;
     }
 
     const picked = list.length === 1
       ? list[0]
-      : await pickFuzzy(this.app, list, f => f.path, 'Pick image to name');
+      : await pickFuzzy(this.app, list, f => f.path, '选择要命名的图片');
     if (!picked) return;
 
     return await this._flashcardFromImage(r.tfile, r.fm, { vaultPath: picked.path, skipCaption: true });
@@ -5266,12 +5266,12 @@ ${body}
       const mdLinkMatch = clipText.match(/!\[[^\]]*\]\(([^)]+\.(?:png|jpe?g|webp|gif))\)/i);
       const linkPath = wikilinkMatch?.[1] || mdLinkMatch?.[1] || null;
       if (!linkPath) {
-        new Notice('No image on clipboard. With PDF++: enable "Rectangular selection" + "Auto-copy", drag rect, then run this command.');
+        new Notice('剪贴板中没有图片。使用 PDF++ 时：启用「矩形选择」+「自动复制」，拖拽出矩形，然后运行此命令。');
         return;
       }
       const sourceTf = this.app.vault.getAbstractFileByPath(linkPath)
         || this.app.metadataCache.getFirstLinkpathDest(linkPath, r.tfile.path);
-      if (!sourceTf) { new Notice(`Image not found in vault: ${linkPath}`); return; }
+      if (!sourceTf) { new Notice(`库中未找到图片：${linkPath}`); return; }
       bytes = await this.app.vault.readBinary(sourceTf);
       ext = (sourceTf.extension || 'png').toLowerCase();
       if (ext === 'jpeg') ext = 'jpg';
@@ -5285,7 +5285,7 @@ ${body}
       await this.app.vault.createBinary(imgPath, bytes);
     }
 
-    const caption = await askText(this.app, 'Caption (optional, used as extract body)', '');
+    const caption = await askText(this.app, '标题（可选，用作摘录正文）', '');
     if (caption === null) return;
     const body = caption.trim()
       ? `![[${imgPath}]]\n\n${caption.trim()}`
@@ -5308,7 +5308,7 @@ ${body}
     if (linked.length === 1) {
       imgVaultPath = linked[0];
     } else if (linked.length > 1) {
-      imgVaultPath = await pickFromList(this.app, linked, linked, 'Pick image to occlude');
+      imgVaultPath = await pickFromList(this.app, linked, linked, '选择要遮挡的图片');
       if (!imgVaultPath) return;
     } else {
       const parentBase = (r.fm.type === 'source')
@@ -5320,20 +5320,20 @@ ${body}
       const dir = `${this.attachmentsFolder()}/${slugifyForFolder(parentBase)}`;
       const folder = this.app.vault.getAbstractFileByPath(dir);
       if (!folder) {
-        new Notice('No images for this source. Use Image-extract (Mod+Shift+K) first or embed an image.');
+        new Notice('此来源没有图片。请先使用图片摘录（Mod+Shift+K）或嵌入一张图片。');
         return;
       }
       const files = filesInFolder(this.app, dir).filter(f =>
         f.path.startsWith(dir + '/') && /\.(png|jpe?g|webp|gif)$/i.test(f.name));
-      if (files.length === 0) { new Notice('No images in attachment folder.'); return; }
-      const picked = await pickFuzzy(this.app, files, f => f.name, 'Pick image');
+      if (files.length === 0) { new Notice('附件文件夹中没有图片。'); return; }
+      const picked = await pickFuzzy(this.app, files, f => f.name, '选择图片');
       if (!picked) return;
       imgVaultPath = picked.path;
     }
 
     const tf = this.app.vault.getAbstractFileByPath(imgVaultPath)
       || this.app.metadataCache.getFirstLinkpathDest(imgVaultPath, r.tfile.path);
-    if (!tf) { new Notice(`Image not found: ${imgVaultPath}`); return; }
+    if (!tf) { new Notice(`未找到图片：${imgVaultPath}`); return; }
     const resolvedPath = tf.path;
     const src = this.app.vault.adapter.getResourcePath(resolvedPath);
 
@@ -5341,11 +5341,11 @@ ${body}
     if (!result) return;
 
     const cardSpecs = generateCardsFromRects(result.rects, result.mode);
-    if (!cardSpecs || cardSpecs.length === 0) { new Notice('No cards generated.'); return; }
+    if (!cardSpecs || cardSpecs.length === 0) { new Notice('未生成卡片。'); return; }
 
     const useToolkitForOcclusion = this.cardBackend() === 'anki';
     if (useToolkitForOcclusion) {
-      new Notice('Anki export does not render Toolkit occlusion blocks; these cards will use the in-house reviewer.');
+      new Notice('Anki 导出不会渲染工具包遮挡块；这些卡片将使用内置复习器。');
     }
 
     let written = 0;
@@ -5381,29 +5381,29 @@ ${body}
     }
 
     const label = useToolkitForOcclusion ? this.cardBackendLabel('toolkit') : this.cardBackendLabel();
-    new Notice(`Occlusion: ${written} ${label} card(s) from ${result.rects.length} rect(s)`);
+    new Notice(`遮挡：由 ${result.rects.length} 个矩形生成 ${written} 张${label}卡片`);
   }
 
   // ---- New source / Import clipping --------------------------------------
 
   async newSource() {
-    const title = await askText(this.app, 'Source title', '');
+    const title = await askText(this.app, '来源标题', '');
     if (!title) return;
     const sourceType = await pickFromList(
       this.app,
-      ['Book', 'Article', 'PDF', 'YouTube video', 'Local video file'],
+      ['书籍', '文章', 'PDF', 'YouTube 视频', '本地视频文件'],
       ['book', 'article', 'pdf', 'youtube', 'video'],
-      'Source type'
+      '来源类型'
     );
     if (!sourceType) return;
-    const priStr = await askText(this.app, 'Priority (1-100, 1=highest)', '50');
+    const priStr = await askText(this.app, '优先级（1-100，1 为最高）', '50');
     if (priStr === null) return;
     if (!/^\d+$/.test(priStr.trim())) {
-      new Notice('Invalid priority — enter an integer from 1 to 100.'); return;
+      new Notice('优先级无效 — 请输入 1 到 100 的整数。'); return;
     }
     const pNum = Number(priStr);
     if (!Number.isInteger(pNum) || pNum < 1 || pNum > 100) {
-      new Notice('Invalid priority — enter an integer from 1 to 100.'); return;
+      new Notice('优先级无效 — 请输入 1 到 100 的整数。'); return;
     }
 
     const today = todayDateString(this.settings);
@@ -5415,28 +5415,28 @@ ${body}
     let read_point_seconds = null, total_seconds = null;
 
     if (sourceType === 'book' || sourceType === 'pdf') {
-      pdf_path = await askText(this.app, 'PDF path (vault-relative or absolute)', '');
+      pdf_path = await askText(this.app, 'PDF 路径（相对库或绝对路径）', '');
       if (pdf_path) pdf_path = pdf_path.replace(/^['"]|['"]$/g, '');
-      const pages = await askText(this.app, 'Total pages', '');
+      const pages = await askText(this.app, '总页数', '');
       if (pages === null) return;
       if (pages.trim() && !/^[1-9]\d*$/.test(pages.trim())) {
-        new Notice('Invalid total pages — enter a positive integer.'); return;
+        new Notice('总页数无效 — 请输入正整数。'); return;
       }
       total_pages = pages.trim() ? Number(pages) : null;
       read_point = 1;
     } else if (sourceType === 'article') {
-      source_url = (await askText(this.app, 'Source URL (optional)', '')) || null;
+      source_url = (await askText(this.app, '来源 URL（可选）', '')) || null;
     } else if (sourceType === 'youtube') {
       video_url = await askText(this.app, 'YouTube URL', '');
-      if (!video_url) { new Notice('YouTube URL required.'); return; }
+      if (!video_url) { new Notice('必须填写 YouTube URL。'); return; }
       const m = video_url.match(/(?:youtu\.be\/|v=|embed\/)([\w-]{11})/);
-      if (!m) { new Notice('Bad YouTube URL.'); return; }
+      if (!m) { new Notice('YouTube URL 无效。'); return; }
       video_id = m[1];
-      author = (await askText(this.app, 'Author / channel (optional)', '')) || null;
-      const dur = await askText(this.app, 'Total duration mm:ss or hh:mm:ss (optional)', '');
+      author = (await askText(this.app, '作者/频道（可选）', '')) || null;
+      const dur = await askText(this.app, '总时长 mm:ss 或 hh:mm:ss（可选）', '');
       if (dur === null) return;
       total_seconds = parseTimeInput(dur);
-      if (dur.trim() && total_seconds == null) { new Notice('Invalid duration — use mm:ss or hh:mm:ss.'); return; }
+      if (dur.trim() && total_seconds == null) { new Notice('时长无效 — 请使用 mm:ss 或 hh:mm:ss。'); return; }
       read_point_seconds = 0;
     } else if (sourceType === 'video') {
       const videosFolder = `${this.sourcesFolder()}/Videos`;
@@ -5444,20 +5444,20 @@ ${body}
         .filter(f => f.path.startsWith(videosFolder + '/') && /\.(mp4|webm|mov|mkv)$/i.test(f.name))
         .sort((a, b) => a.name.localeCompare(b.name));
       if (videos.length === 0) {
-        new Notice(`Drop a video into ${videosFolder}/ first.`); return;
+        new Notice(`请先将视频放入 ${videosFolder}/。`); return;
       }
-      const picked = await pickFuzzy(this.app, videos, v => v.name, 'Pick a video file');
+      const picked = await pickFuzzy(this.app, videos, v => v.name, '选择视频文件');
       if (!picked) return;
       video_path = picked.path;
-      author = (await askText(this.app, 'Author (optional)', '')) || null;
-      const dur = await askText(this.app, 'Total duration mm:ss or hh:mm:ss (optional)', '');
+      author = (await askText(this.app, '作者（可选）', '')) || null;
+      const dur = await askText(this.app, '总时长 mm:ss 或 hh:mm:ss（可选）', '');
       if (dur === null) return;
       total_seconds = parseTimeInput(dur);
-      if (dur.trim() && total_seconds == null) { new Notice('Invalid duration — use mm:ss or hh:mm:ss.'); return; }
+      if (dur.trim() && total_seconds == null) { new Notice('时长无效 — 请使用 mm:ss 或 hh:mm:ss。'); return; }
       read_point_seconds = 0;
     }
 
-    const holdInInbox = await confirmDialog(this.app, 'Hold in inbox? (Otherwise enters queue on schedule.)');
+    const holdInInbox = await confirmDialog(this.app, '保留在收件箱？（否则将按排期进入队列。）');
     const status = holdInInbox ? 'inbox' : 'active';
 
     const aFactorInit = round4(initialAFactor(this.settings, { total_pages, total_seconds }));
@@ -5500,36 +5500,36 @@ ${body}
     body += `## Reading Notes\n\n\n## Extracts\n\n`;
 
     const safeTitle = slugifyForFolder(title);
-    if (!safeTitle) { new Notice('Source title does not contain a valid filename.'); return; }
+    if (!safeTitle) { new Notice('来源标题不含有效文件名。'); return; }
     const sourcesFolder = this.sourcesFolder();
     await ensureFolder(this.app, sourcesFolder);
     const path = `${sourcesFolder}/${safeTitle}.md`;
     if (this.app.vault.getAbstractFileByPath(path)) {
-      new Notice(`Already exists: ${path}`); return;
+      new Notice(`已存在：${path}`); return;
     }
     const f = await this.app.vault.create(path, fmLines.join('\n') + body);
     await this.app.workspace.getLeaf(false).openFile(f);
-    new Notice(`Created ${title} (${status}) a=${aFactorInit}`);
+    new Notice(`已创建 ${title}（${status}）a=${aFactorInit}`);
   }
 
   async importClipping() {
     const active = this.app.workspace.getActiveFile();
     if (!active || active.extension !== 'md') {
-      new Notice('Open a clipper note first.'); return;
+      new Notice('请先打开一篇剪藏笔记。'); return;
     }
     const existing = getFm(this.app, active);
-    if (existing?.type === 'source') { new Notice('Already an incremental reading source.'); return; }
+    if (existing?.type === 'source') { new Notice('已经是渐进阅读来源。'); return; }
 
-    const priStr = await askText(this.app, 'Priority (1-100, 1=highest)', '50');
+    const priStr = await askText(this.app, '优先级（1-100，1 为最高）', '50');
     if (priStr === null) return;
-    if (!/^\d+$/.test(priStr.trim())) { new Notice('Invalid priority.'); return; }
+    if (!/^\d+$/.test(priStr.trim())) { new Notice('优先级无效。'); return; }
     const p = Number(priStr);
-    if (!Number.isInteger(p) || p < 1 || p > 100) { new Notice('Invalid priority.'); return; }
+    if (!Number.isInteger(p) || p < 1 || p > 100) { new Notice('优先级无效。'); return; }
 
     const today = todayDateString(this.settings);
     const interval = priorityToInterval(p);
     const nextReview = futureDateString(interval, this.settings);
-    const hold = await confirmDialog(this.app, 'Hold in inbox? (Otherwise active.)');
+    const hold = await confirmDialog(this.app, '保留在收件箱？（否则为 active。）');
     const initialStatus = hold ? 'inbox' : 'active';
 
     const aFactorInit = round4(initialAFactor(this.settings, {
@@ -5539,7 +5539,7 @@ ${body}
 
     const sourcesFolder = this.sourcesFolder();
     await ensureFolder(this.app, sourcesFolder);
-    const baseName = slugifyForFolder(active.basename) || 'Untitled';
+    const baseName = slugifyForFolder(active.basename) || '未命名';
     let newPath = `${sourcesFolder}/${baseName}.md`;
     let suffix = 2;
     while (active.path !== newPath && this.app.vault.getAbstractFileByPath(newPath)) {
@@ -5572,7 +5572,7 @@ ${body}
       if (!fm.tags.includes('ir/source')) fm.tags.push('ir/source');
     });
 
-    new Notice(`Imported (${initialStatus}) · p${p} · review +${interval}d`);
+    new Notice(`已导入（${initialStatus}）· p${p} · 复习 +${interval} 天`);
   }
 
   // ---- Navigation --------------------------------------------------------
@@ -5592,17 +5592,17 @@ ${body}
 
   async openParent() {
     const active = this.app.workspace.getActiveFile();
-    if (!active) { new Notice('No active file.'); return; }
+    if (!active) { new Notice('没有活动文件。'); return; }
     const fm = getFm(this.app, active);
-    if (!fm) { new Notice('No frontmatter.'); return; }
+    if (!fm) { new Notice('没有 frontmatter。'); return; }
     if (fm.type !== 'source' && fm.type !== 'extract' && fm.type !== 'card') {
-      new Notice('Not an incremental reading element.'); return;
+      new Notice('不是渐进阅读元素。'); return;
     }
     const parentName = (fm.type === 'card' || fm.type === 'extract')
       ? linkTarget(fm.source) : linkTarget(fm.parent);
-    if (!parentName) { new Notice('No parent link.'); return; }
+    if (!parentName) { new Notice('没有父级链接。'); return; }
     const parent = this.app.metadataCache.getFirstLinkpathDest(parentName, active.path);
-    if (!parent) { new Notice(`Parent "${parentName}" not found.`); return; }
+    if (!parent) { new Notice(`未找到父级「${parentName}」。`); return; }
     await this.app.workspace.getLeaf(false).openFile(parent);
     new Notice(`↑ ${parent.basename}`);
   }
@@ -5612,11 +5612,11 @@ ${body}
     if (!r) return;
     const fm = r.fm;
     const configured = fm.pdf_vault_path || fm.pdf_path || fm.sioyek_path;
-    if (!configured) { new Notice('No pdf_path or pdf_vault_path is set.'); return; }
+    if (!configured) { new Notice('未设置 pdf_path 或 pdf_vault_path。'); return; }
     const rawPath = String(configured);
     const ext = (rawPath.split('.').pop() || '').toLowerCase();
-    if (ext === 'epub') { new Notice('Epub not supported by Obsidian viewer.'); return; }
-    if (ext !== 'pdf') { new Notice(`Unsupported extension .${ext}`); return; }
+    if (ext === 'epub') { new Notice('Obsidian 阅读器不支持 Epub。'); return; }
+    if (ext !== 'pdf') { new Notice(`不支持的扩展名 .${ext}`); return; }
     const vaultBase = vaultAbsPath(this.app, '');
     const rel = rawPath.startsWith(vaultBase) ? rawPath.slice(vaultBase.length) : rawPath.replace(/^\/+/, '');
     const vaultFile = this.app.vault.getAbstractFileByPath(rel);
@@ -5625,7 +5625,7 @@ ${body}
     else {
       const absolute = rawPath.startsWith('/') ? rawPath : vaultAbsPath(this.app, rawPath);
       const fs = require('fs');
-      if (!fs.existsSync(absolute)) { new Notice(`PDF not found at ${rawPath}`); return; }
+      if (!fs.existsSync(absolute)) { new Notice(`未在 ${rawPath} 找到 PDF`); return; }
       url = require('url').pathToFileURL(absolute).href;
     }
     const ps = Number(fm.page_start) || null, pe = Number(fm.page_end) || null, rp = Number(fm.read_point) || null;
@@ -5637,15 +5637,15 @@ ${body}
 
   async toggleReadPoint() {
     const active = this.app.workspace.getActiveFile();
-    if (!active || active.extension !== 'md') { new Notice('Open a markdown source.'); return; }
+    if (!active || active.extension !== 'md') { new Notice('请打开一个 Markdown 来源。'); return; }
     const fm = getFm(this.app, active);
-    if (!fm || fm.type !== 'source') { new Notice('Not an incremental reading source.'); return; }
+    if (!fm || fm.type !== 'source') { new Notice('不是渐进阅读来源。'); return; }
     if (fm.total_pages || fm.pdf_path || fm.pdf_vault_path || fm.sioyek_path) {
-      new Notice('PDF source — use Open PDF (Toolkit viewer).'); return;
+      new Notice('PDF 来源 — 请使用打开 PDF（工具包查看器）。'); return;
     }
     const editor = getEditorForFile(this.app, active);
     const cursor = editor?.getCursor?.();
-    if (!editor || !cursor) { new Notice('No editor cursor.'); return; }
+    if (!editor || !cursor) { new Notice('没有编辑器光标。'); return; }
     const content = editor.getValue();
     READ_POINT_RE.lastIndex = 0;
     const hasMarker = READ_POINT_RE.test(content);
@@ -5654,13 +5654,13 @@ ${body}
     if (hasMarker) {
       action = await pickFromList(
         this.app,
-        [`Move 📍 to line ${cursor.line + 1}`, 'Clear 📍 marker'],
+        [`将 📍 移到第 ${cursor.line + 1} 行`, '清除 📍 标记'],
         ['move', 'clear'],
-        '📍 already set'
+        '📍 已设置'
       );
     } else {
       action = await pickFromList(
-        this.app, [`Set 📍 at line ${cursor.line + 1}`], ['set'], '📍 marker'
+        this.app, [`在第 ${cursor.line + 1} 行设置 📍`], ['set'], '📍 标记'
       );
     }
     if (!action) return;
@@ -5682,16 +5682,16 @@ ${body}
       if (action === 'clear') delete next.read_point_line;
       else next.read_point_line = cursor.line + 1;
     });
-    new Notice(action === 'clear' ? '📍 cleared.' : `📍 ${action} at line ${cursor.line + 1}`);
+    new Notice(action === 'clear' ? '📍 已清除。' : `📍 ${action} 于第 ${cursor.line + 1} 行`);
   }
 
   async jumpToReadPoint({ silent = false } = {}) {
     const active = this.app.workspace.getActiveFile();
-    if (!active || active.extension !== 'md') { if (!silent) new Notice('Not a markdown source.'); return; }
+    if (!active || active.extension !== 'md') { if (!silent) new Notice('不是 Markdown 来源。'); return; }
     const fm = getFm(this.app, active);
-    if (!fm || fm.type !== 'source') { if (!silent) new Notice('Not an incremental reading source.'); return; }
+    if (!fm || fm.type !== 'source') { if (!silent) new Notice('不是渐进阅读来源。'); return; }
     if (fm.total_pages || fm.pdf_path || fm.pdf_vault_path || fm.sioyek_path) {
-      if (!silent) new Notice('PDF — use Open PDF (Toolkit viewer).'); return;
+      if (!silent) new Notice('PDF — 请使用打开 PDF（工具包查看器）。'); return;
     }
     const openEditor = getEditorForFile(this.app, active);
     let line = Math.max(0, (Number(fm.read_point_line) || 0) - 1);
@@ -5699,7 +5699,7 @@ ${body}
     if (!fm.read_point_line) {
       const content = openEditor?.getValue?.() ?? await this.app.vault.cachedRead(active);
       const m = content.match(/(?:📍\s*)?<!--ir-readpoint-->/);
-      if (!m) { if (!silent) new Notice('No 📍 read-point.'); return; }
+      if (!m) { if (!silent) new Notice('没有 📍 阅读位置。'); return; }
       const before = content.slice(0, m.index);
       line = (before.match(/\n/g) || []).length;
       ch = m.index - (before.lastIndexOf('\n') + 1);
@@ -5714,8 +5714,8 @@ ${body}
     if (editor) {
       editor.setCursor({ line, ch });
       editor.scrollIntoView({ from: { line, ch }, to: { line, ch } }, true);
-      if (!silent) new Notice(`Jumped to 📍 (line ${line + 1})`);
-    } else if (!silent) new Notice('Editor not available.');
+      if (!silent) new Notice(`已跳转到 📍（第 ${line + 1} 行）`);
+    } else if (!silent) new Notice('编辑器不可用。');
   }
 
   // ---- Stats -------------------------------------------------------------
@@ -5758,10 +5758,10 @@ ${body}
     };
     console.info('[Incremental Reading Toolkit] performance diagnostics', result);
     new Notice([
-      `IR diagnostics · ${result.files} files (${result.cards} cards)`,
-      `Folder scan ${result.folder_scan_ms}ms · metadata ${result.metadata_ms}ms`,
-      `Tree index ${result.tree_index_ms}ms · due pool ${result.due_pool_ms}ms`,
-      'Full details were written to the developer console.',
+      `IR 诊断 · ${result.files} 个文件（${result.cards} 张卡片）`,
+      `文件夹扫描 ${result.folder_scan_ms}ms · 元数据 ${result.metadata_ms}ms`,
+      `树索引 ${result.tree_index_ms}ms · 到期池 ${result.due_pool_ms}ms`,
+      '完整详情已写入开发者控制台。',
     ].join('\n'), 15000);
     return result;
   }
@@ -5770,20 +5770,20 @@ ${body}
 
   async splitArticle() {
     const active = this.app.workspace.getActiveFile();
-    if (!active || active.extension !== 'md') { new Notice('Open a source note.'); return; }
+    if (!active || active.extension !== 'md') { new Notice('请打开一篇来源笔记。'); return; }
     const fm = getFm(this.app, active);
-    if (!fm || fm.type !== 'source') { new Notice('Not a source.'); return; }
-    if (fm.source_type !== 'article') { new Notice('Articles only — books use Split Book.'); return; }
-    if (fm.status === 'container') { new Notice('Already split.'); return; }
+    if (!fm || fm.type !== 'source') { new Notice('不是来源。'); return; }
+    if (fm.source_type !== 'article') { new Notice('仅限文章 — 书籍请使用拆分书籍。'); return; }
+    if (fm.status === 'container') { new Notice('已拆分。'); return; }
 
     const content = await this.app.vault.read(active);
     const fmEnd = content.indexOf('\n---', 3);
     const body = fmEnd !== -1 ? content.slice(fmEnd + 4) : content;
     const headings = [...body.matchAll(/^## (.+)$/gm)].map(m => ({ title: m[1].trim(), index: m.index }));
-    if (headings.length === 0) { new Notice('No H2 headings found.'); return; }
+    if (headings.length === 0) { new Notice('未找到 H2 标题。'); return; }
 
     const confirmed = await askLong(this.app,
-      'Headings to split on (delete lines to skip)',
+      '用于拆分的标题（删除行即跳过）',
       headings.map(h => h.title).join('\n'));
     if (!confirmed || confirmed.trim() === '') return;
     const titles = new Set(confirmed.split('\n').map(s => s.trim()).filter(Boolean));
@@ -5803,7 +5803,7 @@ ${body}
       const sectionBody = body.slice(h.index, next ? next.index : body.length).trimEnd();
       const interval = baseInterval + i;
       const nextReview = futureDateString(interval, this.settings);
-      const noteTitle = slugifyForFolder(`${parentTitle} - ${h.title}`) || `${parentTitle} - Section ${i + 1}`;
+      const noteTitle = slugifyForFolder(`${parentTitle} - ${h.title}`) || `${parentTitle} - 第 ${i + 1} 节`;
       const noteContent = `---
 type: source
 source_type: article
@@ -5835,31 +5835,31 @@ ${sectionBody}
     const bodyWithoutOld = content.replace(/\n## Sub-topics[\s\S]*?(?=\n## |$)/, '');
     await this.app.vault.process(active, () => bodyWithoutOld + subSection);
     await this.app.fileManager.processFrontMatter(active, (fmw) => { fmw.status = 'container'; });
-    new Notice(`Split into ${selected.length} sub-topic${selected.length === 1 ? '' : 's'}.`);
+    new Notice(`已拆分为 ${selected.length} 个子主题${selected.length === 1 ? '' : 's'}。`);
   }
 
   async splitBook() {
     const active = this.app.workspace.getActiveFile();
-    if (!active || active.extension !== 'md') { new Notice('Open a book source note.'); return; }
+    if (!active || active.extension !== 'md') { new Notice('请打开一篇书籍来源笔记。'); return; }
     const fm = getFm(this.app, active);
-    if (!fm || fm.type !== 'source') { new Notice('Not a source.'); return; }
-    if (fm.status === 'container') { new Notice('Already a container.'); return; }
+    if (!fm || fm.type !== 'source') { new Notice('不是来源。'); return; }
+    if (fm.status === 'container') { new Notice('已经是容器。'); return; }
     if (fm.source_type !== 'book' && fm.source_type !== 'pdf') {
-      const cont = await confirmDialog(this.app, "Not a book/PDF — proceed anyway?");
+      const cont = await confirmDialog(this.app, "不是书籍/PDF — 仍要继续吗？");
       if (!cont) return;
     }
     const toc = await askLong(this.app,
-      "Paste chapter list (one per line): 'START-END: Title' or 'START: Title'",
+      "粘贴章节列表（每行一章）：'START-END: Title' 或 'START: Title'",
       '');
     if (!toc) return;
     const lines = toc.split('\n').map(l => l.trim()).filter(Boolean);
-    if (!lines.length) { new Notice('Enter at least one chapter.'); return; }
+    if (!lines.length) { new Notice('请至少输入一个章节。'); return; }
     const chapters = [];
     for (const line of lines) {
       const m = line.match(/^(\d+)\s*(?:[-–—]\s*(\d+))?\s*[:：]\s*(.+)$/);
-      if (!m) { new Notice(`Can't parse: "${line}"`); return; }
+      if (!m) { new Notice(`无法解析：「${line}」`); return; }
       const title = m[3].trim();
-      if (!title) { new Notice(`Chapter title is missing: "${line}"`); return; }
+      if (!title) { new Notice(`缺少章节标题：「${line}」`); return; }
       chapters.push({ start: Number(m[1]), end: m[2] ? Number(m[2]) : null, title });
     }
     for (let i = 0; i < chapters.length; i++) {
@@ -5874,13 +5874,13 @@ ${sectionBody}
       const chapter = chapters[i];
       const previous = chapters[i - 1];
       if (chapter.start < 1 || chapter.end < chapter.start) {
-        new Notice(`Invalid page range for "${chapter.title}".`); return;
+        new Notice(`「${chapter.title}」的页码范围无效。`); return;
       }
       if (previous && chapter.start <= previous.end) {
-        new Notice(`Chapter ranges overlap or are out of order near "${chapter.title}".`); return;
+        new Notice(`「${chapter.title}」附近的章节范围重叠或顺序错误。`); return;
       }
       if (totalPages && chapter.end > totalPages) {
-        new Notice(`"${chapter.title}" ends after the source's ${totalPages} pages.`); return;
+        new Notice(`「${chapter.title}」的结束位置超出了来源的 ${totalPages} 页。`); return;
       }
     }
 
@@ -5898,7 +5898,7 @@ ${sectionBody}
     for (let i = 0; i < chapters.length; i++) {
       const ch = chapters[i];
       const num = String(i + 1).padStart(2, '0');
-      const safeTitle = slugifyForFolder(ch.title) || `Chapter ${i + 1}`;
+      const safeTitle = slugifyForFolder(ch.title) || `第 ${i + 1} 章`;
       const name = slugifyForFolder(`${parentTitle} - Ch${num} ${safeTitle}`);
       const path = `${folder}/${name}.md`;
       if (this.app.vault.getAbstractFileByPath(path)) { skipped.push(name); continue; }
@@ -5955,14 +5955,14 @@ tags:
       if (cur.includes('## Chapters')) return cur;
       const list = chapters.map((ch, i) => {
         const num = String(i + 1).padStart(2, '0');
-        const safeTitle = slugifyForFolder(ch.title) || `Chapter ${i + 1}`;
+        const safeTitle = slugifyForFolder(ch.title) || `第 ${i + 1} 章`;
         const name = slugifyForFolder(`${parentTitle} - Ch${num} ${safeTitle}`);
         return `- [[${name}]] (p.${ch.start}–${ch.end})`;
       }).join('\n');
       return cur.trimEnd() + `\n\n## Chapters\n\n${list}\n`;
     });
-    const skipMsg = skipped.length ? ` | Skipped ${skipped.length} (already exist)` : '';
-    new Notice(`Split: ${created} chapter(s).${skipMsg}`);
+    const skipMsg = skipped.length ? ` | 已跳过 ${skipped.length} 个（已存在）` : '';
+    new Notice(`已拆分：${created} 个章节。${skipMsg}`);
   }
 }
 

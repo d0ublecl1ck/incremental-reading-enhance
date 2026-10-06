@@ -30,7 +30,7 @@ test('main knowledge tree exposes persistent multi-selection and bulk status act
   const treeClass = main.match(/class KnowledgeTreeView extends ItemView \{([\s\S]*?)\n\}\n\nclass IncrementalReadingPlugin/)?.[1] || '';
   assert.match(treeClass, /this\.selectedPaths = new Set\(\)/);
   assert.match(treeClass, /type: 'checkbox'/);
-  assert.match(treeClass, /Select visible/);
+  assert.match(treeClass, /选择可见项/);
   assert.match(treeClass, /_runBulkAction\('done'\)/);
   assert.match(treeClass, /_runBulkAction\('reset'\)/);
   assert.match(treeClass, /event\.shiftKey/);

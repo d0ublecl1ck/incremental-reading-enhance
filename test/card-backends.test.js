@@ -8,9 +8,9 @@ const main = fs.readFileSync(path.join(__dirname, '..', 'main.js'), 'utf8');
 
 test('settings let users choose Toolkit, Anki, or the existing SR compatibility path', () => {
   assert.match(main, /backend: 'toolkit'/);
-  assert.match(main, /addOption\('toolkit', 'Toolkit \(in-house\)'\)/);
-  assert.match(main, /addOption\('anki', 'Anki via Flashcards'\)/);
-  assert.match(main, /addOption\('spaced_repetition', 'Spaced Repetition \(compatibility\)'\)/);
+  assert.match(main, /addOption\('toolkit', '工具包（内置）'\)/);
+  assert.match(main, /addOption\('anki', '通过 Flashcards 使用 Anki'\)/);
+  assert.match(main, /addOption\('spaced_repetition', 'Spaced Repetition（兼容）'\)/);
 });
 
 test('card creation dispatches to the selected backend and stores ownership per card', () => {

@@ -1,0 +1,4818 @@
+[
+ {
+  "i": 0,
+  "line": 484,
+  "quote": "'",
+  "raw": "Sources/Incremental Reading",
+  "count": 1
+ },
+ {
+  "i": 1,
+  "line": 494,
+  "quote": "`",
+  "raw": "${ROOT}/Review Log.md",
+  "count": 1
+ },
+ {
+  "i": 2,
+  "line": 503,
+  "quote": "'",
+  "raw": "📍<!--ir-readpoint-->",
+  "count": 1
+ },
+ {
+  "i": 3,
+  "line": 543,
+  "quote": "'",
+  "raw": "^Q::\\\\s*(.+?)\\\\s*::A::\\\\s*(.+)$",
+  "count": 1
+ },
+ {
+  "i": 4,
+  "line": 544,
+  "quote": "'",
+  "raw": "\\\\{\\\\{c(\\\\d+)::([^}]+?)(?:::([^}]+?))?\\\\}\\\\}",
+  "count": 1
+ },
+ {
+  "i": 5,
+  "line": 547,
+  "quote": "'",
+  "raw": "flashcards/incremental-reading",
+  "count": 3
+ },
+ {
+  "i": 6,
+  "line": 552,
+  "quote": "'",
+  "raw": "Incremental Reading",
+  "count": 4
+ },
+ {
+  "i": 7,
+  "line": 557,
+  "quote": "'",
+  "raw": "Sources/Incremental Reading/Sources",
+  "count": 1
+ },
+ {
+  "i": 8,
+  "line": 558,
+  "quote": "'",
+  "raw": "Sources/Incremental Reading/Extracts",
+  "count": 1
+ },
+ {
+  "i": 9,
+  "line": 559,
+  "quote": "'",
+  "raw": "Sources/Incremental Reading/Cards",
+  "count": 1
+ },
+ {
+  "i": 10,
+  "line": 560,
+  "quote": "'",
+  "raw": "Sources/Incremental Reading/Attachments",
+  "count": 1
+ },
+ {
+  "i": 11,
+  "line": 561,
+  "quote": "'",
+  "raw": "Sources/Incremental Reading/Categories",
+  "count": 1
+ },
+ {
+  "i": 12,
+  "line": 562,
+  "quote": "'",
+  "raw": "Sources/Incremental Reading/Incremental-Reading-Dashboard.md",
+  "count": 1
+ },
+ {
+  "i": 13,
+  "line": 563,
+  "quote": "'",
+  "raw": "Sources/Incremental Reading/Review Log.md",
+  "count": 1
+ },
+ {
+  "i": 14,
+  "line": 567,
+  "quote": "'",
+  "raw": "DD-MM-YYYY",
+  "count": 1
+ },
+ {
+  "i": 15,
+  "line": 684,
+  "quote": "`",
+  "raw": "${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}",
+  "count": 2
+ },
+ {
+  "i": 16,
+  "line": 773,
+  "quote": "`",
+  "raw": "Invalid inline-card regular expression: ${error.message}",
+  "count": 1
+ },
+ {
+  "i": 17,
+  "line": 775,
+  "quote": "'",
+  "raw": "The Q::A regular expression must not use the global flag.",
+  "count": 1
+ },
+ {
+  "i": 18,
+  "line": 848,
+  "quote": "'",
+  "raw": "Enter",
+  "count": 5
+ },
+ {
+  "i": 19,
+  "line": 849,
+  "quote": "'",
+  "raw": "Escape",
+  "count": 3
+ },
+ {
+  "i": 20,
+  "line": 854,
+  "quote": "'",
+  "raw": "Cancel",
+  "count": 4
+ },
+ {
+  "i": 21,
+  "line": 1015,
+  "quote": "'",
+  "raw": "Occlusion: drag to draw rectangles",
+  "count": 1
+ },
+ {
+  "i": 22,
+  "line": 1022,
+  "quote": "'",
+  "raw": "Click-drag to add a rectangle. Right-click to remove. Shift+click a rect to set/clear its label. Choose mode at bottom to generate cards.",
+  "count": 1
+ },
+ {
+  "i": 23,
+  "line": 1070,
+  "quote": "'",
+  "raw": "Generate: hide-one (N cards)",
+  "count": 1
+ },
+ {
+  "i": 24,
+  "line": 1071,
+  "quote": "'",
+  "raw": "One card per rect; each card hides exactly that rect, reveals others.",
+  "count": 1
+ },
+ {
+  "i": 25,
+  "line": 1074,
+  "quote": "'",
+  "raw": "Generate: show-one (N cards)",
+  "count": 1
+ },
+ {
+  "i": 26,
+  "line": 1075,
+  "quote": "'",
+  "raw": "One card per rect; each card shows only that rect, hides others.",
+  "count": 1
+ },
+ {
+  "i": 27,
+  "line": 1078,
+  "quote": "'",
+  "raw": "Clear",
+  "count": 2
+ },
+ {
+  "i": 28,
+  "line": 1088,
+  "quote": "`",
+  "raw": "${this.rects.length} rectangle(s) drawn",
+  "count": 1
+ },
+ {
+  "i": 29,
+  "line": 1102,
+  "quote": "`",
+  "raw": " — \"${r.label}\"",
+  "count": 1
+ },
+ {
+  "i": 30,
+  "line": 1103,
+  "quote": "`",
+  "raw": "Rect ${idx + 1}${labelSuffix} · shift+click=label · right-click=remove",
+  "count": 1
+ },
+ {
+  "i": 31,
+  "line": 1114,
+  "quote": "`",
+  "raw": "Label for rect ${idx + 1} (empty = clear)",
+  "count": 1
+ },
+ {
+  "i": 32,
+  "line": 1139,
+  "quote": "'",
+  "raw": "Draw at least one rectangle first.",
+  "count": 1
+ },
+ {
+  "i": 33,
+  "line": 1176,
+  "quote": "'",
+  "raw": "Review card",
+  "count": 1
+ },
+ {
+  "i": 34,
+  "line": 1180,
+  "quote": "'",
+  "raw": "Question",
+  "count": 1
+ },
+ {
+  "i": 35,
+  "line": 1188,
+  "quote": "'",
+  "raw": "Show answer (Space)",
+  "count": 1
+ },
+ {
+  "i": 36,
+  "line": 1218,
+  "quote": "'",
+  "raw": "Answer",
+  "count": 1
+ },
+ {
+  "i": 37,
+  "line": 1225,
+  "quote": "'",
+  "raw": "Again",
+  "count": 1
+ },
+ {
+  "i": 38,
+  "line": 1225,
+  "quote": "'",
+  "raw": "Hard",
+  "count": 1
+ },
+ {
+  "i": 39,
+  "line": 1225,
+  "quote": "'",
+  "raw": "Good",
+  "count": 1
+ },
+ {
+  "i": 40,
+  "line": 1225,
+  "quote": "'",
+  "raw": "Easy",
+  "count": 1
+ },
+ {
+  "i": 41,
+  "line": 1227,
+  "quote": "`",
+  "raw": "ir-fc-grade-${grade} ir-fc-grade-btn${grade === 3 ? ' mod-cta' : ''}",
+  "count": 1
+ },
+ {
+  "i": 42,
+  "line": 1390,
+  "quote": "'",
+  "raw": "---\\n",
+  "count": 1
+ },
+ {
+  "i": 43,
+  "line": 1391,
+  "quote": "'",
+  "raw": "\\n---\\n",
+  "count": 1
+ },
+ {
+  "i": 44,
+  "line": 1408,
+  "quote": "'",
+  "raw": "SHA-1",
+  "count": 1
+ },
+ {
+  "i": 45,
+  "line": 1419,
+  "quote": "'",
+  "raw": "image/",
+  "count": 1
+ },
+ {
+  "i": 46,
+  "line": 1446,
+  "quote": "'",
+  "raw": "No active file.",
+  "count": 4
+ },
+ {
+  "i": 47,
+  "line": 1451,
+  "quote": "'",
+  "raw": "Active note is not an incremental reading source.",
+  "count": 1
+ },
+ {
+  "i": 48,
+  "line": 1456,
+  "quote": "'",
+  "raw": "Active file must be a source note or PDF.",
+  "count": 1
+ },
+ {
+  "i": 49,
+  "line": 1461,
+  "quote": "'",
+  "raw": "Cannot resolve filesystem path.",
+  "count": 1
+ },
+ {
+  "i": 50,
+  "line": 1484,
+  "quote": "'",
+  "raw": "No source note links to this PDF via pdf_path or pdf_vault_path.",
+  "count": 1
+ },
+ {
+  "i": 51,
+  "line": 1508,
+  "quote": "`",
+  "raw": "${c.tfile.basename}${(c.fm.page_start != null && c.fm.page_end != null) ? `  p.${c.fm.page_start}–${c.fm.page_end}` : ''}",
+  "count": 1
+ },
+ {
+  "i": 52,
+  "line": 1509,
+  "quote": "'",
+  "raw": "Pick the source for this PDF",
+  "count": 1
+ },
+ {
+  "i": 53,
+  "line": 1528,
+  "quote": "'",
+  "raw": "Card has no source link.",
+  "count": 1
+ },
+ {
+  "i": 54,
+  "line": 1532,
+  "quote": "`",
+  "raw": "Parent not found: ${parentName}",
+  "count": 2
+ },
+ {
+  "i": 55,
+  "line": 1535,
+  "quote": "'",
+  "raw": "Card parent is not a source/extract.",
+  "count": 1
+ },
+ {
+  "i": 56,
+  "line": 1539,
+  "quote": "'",
+  "raw": "Active note is not an incremental reading source, extract, or card.",
+  "count": 1
+ },
+ {
+  "i": 57,
+  "line": 1544,
+  "quote": "'",
+  "raw": "Active file must be an incremental reading element or PDF.",
+  "count": 1
+ },
+ {
+  "i": 58,
+  "line": 1555,
+  "quote": "'",
+  "raw": "No frontmatter on active note.",
+  "count": 1
+ },
+ {
+  "i": 59,
+  "line": 1557,
+  "quote": "`",
+  "raw": "Active note is not an IR ${allowCard ? 'source/extract/card' : 'source/extract'}.",
+  "count": 1
+ },
+ {
+  "i": 60,
+  "line": 1565,
+  "quote": "'",
+  "raw": "Active file must be an incremental reading element or linked PDF.",
+  "count": 1
+ },
+ {
+  "i": 61,
+  "line": 1658,
+  "quote": "'",
+  "raw": "Reading queue",
+  "count": 2
+ },
+ {
+  "i": 62,
+  "line": 1758,
+  "quote": "'",
+  "raw": "Filter by tag or title…",
+  "count": 1
+ },
+ {
+  "i": 63,
+  "line": 1841,
+  "quote": "\"",
+  "raw": "Today's Session",
+  "count": 1
+ },
+ {
+  "i": 64,
+  "line": 1842,
+  "quote": "'",
+  "raw": "Overdue (not in session)",
+  "count": 1
+ },
+ {
+  "i": 65,
+  "line": 1843,
+  "quote": "'",
+  "raw": "New",
+  "count": 1
+ },
+ {
+  "i": 66,
+  "line": 1844,
+  "quote": "'",
+  "raw": "Active (no due)",
+  "count": 1
+ },
+ {
+  "i": 67,
+  "line": 1860,
+  "quote": "`",
+  "raw": "${title} (${rows.length})",
+  "count": 1
+ },
+ {
+  "i": 68,
+  "line": 1866,
+  "quote": "`",
+  "raw": "p${r.fm.priority ?? '?'}",
+  "count": 1
+ },
+ {
+  "i": 69,
+  "line": 1872,
+  "quote": "`",
+  "raw": "Show ${Math.min(100, rows.length - limit)} more",
+  "count": 1
+ },
+ {
+  "i": 70,
+  "line": 1913,
+  "quote": "`",
+  "raw": "Timeline: ${active.basename}",
+  "count": 1
+ },
+ {
+  "i": 71,
+  "line": 1917,
+  "quote": "`",
+  "raw": "${c.date} L${c.line} — ${c.note}",
+  "count": 1
+ },
+ {
+  "i": 72,
+  "line": 1926,
+  "quote": "'",
+  "raw": "New checkpoint (Nd:: optional)",
+  "count": 1
+ },
+ {
+  "i": 73,
+  "line": 1943,
+  "quote": "'",
+  "raw": "Incremental Reading Toolkit guide",
+  "count": 1
+ },
+ {
+  "i": 74,
+  "line": 1947,
+  "quote": "'",
+  "raw": "Quickstart",
+  "count": 1
+ },
+ {
+  "i": 75,
+  "line": 1950,
+  "quote": "'",
+  "raw": "Open an article note and run Import clipping, or create a source with New source.",
+  "count": 1
+ },
+ {
+  "i": 76,
+  "line": 1951,
+  "quote": "'",
+  "raw": "Run Build today\\'s session queue once, then use Next element to move through it.",
+  "count": 1
+ },
+ {
+  "i": 77,
+  "line": 1952,
+  "quote": "'",
+  "raw": "Select important text and run Extract selection.",
+  "count": 1
+ },
+ {
+  "i": 78,
+  "line": 1953,
+  "quote": "'",
+  "raw": "Leave the cursor where you stopped, then run Grade current reading topic.",
+  "count": 1
+ },
+ {
+  "i": 79,
+  "line": 1954,
+  "quote": "'",
+  "raw": "Create recall material with Flashcard from clipboard.",
+  "count": 1
+ },
+ {
+  "i": 80,
+  "line": 1955,
+  "quote": "'",
+  "raw": "Next element opens card review automatically; the answer finishes that queue item.",
+  "count": 1
+ },
+ {
+  "i": 81,
+  "line": 1958,
+  "quote": "'",
+  "raw": "Recommended hotkeys",
+  "count": 1
+ },
+ {
+  "i": 82,
+  "line": 1959,
+  "quote": "'",
+  "raw": "Open Settings -> Hotkeys and search for Incremental Reading Toolkit. These are suggestions, not defaults.",
+  "count": 1
+ },
+ {
+  "i": 83,
+  "line": 1962,
+  "quote": "'",
+  "raw": "Command",
+  "count": 1
+ },
+ {
+  "i": 84,
+  "line": 1963,
+  "quote": "'",
+  "raw": "Suggested hotkey",
+  "count": 1
+ },
+ {
+  "i": 85,
+  "line": 1966,
+  "quote": "'",
+  "raw": "Next element",
+  "count": 2
+ },
+ {
+  "i": 86,
+  "line": 1966,
+  "quote": "'",
+  "raw": "Cmd/Ctrl+Shift+J",
+  "count": 1
+ },
+ {
+  "i": 87,
+  "line": 1967,
+  "quote": "'",
+  "raw": "Grade current reading topic",
+  "count": 2
+ },
+ {
+  "i": 88,
+  "line": 1967,
+  "quote": "'",
+  "raw": "Cmd/Ctrl+Shift+Enter",
+  "count": 1
+ },
+ {
+  "i": 89,
+  "line": 1968,
+  "quote": "'",
+  "raw": "Extract selection",
+  "count": 2
+ },
+ {
+  "i": 90,
+  "line": 1968,
+  "quote": "'",
+  "raw": "Cmd/Ctrl+Shift+E",
+  "count": 1
+ },
+ {
+  "i": 91,
+  "line": 1969,
+  "quote": "'",
+  "raw": "Flashcard from clipboard",
+  "count": 2
+ },
+ {
+  "i": 92,
+  "line": 1969,
+  "quote": "'",
+  "raw": "Cmd/Ctrl+Shift+F",
+  "count": 1
+ },
+ {
+  "i": 93,
+  "line": 1970,
+  "quote": "'",
+  "raw": "Current element actions…",
+  "count": 2
+ },
+ {
+  "i": 94,
+  "line": 1970,
+  "quote": "'",
+  "raw": "Cmd/Ctrl+Shift+A",
+  "count": 1
+ },
+ {
+  "i": 95,
+  "line": 1977,
+  "quote": "'",
+  "raw": "Daily reading loop",
+  "count": 1
+ },
+ {
+  "i": 96,
+  "line": 1980,
+  "quote": "'",
+  "raw": "Build today\\'s session queue performs scheduling work; Next element opens the saved path and starts card review when needed.",
+  "count": 1
+ },
+ {
+  "i": 97,
+  "line": 1981,
+  "quote": "'",
+  "raw": "Extracts remain reading topics; cards use the backend stored on each note.",
+  "count": 1
+ },
+ {
+  "i": 98,
+  "line": 1982,
+  "quote": "'",
+  "raw": "Moving the Markdown read-point or advancing a page/timestamp counts as progress.",
+  "count": 1
+ },
+ {
+  "i": 99,
+  "line": 1983,
+  "quote": "'",
+  "raw": "Use Mercy to spread overdue work and Postpone subtree to move related material together.",
+  "count": 1
+ },
+ {
+  "i": 100,
+  "line": 1986,
+  "quote": "'",
+  "raw": "PDFs, cards, and dates",
+  "count": 1
+ },
+ {
+  "i": 101,
+  "line": 1987,
+  "quote": "'",
+  "raw": "Use the Toolkit PDF viewer for vault or external PDFs. Toolkit cards use built-in FSRS, Anki cards sync externally, and existing Spaced Repetition cards keep their plugin-owned schedule.",
+  "count": 1
+ },
+ {
+  "i": 102,
+  "line": 1988,
+  "quote": "'",
+  "raw": "Choose DD-MM-YYYY, MM-DD-YYYY, or YYYY-MM-DD in General settings. Relative schedules such as +3d work with every format.",
+  "count": 1
+ },
+ {
+  "i": 103,
+  "line": 1990,
+  "quote": "'",
+  "raw": "Troubleshooting",
+  "count": 1
+ },
+ {
+  "i": 104,
+  "line": 1993,
+  "quote": "'",
+  "raw": "No cards in review: run setup check and confirm the backend stored on the card note.",
+  "count": 1
+ },
+ {
+  "i": 105,
+  "line": 1994,
+  "quote": "'",
+  "raw": "PDF will not open: confirm pdf_path points to an existing PDF, or use pdf_vault_path for a vault file.",
+  "count": 1
+ },
+ {
+  "i": 106,
+  "line": 1995,
+  "quote": "'",
+  "raw": "Ambiguous tree parent: rename files that share the same basename.",
+  "count": 1
+ },
+ {
+  "i": 107,
+  "line": 1996,
+  "quote": "'",
+  "raw": "For the full guide, open docs/USER-GUIDE.md in the GitHub repository from the Help link.",
+  "count": 1
+ },
+ {
+  "i": 108,
+  "line": 2026,
+  "quote": "`",
+  "raw": "Incremental Reading Toolkit ${this.plugin.manifest.version}",
+  "count": 1
+ },
+ {
+  "i": 109,
+  "line": 2028,
+  "quote": "'",
+  "raw": "User guide",
+  "count": 2
+ },
+ {
+  "i": 110,
+  "line": 2029,
+  "quote": "'",
+  "raw": "Open the quickstart, suggested hotkeys, daily workflow, and troubleshooting inside Obsidian.",
+  "count": 1
+ },
+ {
+  "i": 111,
+  "line": 2030,
+  "quote": "'",
+  "raw": "Open user guide",
+  "count": 1
+ },
+ {
+  "i": 112,
+  "line": 2035,
+  "quote": "'",
+  "raw": "Setup status",
+  "count": 1
+ },
+ {
+  "i": 113,
+  "line": 2036,
+  "quote": "`",
+  "raw": "${backendLabel} is ready.",
+  "count": 1
+ },
+ {
+  "i": 114,
+  "line": 2036,
+  "quote": "`",
+  "raw": "${backendLabel} needs attention; run the setup check for details.",
+  "count": 1
+ },
+ {
+  "i": 115,
+  "line": 2037,
+  "quote": "'",
+  "raw": "Run setup check",
+  "count": 1
+ },
+ {
+  "i": 116,
+  "line": 2062,
+  "quote": "'",
+  "raw": "Reading schedule",
+  "count": 1
+ },
+ {
+  "i": 117,
+  "line": 2067,
+  "quote": "'",
+  "raw": "Progress-aware A-Factor",
+  "count": 1
+ },
+ {
+  "i": 118,
+  "line": 2068,
+  "quote": "'",
+  "raw": "Adjust intervals from the pages or media time still remaining. Recommended for books, PDFs, and videos.",
+  "count": 1
+ },
+ {
+  "i": 119,
+  "line": 2072,
+  "quote": "'",
+  "raw": "Stall guard",
+  "count": 1
+ },
+ {
+  "i": 120,
+  "line": 2073,
+  "quote": "'",
+  "raw": "Prevent intervals from growing when the page, timestamp, or Markdown read-point does not move.",
+  "count": 1
+ },
+ {
+  "i": 121,
+  "line": 2076,
+  "quote": "'",
+  "raw": "Minimum A-Factor",
+  "count": 1
+ },
+ {
+  "i": 122,
+  "line": 2076,
+  "quote": "'",
+  "raw": "Smallest interval-growth multiplier. Values just above 1 keep material in frequent rotation.",
+  "count": 1
+ },
+ {
+  "i": 123,
+  "line": 2077,
+  "quote": "'",
+  "raw": "Maximum A-Factor",
+  "count": 1
+ },
+ {
+  "i": 124,
+  "line": 2077,
+  "quote": "'",
+  "raw": "Largest interval-growth multiplier allowed for nearly finished material.",
+  "count": 1
+ },
+ {
+  "i": 125,
+  "line": 2079,
+  "quote": "'",
+  "raw": "Review pace adjustments",
+  "count": 1
+ },
+ {
+  "i": 126,
+  "line": 2080,
+  "quote": "'",
+  "raw": "Hold multiplier",
+  "count": 1
+ },
+ {
+  "i": 127,
+  "line": 2080,
+  "quote": "'",
+  "raw": "Applied when choosing Hold. Use 1 to keep the current A-Factor.",
+  "count": 1
+ },
+ {
+  "i": 128,
+  "line": 2081,
+  "quote": "'",
+  "raw": "See sooner multiplier",
+  "count": 1
+ },
+ {
+  "i": 129,
+  "line": 2081,
+  "quote": "'",
+  "raw": "Applied when choosing Speed up. Values below 1 shorten future growth.",
+  "count": 1
+ },
+ {
+  "i": 130,
+  "line": 2082,
+  "quote": "'",
+  "raw": "Push out multiplier",
+  "count": 1
+ },
+ {
+  "i": 131,
+  "line": 2082,
+  "quote": "'",
+  "raw": "Applied when choosing Slow down. Values above 1 lengthen future growth.",
+  "count": 1
+ },
+ {
+  "i": 132,
+  "line": 2084,
+  "quote": "'",
+  "raw": "Initial interval model",
+  "count": 1
+ },
+ {
+  "i": 133,
+  "line": 2085,
+  "quote": "'",
+  "raw": "Base A-Factor",
+  "count": 1
+ },
+ {
+  "i": 134,
+  "line": 2085,
+  "quote": "'",
+  "raw": "Starting multiplier before source length is considered.",
+  "count": 1
+ },
+ {
+  "i": 135,
+  "line": 2086,
+  "quote": "'",
+  "raw": "Length sensitivity",
+  "count": 1
+ },
+ {
+  "i": 136,
+  "line": 2086,
+  "quote": "'",
+  "raw": "How strongly longer sources receive smaller A-Factors.",
+  "count": 1
+ },
+ {
+  "i": 137,
+  "line": 2087,
+  "quote": "'",
+  "raw": "Length scale",
+  "count": 1
+ },
+ {
+  "i": 138,
+  "line": 2087,
+  "quote": "'",
+  "raw": "Pages, or minutes for media, treated as the neutral source size.",
+  "count": 1
+ },
+ {
+  "i": 139,
+  "line": 2088,
+  "quote": "'",
+  "raw": "Extract bump",
+  "count": 1
+ },
+ {
+  "i": 140,
+  "line": 2088,
+  "quote": "'",
+  "raw": "Multiplier applied to the parent A-Factor after creating an extract.",
+  "count": 1
+ },
+ {
+  "i": 141,
+  "line": 2093,
+  "quote": "'",
+  "raw": "Queue",
+  "count": 1
+ },
+ {
+  "i": 142,
+  "line": 2096,
+  "quote": "'",
+  "raw": "Sidebar enabled",
+  "count": 1
+ },
+ {
+  "i": 143,
+  "line": 2097,
+  "quote": "'",
+  "raw": "Allow the reading queue to open in the sidebar and refresh as notes change.",
+  "count": 1
+ },
+ {
+  "i": 144,
+  "line": 2099,
+  "quote": "'",
+  "raw": "Default tag filter",
+  "count": 1
+ },
+ {
+  "i": 145,
+  "line": 2100,
+  "quote": "'",
+  "raw": "Initial sidebar filter. Leave empty to show every scheduled topic.",
+  "count": 1
+ },
+ {
+  "i": 146,
+  "line": 2102,
+  "quote": "'",
+  "raw": "Supplementary list order",
+  "count": 1
+ },
+ {
+  "i": 147,
+  "line": 2103,
+  "quote": "'",
+  "raw": "Controls overdue, new, and unscheduled sections. Today\\'s session keeps its scheduled order.",
+  "count": 1
+ },
+ {
+  "i": 148,
+  "line": 2105,
+  "quote": "'",
+  "raw": "Urgency",
+  "count": 1
+ },
+ {
+  "i": 149,
+  "line": 2105,
+  "quote": "'",
+  "raw": "Priority",
+  "count": 1
+ },
+ {
+  "i": 150,
+  "line": 2105,
+  "quote": "'",
+  "raw": "Due date",
+  "count": 1
+ },
+ {
+  "i": 151,
+  "line": 2108,
+  "quote": "'",
+  "raw": "Mix cards with topics",
+  "count": 1
+ },
+ {
+  "i": 152,
+  "line": 2109,
+  "quote": "'",
+  "raw": "Alternate locally reviewable Toolkit and Spaced Repetition cards with reading topics. Anki cards remain in Anki.",
+  "count": 1
+ },
+ {
+  "i": 153,
+  "line": 2115,
+  "quote": "'",
+  "raw": "Inline card export",
+  "count": 1
+ },
+ {
+  "i": 154,
+  "line": 2118,
+  "quote": "'",
+  "raw": "Enabled",
+  "count": 1
+ },
+ {
+  "i": 155,
+  "line": 2119,
+  "quote": "'",
+  "raw": "Allow Export inline cards to recognize question/answer, cloze, and highlighted-text forms.",
+  "count": 1
+ },
+ {
+  "i": 156,
+  "line": 2121,
+  "quote": "'",
+  "raw": "Q::A regex",
+  "count": 1
+ },
+ {
+  "i": 157,
+  "line": 2122,
+  "quote": "'",
+  "raw": "Advanced pattern for one-line Q::question::A::answer cards.",
+  "count": 1
+ },
+ {
+  "i": 158,
+  "line": 2124,
+  "quote": "'",
+  "raw": "Cloze regex",
+  "count": 1
+ },
+ {
+  "i": 159,
+  "line": 2125,
+  "quote": "'",
+  "raw": "Advanced pattern for {{c1::answer::hint}} cards.",
+  "count": 1
+ },
+ {
+  "i": 160,
+  "line": 2131,
+  "quote": "'",
+  "raw": "Flashcards",
+  "count": 1
+ },
+ {
+  "i": 161,
+  "line": 2134,
+  "quote": "'",
+  "raw": "Create cards with",
+  "count": 1
+ },
+ {
+  "i": 162,
+  "line": 2135,
+  "quote": "'",
+  "raw": "Choose where newly created cards are scheduled. Existing cards keep their original backend.",
+  "count": 1
+ },
+ {
+  "i": 163,
+  "line": 2137,
+  "quote": "'",
+  "raw": "Toolkit (in-house)",
+  "count": 1
+ },
+ {
+  "i": 164,
+  "line": 2138,
+  "quote": "'",
+  "raw": "Anki via Flashcards",
+  "count": 2
+ },
+ {
+  "i": 165,
+  "line": 2139,
+  "quote": "'",
+  "raw": "Spaced Repetition (compatibility)",
+  "count": 1
+ },
+ {
+  "i": 166,
+  "line": 2148,
+  "quote": "'",
+  "raw": "Cards stay in the vault and use the Toolkit\\'s built-in FSRS scheduler and review window.",
+  "count": 1
+ },
+ {
+  "i": 167,
+  "line": 2149,
+  "quote": "'",
+  "raw": "Cards use Reuseman Flashcards syntax and sync to Anki through that plugin.",
+  "count": 1
+ },
+ {
+  "i": 168,
+  "line": 2150,
+  "quote": "'",
+  "raw": "Cards use native Markdown syntax owned by the Spaced Repetition community plugin.",
+  "count": 1
+ },
+ {
+  "i": 169,
+  "line": 2152,
+  "quote": "'",
+  "raw": "Selected workflow",
+  "count": 1
+ },
+ {
+  "i": 170,
+  "line": 2161,
+  "quote": "'",
+  "raw": "Dependency",
+  "count": 2
+ },
+ {
+  "i": 171,
+  "line": 2163,
+  "quote": "'",
+  "raw": "Ready. Flashcards can generate Anki cards from the Toolkit card notes.",
+  "count": 1
+ },
+ {
+  "i": 172,
+  "line": 2164,
+  "quote": "'",
+  "raw": "Install and enable Flashcards by Reuseman. Anki and AnkiConnect must also be running when syncing.",
+  "count": 1
+ },
+ {
+  "i": 173,
+  "line": 2165,
+  "quote": "'",
+  "raw": "Sync now",
+  "count": 1
+ },
+ {
+  "i": 174,
+  "line": 2166,
+  "quote": "'",
+  "raw": "Target deck",
+  "count": 1
+ },
+ {
+  "i": 175,
+  "line": 2167,
+  "quote": "'",
+  "raw": "Written to the cards-deck frontmatter field supported by Flashcards.",
+  "count": 1
+ },
+ {
+  "i": 176,
+  "line": 2172,
+  "quote": "'",
+  "raw": "Sync after creating cards",
+  "count": 1
+ },
+ {
+  "i": 177,
+  "line": 2173,
+  "quote": "'",
+  "raw": "Run Flashcards: Generate for the current file after creating card notes.",
+  "count": 1
+ },
+ {
+  "i": 178,
+  "line": 2178,
+  "quote": "'",
+  "raw": "Flashcards tag",
+  "count": 1
+ },
+ {
+  "i": 179,
+  "line": 2179,
+  "quote": "'",
+  "raw": "Match the Flashcards plugin tag setting. Do not include the leading #.",
+  "count": 1
+ },
+ {
+  "i": 180,
+  "line": 2188,
+  "quote": "'",
+  "raw": "Spaced Repetition",
+  "count": 1
+ },
+ {
+  "i": 181,
+  "line": 2194,
+  "quote": "'",
+  "raw": "Ready. Card review commands will open Spaced Repetition.",
+  "count": 1
+ },
+ {
+  "i": 182,
+  "line": 2195,
+  "quote": "'",
+  "raw": "Not ready. Install and enable the Spaced Repetition community plugin.",
+  "count": 1
+ },
+ {
+  "i": 183,
+  "line": 2197,
+  "quote": "'",
+  "raw": "Flashcard deck tag",
+  "count": 1
+ },
+ {
+  "i": 184,
+  "line": 2198,
+  "quote": "'",
+  "raw": "Match a flashcard tag configured in Spaced Repetition. Do not include the leading #.",
+  "count": 1
+ },
+ {
+  "i": 185,
+  "line": 2204,
+  "quote": "'",
+  "raw": "Multiline card separator",
+  "count": 1
+ },
+ {
+  "i": 186,
+  "line": 2205,
+  "quote": "'",
+  "raw": "Match the multiline separator configured in Spaced Repetition.",
+  "count": 1
+ },
+ {
+  "i": 187,
+  "line": 2211,
+  "quote": "'",
+  "raw": "Bidirectional card separator",
+  "count": 1
+ },
+ {
+  "i": 188,
+  "line": 2212,
+  "quote": "'",
+  "raw": "Match the multiline reversed separator configured in Spaced Repetition.",
+  "count": 1
+ },
+ {
+  "i": 189,
+  "line": 2221,
+  "quote": "'",
+  "raw": "Knowledge tree",
+  "count": 4
+ },
+ {
+  "i": 190,
+  "line": 2224,
+  "quote": "'",
+  "raw": "Large branch warning",
+  "count": 1
+ },
+ {
+  "i": 191,
+  "line": 2225,
+  "quote": "'",
+  "raw": "Highlight a category child count after it exceeds this number.",
+  "count": 1
+ },
+ {
+  "i": 192,
+  "line": 2230,
+  "quote": "'",
+  "raw": "Show completed material",
+  "count": 1
+ },
+ {
+  "i": 193,
+  "line": 2231,
+  "quote": "'",
+  "raw": "Include done and dismissed topics in the knowledge tree.",
+  "count": 1
+ },
+ {
+  "i": 194,
+  "line": 2239,
+  "quote": "'",
+  "raw": "Paths",
+  "count": 1
+ },
+ {
+  "i": 195,
+  "line": 2246,
+  "quote": "'",
+  "raw": "Sources folder",
+  "count": 1
+ },
+ {
+  "i": 196,
+  "line": 2246,
+  "quote": "'",
+  "raw": "Source notes and local video files.",
+  "count": 1
+ },
+ {
+  "i": 197,
+  "line": 2247,
+  "quote": "'",
+  "raw": "Extracts folder",
+  "count": 1
+ },
+ {
+  "i": 198,
+  "line": 2247,
+  "quote": "'",
+  "raw": "Passages scheduled as separate reading topics.",
+  "count": 1
+ },
+ {
+  "i": 199,
+  "line": 2248,
+  "quote": "'",
+  "raw": "Cards folder",
+  "count": 1
+ },
+ {
+  "i": 200,
+  "line": 2248,
+  "quote": "'",
+  "raw": "Markdown cards consumed by Spaced Repetition.",
+  "count": 1
+ },
+ {
+  "i": 201,
+  "line": 2249,
+  "quote": "'",
+  "raw": "Attachments folder",
+  "count": 1
+ },
+ {
+  "i": 202,
+  "line": 2249,
+  "quote": "'",
+  "raw": "Clipboard images and visual-learning assets.",
+  "count": 1
+ },
+ {
+  "i": 203,
+  "line": 2250,
+  "quote": "'",
+  "raw": "Categories folder",
+  "count": 1
+ },
+ {
+  "i": 204,
+  "line": 2250,
+  "quote": "'",
+  "raw": "Knowledge-tree category notes.",
+  "count": 1
+ },
+ {
+  "i": 205,
+  "line": 2251,
+  "quote": "'",
+  "raw": "Dashboard note",
+  "count": 1
+ },
+ {
+  "i": 206,
+  "line": 2251,
+  "quote": "'",
+  "raw": "Optional session snapshot and dashboard note path.",
+  "count": 1
+ },
+ {
+  "i": 207,
+  "line": 2252,
+  "quote": "'",
+  "raw": "Review log",
+  "count": 1
+ },
+ {
+  "i": 208,
+  "line": 2252,
+  "quote": "'",
+  "raw": "Markdown table containing completed topic reviews.",
+  "count": 1
+ },
+ {
+  "i": 209,
+  "line": 2262,
+  "quote": "`",
+  "raw": "Reset ${name.toLowerCase()}",
+  "count": 1
+ },
+ {
+  "i": 210,
+  "line": 2273,
+  "quote": "'",
+  "raw": "General",
+  "count": 1
+ },
+ {
+  "i": 211,
+  "line": 2276,
+  "quote": "'",
+  "raw": "Date format",
+  "count": 1
+ },
+ {
+  "i": 212,
+  "line": 2277,
+  "quote": "'",
+  "raw": "Used for scheduling fields, prompts, checkpoints, and the review log.",
+  "count": 1
+ },
+ {
+  "i": 213,
+  "line": 2287,
+  "quote": "`",
+  "raw": "Date format changed to ${value}; migrated ${changed} stored date${changed === 1 ? '' : 's'}.",
+  "count": 1
+ },
+ {
+  "i": 214,
+  "line": 2289,
+  "quote": "`",
+  "raw": "Date migration failed: ${error.message}",
+  "count": 1
+ },
+ {
+  "i": 215,
+  "line": 2293,
+  "quote": "'",
+  "raw": "Extract highlight colour",
+  "count": 1
+ },
+ {
+  "i": 216,
+  "line": 2294,
+  "quote": "'",
+  "raw": "Accent used for extracted source passages and extract notes in editing and reading views.",
+  "count": 1
+ },
+ {
+  "i": 217,
+  "line": 2304,
+  "quote": "'",
+  "raw": "Reset extract highlight colour",
+  "count": 1
+ },
+ {
+  "i": 218,
+  "line": 2311,
+  "quote": "'",
+  "raw": "Diagnostics",
+  "count": 1
+ },
+ {
+  "i": 219,
+  "line": 2312,
+  "quote": "'",
+  "raw": "Debug logging",
+  "count": 1
+ },
+ {
+  "i": 220,
+  "line": 2313,
+  "quote": "'",
+  "raw": "Write additional details to the developer console. Keep disabled during normal use.",
+  "count": 1
+ },
+ {
+  "i": 221,
+  "line": 2335,
+  "quote": "'",
+  "raw": "Learning dashboard",
+  "count": 1
+ },
+ {
+  "i": 222,
+  "line": 2381,
+  "quote": "`",
+  "raw": "ir-dashboard-metric ${tone}",
+  "count": 1
+ },
+ {
+  "i": 223,
+  "line": 2389,
+  "quote": "`",
+  "raw": "Topic reviews over the last ${days.length} days",
+  "count": 1
+ },
+ {
+  "i": 224,
+  "line": 2396,
+  "quote": "`",
+  "raw": "${day.count ? Math.max(8, day.count / max * 100) : 2}%",
+  "count": 1
+ },
+ {
+  "i": 225,
+  "line": 2397,
+  "quote": "`",
+  "raw": "${day.label}: ${day.count} review${day.count === 1 ? '' : 's'}",
+  "count": 1
+ },
+ {
+  "i": 226,
+  "line": 2400,
+  "quote": "'",
+  "raw": "Today",
+  "count": 1
+ },
+ {
+  "i": 227,
+  "line": 2414,
+  "quote": "`",
+  "raw": "ir-dashboard-distribution-bar ${row.tone || ''}",
+  "count": 1
+ },
+ {
+  "i": 228,
+  "line": 2415,
+  "quote": "`",
+  "raw": "${row.value ? Math.max(3, row.value / max * 100) : 0}%",
+  "count": 1
+ },
+ {
+  "i": 229,
+  "line": 2462,
+  "quote": "'",
+  "raw": "Could not read review log for dashboard",
+  "count": 1
+ },
+ {
+  "i": 230,
+  "line": 2489,
+  "quote": "'",
+  "raw": "Incremental learning",
+  "count": 1
+ },
+ {
+  "i": 231,
+  "line": 2490,
+  "quote": "`",
+  "raw": "${today.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })} · mixed topics and cards",
+  "count": 1
+ },
+ {
+  "i": 232,
+  "line": 2493,
+  "quote": "'",
+  "raw": "Start mixed session",
+  "count": 1
+ },
+ {
+  "i": 233,
+  "line": 2494,
+  "quote": "'",
+  "raw": "Review cards",
+  "count": 1
+ },
+ {
+  "i": 234,
+  "line": 2502,
+  "quote": "'",
+  "raw": "Due topics",
+  "count": 1
+ },
+ {
+  "i": 235,
+  "line": 2503,
+  "quote": "'",
+  "raw": "Overdue",
+  "count": 2
+ },
+ {
+  "i": 236,
+  "line": 2504,
+  "quote": "'",
+  "raw": "Reviewed today",
+  "count": 1
+ },
+ {
+  "i": 237,
+  "line": 2505,
+  "quote": "'",
+  "raw": "Reviews · 7 days",
+  "count": 1
+ },
+ {
+  "i": 238,
+  "line": 2506,
+  "quote": "'",
+  "raw": "Card notes",
+  "count": 2
+ },
+ {
+  "i": 239,
+  "line": 2507,
+  "quote": "'",
+  "raw": "Active topics",
+  "count": 1
+ },
+ {
+  "i": 240,
+  "line": 2511,
+  "quote": "'",
+  "raw": "Next mixed session",
+  "count": 1
+ },
+ {
+  "i": 241,
+  "line": 2516,
+  "quote": "'",
+  "raw": "Nothing due — you are caught up.",
+  "count": 1
+ },
+ {
+  "i": 242,
+  "line": 2525,
+  "quote": "'",
+  "raw": "Collection health",
+  "count": 1
+ },
+ {
+  "i": 243,
+  "line": 2532,
+  "quote": "'",
+  "raw": "Topic intervals use progress-aware A-Factors. Toolkit cards use FSRS; external card systems retain their own schedules.",
+  "count": 1
+ },
+ {
+  "i": 244,
+  "line": 2535,
+  "quote": "'",
+  "raw": "Learning analytics",
+  "count": 1
+ },
+ {
+  "i": 245,
+  "line": 2539,
+  "quote": "'",
+  "raw": "Review activity",
+  "count": 1
+ },
+ {
+  "i": 246,
+  "line": 2540,
+  "quote": "`",
+  "raw": "${reviewsThisWeek} this week · ${lifetimeReviews} lifetime",
+  "count": 1
+ },
+ {
+  "i": 247,
+  "line": 2544,
+  "quote": "'",
+  "raw": "Queue workload",
+  "count": 1
+ },
+ {
+  "i": 248,
+  "line": 2547,
+  "quote": "'",
+  "raw": "Due today",
+  "count": 1
+ },
+ {
+  "i": 249,
+  "line": 2548,
+  "quote": "'",
+  "raw": "Unscheduled",
+  "count": 1
+ },
+ {
+  "i": 250,
+  "line": 2549,
+  "quote": "'",
+  "raw": "Upcoming",
+  "count": 1
+ },
+ {
+  "i": 251,
+  "line": 2553,
+  "quote": "'",
+  "raw": "Collection mix",
+  "count": 1
+ },
+ {
+  "i": 252,
+  "line": 2555,
+  "quote": "'",
+  "raw": "Sources",
+  "count": 3
+ },
+ {
+  "i": 253,
+  "line": 2556,
+  "quote": "'",
+  "raw": "Extracts",
+  "count": 3
+ },
+ {
+  "i": 254,
+  "line": 2559,
+  "quote": "'",
+  "raw": "Card review history remains available in the Spaced Repetition plugin.",
+  "count": 1
+ },
+ {
+  "i": 255,
+  "line": 2571,
+  "quote": "`",
+  "raw": "PDF: ${this.state.title}",
+  "count": 1
+ },
+ {
+  "i": 256,
+  "line": 2571,
+  "quote": "'",
+  "raw": "PDF reader",
+  "count": 1
+ },
+ {
+  "i": 257,
+  "line": 2578,
+  "quote": "'",
+  "raw": "Open a PDF source to begin.",
+  "count": 1
+ },
+ {
+  "i": 258,
+  "line": 2580,
+  "quote": "'",
+  "raw": "PDF",
+  "count": 2
+ },
+ {
+  "i": 259,
+  "line": 2581,
+  "quote": "'",
+  "raw": "Page",
+  "count": 1
+ },
+ {
+  "i": 260,
+  "line": 2584,
+  "quote": "'",
+  "raw": "PDF viewer",
+  "count": 1
+ },
+ {
+  "i": 261,
+  "line": 2587,
+  "quote": "'",
+  "raw": "Save read point",
+  "count": 1
+ },
+ {
+  "i": 262,
+  "line": 2593,
+  "quote": "`",
+  "raw": "PDF read point saved at page ${Math.max(1, Number(page.value) || 1)}",
+  "count": 1
+ },
+ {
+  "i": 263,
+  "line": 2672,
+  "quote": "'",
+  "raw": "+ Category",
+  "count": 1
+ },
+ {
+  "i": 264,
+  "line": 2674,
+  "quote": "'",
+  "raw": "Expand all",
+  "count": 1
+ },
+ {
+  "i": 265,
+  "line": 2676,
+  "quote": "'",
+  "raw": "Collapse all",
+  "count": 1
+ },
+ {
+  "i": 266,
+  "line": 2678,
+  "quote": "'",
+  "raw": "Refresh",
+  "count": 1
+ },
+ {
+  "i": 267,
+  "line": 2681,
+  "quote": "'",
+  "raw": "Filter by title or tag…",
+  "count": 1
+ },
+ {
+  "i": 268,
+  "line": 2686,
+  "quote": "'",
+  "raw": "All types",
+  "count": 1
+ },
+ {
+  "i": 269,
+  "line": 2686,
+  "quote": "'",
+  "raw": "Categories",
+  "count": 2
+ },
+ {
+  "i": 270,
+  "line": 2686,
+  "quote": "'",
+  "raw": "Cards",
+  "count": 2
+ },
+ {
+  "i": 271,
+  "line": 2700,
+  "quote": "'",
+  "raw": "text/ir-path",
+  "count": 3
+ },
+ {
+  "i": 272,
+  "line": 2778,
+  "quote": "`",
+  "raw": "${TREE_ICONS[type]} ${counts[type]} ${label}",
+  "count": 1
+ },
+ {
+  "i": 273,
+  "line": 2779,
+  "quote": "`",
+  "raw": "Show ${label}",
+  "count": 1
+ },
+ {
+  "i": 274,
+  "line": 2789,
+  "quote": "`",
+  "raw": "${count} selected",
+  "count": 1
+ },
+ {
+  "i": 275,
+  "line": 2793,
+  "quote": "'",
+  "raw": "Unselect visible",
+  "count": 1
+ },
+ {
+  "i": 276,
+  "line": 2793,
+  "quote": "'",
+  "raw": "Select visible",
+  "count": 1
+ },
+ {
+  "i": 277,
+  "line": 2805,
+  "quote": "'",
+  "raw": "Done",
+  "count": 2
+ },
+ {
+  "i": 278,
+  "line": 2807,
+  "quote": "'",
+  "raw": "Mark selected sources, extracts, and cards done",
+  "count": 1
+ },
+ {
+  "i": 279,
+  "line": 2810,
+  "quote": "'",
+  "raw": "Reset",
+  "count": 2
+ },
+ {
+  "i": 280,
+  "line": 2812,
+  "quote": "'",
+  "raw": "Make selected items active and clear their scheduling history",
+  "count": 1
+ },
+ {
+  "i": 281,
+  "line": 2882,
+  "quote": "`",
+  "raw": "Select ${page.basename}",
+  "count": 1
+ },
+ {
+  "i": 282,
+  "line": 2903,
+  "quote": "`",
+  "raw": "p${page.fm.priority ?? '?'}",
+  "count": 1
+ },
+ {
+  "i": 283,
+  "line": 2909,
+  "quote": "`",
+  "raw": "ir-tree-status is-${page.fm.status || 'active'}",
+  "count": 1
+ },
+ {
+  "i": 284,
+  "line": 2910,
+  "quote": "`",
+  "raw": "Next review: ${page.fm.next_review}",
+  "count": 1
+ },
+ {
+  "i": 285,
+  "line": 2910,
+  "quote": "'",
+  "raw": "No review date",
+  "count": 1
+ },
+ {
+  "i": 286,
+  "line": 2930,
+  "quote": "'",
+  "raw": "ArrowRight",
+  "count": 1
+ },
+ {
+  "i": 287,
+  "line": 2931,
+  "quote": "'",
+  "raw": "ArrowLeft",
+  "count": 1
+ },
+ {
+  "i": 288,
+  "line": 2956,
+  "quote": "`",
+  "raw": "Unfiled (${visible.length})",
+  "count": 1
+ },
+ {
+  "i": 289,
+  "line": 3006,
+  "quote": "'",
+  "raw": "Move",
+  "count": 1
+ },
+ {
+  "i": 290,
+  "line": 3007,
+  "quote": "'",
+  "raw": "Move under another node",
+  "count": 1
+ },
+ {
+  "i": 291,
+  "line": 3010,
+  "quote": "'",
+  "raw": "Move up",
+  "count": 1
+ },
+ {
+  "i": 292,
+  "line": 3013,
+  "quote": "'",
+  "raw": "Move down",
+  "count": 1
+ },
+ {
+  "i": 293,
+  "line": 3016,
+  "quote": "'",
+  "raw": "Rename",
+  "count": 1
+ },
+ {
+  "i": 294,
+  "line": 3021,
+  "quote": "'",
+  "raw": "Mark done",
+  "count": 1
+ },
+ {
+  "i": 295,
+  "line": 3025,
+  "quote": "'",
+  "raw": "Reset scheduling and make active",
+  "count": 1
+ },
+ {
+  "i": 296,
+  "line": 3030,
+  "quote": "'",
+  "raw": "Dismiss",
+  "count": 2
+ },
+ {
+  "i": 297,
+  "line": 3124,
+  "quote": "`",
+  "raw": "[ir-occlusion] yaml parse error: ${e.message}",
+  "count": 1
+ },
+ {
+  "i": 298,
+  "line": 3128,
+  "quote": "'",
+  "raw": "[ir-occlusion] missing image or rects",
+  "count": 1
+ },
+ {
+  "i": 299,
+  "line": 3137,
+  "quote": "`",
+  "raw": "[ir-occlusion] image not found: ${data.image}",
+  "count": 1
+ },
+ {
+  "i": 300,
+  "line": 3168,
+  "quote": "'",
+  "raw": "Show answer",
+  "count": 1
+ },
+ {
+  "i": 301,
+  "line": 3173,
+  "quote": "'",
+  "raw": "Hide Answer",
+  "count": 1
+ },
+ {
+  "i": 302,
+  "line": 3173,
+  "quote": "'",
+  "raw": "Show Answer",
+  "count": 1
+ },
+ {
+  "i": 303,
+  "line": 3178,
+  "quote": "'",
+  "raw": "Build today\\'s session queue",
+  "count": 1
+ },
+ {
+  "i": 304,
+  "line": 3185,
+  "quote": "'",
+  "raw": "Capture or create…",
+  "count": 1
+ },
+ {
+  "i": 305,
+  "line": 3187,
+  "quote": "'",
+  "raw": "Open Toolkit view…",
+  "count": 1
+ },
+ {
+  "i": 306,
+  "line": 3188,
+  "quote": "'",
+  "raw": "Advanced tools…",
+  "count": 1
+ },
+ {
+  "i": 307,
+  "line": 3192,
+  "quote": "`",
+  "raw": "Incremental Reading Toolkit: ${count} legacy card${count === 1 ? '' : 's'} found. Open Advanced tools and choose \"Migrate legacy cards to Spaced Repetition\".",
+  "count": 1
+ },
+ {
+  "i": 308,
+  "line": 3206,
+  "quote": "'",
+  "raw": "[IR] final session persistence failed",
+  "count": 1
+ },
+ {
+  "i": 309,
+  "line": 3244,
+  "quote": "'",
+  "raw": "Capture or create",
+  "count": 1
+ },
+ {
+  "i": 310,
+  "line": 3245,
+  "quote": "'",
+  "raw": "New source",
+  "count": 1
+ },
+ {
+  "i": 311,
+  "line": 3246,
+  "quote": "'",
+  "raw": "Import clipping (active note)",
+  "count": 1
+ },
+ {
+  "i": 312,
+  "line": 3247,
+  "quote": "'",
+  "raw": "Extract from clipboard (PDF-aware)",
+  "count": 1
+ },
+ {
+  "i": 313,
+  "line": 3248,
+  "quote": "'",
+  "raw": "Flashcard: name this image",
+  "count": 1
+ },
+ {
+  "i": 314,
+  "line": 3249,
+  "quote": "'",
+  "raw": "Image extract from clipboard",
+  "count": 1
+ },
+ {
+  "i": 315,
+  "line": 3250,
+  "quote": "'",
+  "raw": "Occlusion: create cards from image",
+  "count": 1
+ },
+ {
+  "i": 316,
+  "line": 3255,
+  "quote": "'",
+  "raw": "Current element actions",
+  "count": 1
+ },
+ {
+  "i": 317,
+  "line": 3259,
+  "quote": "'",
+  "raw": "Postpone",
+  "count": 1
+ },
+ {
+  "i": 318,
+  "line": 3260,
+  "quote": "'",
+  "raw": "Schedule (manual date)",
+  "count": 1
+ },
+ {
+  "i": 319,
+  "line": 3261,
+  "quote": "'",
+  "raw": "Set priority",
+  "count": 1
+ },
+ {
+  "i": 320,
+  "line": 3262,
+  "quote": "'",
+  "raw": "Boost priority",
+  "count": 1
+ },
+ {
+  "i": 321,
+  "line": 3263,
+  "quote": "'",
+  "raw": "Open parent",
+  "count": 1
+ },
+ {
+  "i": 322,
+  "line": 3264,
+  "quote": "'",
+  "raw": "Open PDF (Toolkit viewer)",
+  "count": 1
+ },
+ {
+  "i": 323,
+  "line": 3265,
+  "quote": "'",
+  "raw": "Toggle read-point",
+  "count": 1
+ },
+ {
+  "i": 324,
+  "line": 3266,
+  "quote": "'",
+  "raw": "Jump to read-point",
+  "count": 1
+ },
+ {
+  "i": 325,
+  "line": 3267,
+  "quote": "'",
+  "raw": "Add timeline checkpoint",
+  "count": 1
+ },
+ {
+  "i": 326,
+  "line": 3272,
+  "quote": "'",
+  "raw": "Open Toolkit view",
+  "count": 1
+ },
+ {
+  "i": 327,
+  "line": 3273,
+  "quote": "'",
+  "raw": "Dashboard",
+  "count": 1
+ },
+ {
+  "i": 328,
+  "line": 3274,
+  "quote": "'",
+  "raw": "Stats and analytics",
+  "count": 1
+ },
+ {
+  "i": 329,
+  "line": 3275,
+  "quote": "'",
+  "raw": "Reading queue sidebar",
+  "count": 1
+ },
+ {
+  "i": 330,
+  "line": 3277,
+  "quote": "'",
+  "raw": "Knowledge tree sidebar",
+  "count": 1
+ },
+ {
+  "i": 331,
+  "line": 3283,
+  "quote": "'",
+  "raw": "Advanced tools",
+  "count": 1
+ },
+ {
+  "i": 332,
+  "line": 3284,
+  "quote": "'",
+  "raw": "Subset review",
+  "count": 1
+ },
+ {
+  "i": 333,
+  "line": 3285,
+  "quote": "'",
+  "raw": "Mercy (spread overdue)",
+  "count": 1
+ },
+ {
+  "i": 334,
+  "line": 3286,
+  "quote": "'",
+  "raw": "Postpone subtree",
+  "count": 1
+ },
+ {
+  "i": 335,
+  "line": 3287,
+  "quote": "'",
+  "raw": "Split article on H2 headings",
+  "count": 1
+ },
+ {
+  "i": 336,
+  "line": 3288,
+  "quote": "'",
+  "raw": "Split book into chapters",
+  "count": 1
+ },
+ {
+  "i": 337,
+  "line": 3289,
+  "quote": "'",
+  "raw": "New category",
+  "count": 1
+ },
+ {
+  "i": 338,
+  "line": 3290,
+  "quote": "'",
+  "raw": "Move active element under…",
+  "count": 1
+ },
+ {
+  "i": 339,
+  "line": 3291,
+  "quote": "'",
+  "raw": "Export inline cards to selected card system",
+  "count": 1
+ },
+ {
+  "i": 340,
+  "line": 3292,
+  "quote": "'",
+  "raw": "Sync Anki cards with Flashcards",
+  "count": 1
+ },
+ {
+  "i": 341,
+  "line": 3293,
+  "quote": "'",
+  "raw": "Migrate legacy cards to Spaced Repetition",
+  "count": 1
+ },
+ {
+  "i": 342,
+  "line": 3294,
+  "quote": "'",
+  "raw": "Performance diagnostics",
+  "count": 1
+ },
+ {
+  "i": 343,
+  "line": 3333,
+  "quote": "'",
+  "raw": "Untitled",
+  "count": 4
+ },
+ {
+  "i": 344,
+  "line": 3336,
+  "quote": "`",
+  "raw": "${safeParent} - Card",
+  "count": 1
+ },
+ {
+  "i": 345,
+  "line": 3338,
+  "quote": "`",
+  "raw": "${safeParent} - Card ${number}",
+  "count": 1
+ },
+ {
+  "i": 346,
+  "line": 3340,
+  "quote": "`",
+  "raw": "${safeParent} - Card ${++number}",
+  "count": 1
+ },
+ {
+  "i": 347,
+  "line": 3367,
+  "quote": "`",
+  "raw": "${forward.name} + ${reverse.name}",
+  "count": 1
+ },
+ {
+  "i": 348,
+  "line": 3375,
+  "quote": "`",
+  "raw": "source: ${JSON.stringify(`[[${parentFile.basename}]]`)}",
+  "count": 2
+ },
+ {
+  "i": 349,
+  "line": 3376,
+  "quote": "`",
+  "raw": "priority: ${priority}",
+  "count": 1
+ },
+ {
+  "i": 350,
+  "line": 3377,
+  "quote": "`",
+  "raw": "next_review: ${futureDateString(1, this.settings)}",
+  "count": 1
+ },
+ {
+  "i": 351,
+  "line": 3379,
+  "quote": "`",
+  "raw": "date_added: ${todayDateString(this.settings)}",
+  "count": 3
+ },
+ {
+  "i": 352,
+  "line": 3380,
+  "quote": "`",
+  "raw": "card_format: ${spec.format}",
+  "count": 2
+ },
+ {
+  "i": 353,
+  "line": 3383,
+  "quote": "'",
+  "raw": "  - ir/card",
+  "count": 3
+ },
+ {
+  "i": 354,
+  "line": 3404,
+  "quote": "`",
+  "raw": "cards-deck: ${deck}",
+  "count": 1
+ },
+ {
+  "i": 355,
+  "line": 3423,
+  "quote": "'",
+  "raw": "[IR] Flashcards auto-sync failed",
+  "count": 1
+ },
+ {
+  "i": 356,
+  "line": 3429,
+  "quote": "'",
+  "raw": "Enable Flashcards by Reuseman before syncing.",
+  "count": 1
+ },
+ {
+  "i": 357,
+  "line": 3438,
+  "quote": "'",
+  "raw": "No Flashcards-owned card notes found.",
+  "count": 1
+ },
+ {
+  "i": 358,
+  "line": 3454,
+  "quote": "`",
+  "raw": "Flashcards sync started for ${started} card note${started === 1 ? '' : 's'}.",
+  "count": 1
+ },
+ {
+  "i": 359,
+  "line": 3464,
+  "quote": "'",
+  "raw": " - Card",
+  "count": 1
+ },
+ {
+  "i": 360,
+  "line": 3466,
+  "quote": "`",
+  "raw": "${safeParent} - Card ${cardNum}",
+  "count": 1
+ },
+ {
+  "i": 361,
+  "line": 3468,
+  "quote": "`",
+  "raw": "${safeParent} - Card ${++cardNum}",
+  "count": 1
+ },
+ {
+  "i": 362,
+  "line": 3473,
+  "quote": "`",
+  "raw": "source: ${JSON.stringify(`[[${parentTitle}]]`)}",
+  "count": 1
+ },
+ {
+  "i": 363,
+  "line": 3475,
+  "quote": "`",
+  "raw": "card_format: ${format}",
+  "count": 1
+ },
+ {
+  "i": 364,
+  "line": 3478,
+  "quote": "`",
+  "raw": "ir_spaced_repetition_deck_tag: ${JSON.stringify(this._spacedRepetitionDeckTag())}",
+  "count": 1
+ },
+ {
+  "i": 365,
+  "line": 3483,
+  "quote": "`",
+  "raw": "  - ${this._spacedRepetitionDeckTag()}",
+  "count": 1
+ },
+ {
+  "i": 366,
+  "line": 3510,
+  "quote": "'",
+  "raw": "No legacy IR cards to migrate.",
+  "count": 1
+ },
+ {
+  "i": 367,
+  "line": 3513,
+  "quote": "`",
+  "raw": "Migrate ${files.length} legacy card${files.length === 1 ? '' : 's'}?",
+  "count": 1
+ },
+ {
+  "i": 368,
+  "line": 3514,
+  "quote": "'",
+  "raw": "Card content will be converted to Spaced Repetition syntax. IR scheduling fields will be removed.",
+  "count": 1
+ },
+ {
+  "i": 369,
+  "line": 3552,
+  "quote": "'",
+  "raw": "ir/card",
+  "count": 1
+ },
+ {
+  "i": 370,
+  "line": 3570,
+  "quote": "`",
+  "raw": "Migrated ${migrated} card${migrated === 1 ? '' : 's'} to Spaced Repetition${skipped ? `; skipped ${skipped}` : ''}.",
+  "count": 1
+ },
+ {
+  "i": 371,
+  "line": 3583,
+  "quote": "'",
+  "raw": "No Toolkit flashcards are due.",
+  "count": 1
+ },
+ {
+  "i": 372,
+  "line": 3588,
+  "quote": "'",
+  "raw": "Spaced Repetition is still starting. Reload Obsidian and try again.",
+  "count": 1
+ },
+ {
+  "i": 373,
+  "line": 3599,
+  "quote": "'",
+  "raw": "This card is reviewed in Anki.",
+  "count": 2
+ },
+ {
+  "i": 374,
+  "line": 3656,
+  "quote": "`",
+  "raw": "Card reviewed · ${['', 'Again', 'Hard', 'Good', 'Easy'][grade]} · next in ${next.interval}d.",
+  "count": 1
+ },
+ {
+  "i": 375,
+  "line": 3669,
+  "quote": "'",
+  "raw": "[IR] could not read Spaced Repetition baseline",
+  "count": 1
+ },
+ {
+  "i": 376,
+  "line": 3679,
+  "quote": "'",
+  "raw": "Open a card note, then try again after Spaced Repetition has initialized.",
+  "count": 1
+ },
+ {
+  "i": 377,
+  "line": 3695,
+  "quote": "'",
+  "raw": "[IR] could not verify Spaced Repetition review",
+  "count": 1
+ },
+ {
+  "i": 378,
+  "line": 3723,
+  "quote": "'",
+  "raw": "Card reviewed. Run Next element when you are ready.",
+  "count": 1
+ },
+ {
+  "i": 379,
+  "line": 3741,
+  "quote": "'",
+  "raw": "Toolkit in-house flashcards",
+  "count": 1
+ },
+ {
+  "i": 380,
+  "line": 3742,
+  "quote": "'",
+  "raw": "Anki integration",
+  "count": 1
+ },
+ {
+  "i": 381,
+  "line": 3743,
+  "quote": "'",
+  "raw": "Spaced Repetition integration",
+  "count": 1
+ },
+ {
+  "i": 382,
+  "line": 3769,
+  "quote": "'",
+  "raw": "Enable Flashcards by Reuseman. Anki and AnkiConnect must be running when you sync.",
+  "count": 1
+ },
+ {
+  "i": 383,
+  "line": 3772,
+  "quote": "'",
+  "raw": "Enable Spaced Repetition for card review.",
+  "count": 1
+ },
+ {
+  "i": 384,
+  "line": 3778,
+  "quote": "'",
+  "raw": "Attachments",
+  "count": 1
+ },
+ {
+  "i": 385,
+  "line": 3782,
+  "quote": "'",
+  "raw": "Vault folders must use distinct paths.",
+  "count": 1
+ },
+ {
+  "i": 386,
+  "line": 3783,
+  "quote": "'",
+  "raw": "A-Factor minimum must be greater than 1.",
+  "count": 1
+ },
+ {
+  "i": 387,
+  "line": 3785,
+  "quote": "'",
+  "raw": "A-Factor maximum must be at least the minimum.",
+  "count": 1
+ },
+ {
+  "i": 388,
+  "line": 3789,
+  "quote": "'",
+  "raw": "Basic and bidirectional card separators must differ.",
+  "count": 1
+ },
+ {
+  "i": 389,
+  "line": 3791,
+  "quote": "'",
+  "raw": "Anki target deck cannot be empty.",
+  "count": 1
+ },
+ {
+  "i": 390,
+  "line": 3796,
+  "quote": "'",
+  "raw": "The inline Q::A regular expression must not use the global flag.",
+  "count": 1
+ },
+ {
+  "i": 391,
+  "line": 3798,
+  "quote": "`",
+  "raw": "Inline-card regular expression is invalid: ${error.message}",
+  "count": 1
+ },
+ {
+  "i": 392,
+  "line": 3801,
+  "quote": "`",
+  "raw": "Setup needs attention:\\n- ${issues.join('\\n- ')}",
+  "count": 1
+ },
+ {
+  "i": 393,
+  "line": 3805,
+  "quote": "`",
+  "raw": "Setup ready. Date format: ${configuredDateFormat(this.settings)}. ${this.cardBackendLabel()} is selected.${detail}",
+  "count": 1
+ },
+ {
+  "i": 394,
+  "line": 3854,
+  "quote": "'",
+  "raw": "[Incremental Reading Toolkit]",
+  "count": 1
+ },
+ {
+  "i": 395,
+  "line": 3889,
+  "quote": "`",
+  "raw": "${dateKey}:${file.stat?.mtime || 0}:${file.stat?.size || 0}",
+  "count": 1
+ },
+ {
+  "i": 396,
+  "line": 4008,
+  "quote": "'",
+  "raw": "[IR] persistSessionSnapshot failed",
+  "count": 1
+ },
+ {
+  "i": 397,
+  "line": 4036,
+  "quote": "'",
+  "raw": "[IR] background session persistence failed",
+  "count": 1
+ },
+ {
+  "i": 398,
+  "line": 4120,
+  "quote": "'",
+  "raw": "✨ Nothing due. Caught up.",
+  "count": 2
+ },
+ {
+  "i": 399,
+  "line": 4121,
+  "quote": "`",
+  "raw": "Built today's queue with ${queue.length} element${queue.length === 1 ? '' : 's'}.",
+  "count": 1
+ },
+ {
+  "i": 400,
+  "line": 4128,
+  "quote": "\"",
+  "raw": "No saved queue for today. Run Build today's session queue first.",
+  "count": 1
+ },
+ {
+  "i": 401,
+  "line": 4136,
+  "quote": "'",
+  "raw": "✨ Caught up.",
+  "count": 1
+ },
+ {
+  "i": 402,
+  "line": 4148,
+  "quote": "'",
+  "raw": "🃏 Review",
+  "count": 1
+ },
+ {
+  "i": 403,
+  "line": 4148,
+  "quote": "'",
+  "raw": "📖 Read",
+  "count": 1
+ },
+ {
+  "i": 404,
+  "line": 4148,
+  "quote": "'",
+  "raw": "📝 Process",
+  "count": 1
+ },
+ {
+  "i": 405,
+  "line": 4149,
+  "quote": "`",
+  "raw": "🎲 ${action}: ${pick.tfile.basename} · p${pick.fm.priority ?? '—'} (1 of ${pool.length} due)",
+  "count": 1
+ },
+ {
+  "i": 406,
+  "line": 4160,
+  "quote": "'",
+  "raw": "Cards finish automatically when Spaced Repetition accepts the review.",
+  "count": 1
+ },
+ {
+  "i": 407,
+  "line": 4166,
+  "quote": "'",
+  "raw": "Element graded. Run Next element when you are ready.",
+  "count": 1
+ },
+ {
+  "i": 408,
+  "line": 4180,
+  "quote": "'",
+  "raw": "Open an incremental reading source, extract, or Toolkit card first.",
+  "count": 1
+ },
+ {
+  "i": 409,
+  "line": 4185,
+  "quote": "'",
+  "raw": "Active note is not an incremental reading element.",
+  "count": 1
+ },
+ {
+  "i": 410,
+  "line": 4201,
+  "quote": "'",
+  "raw": "Page you stopped at",
+  "count": 1
+ },
+ {
+  "i": 411,
+  "line": 4203,
+  "quote": "'",
+  "raw": "Enter a positive whole page number.",
+  "count": 1
+ },
+ {
+  "i": 412,
+  "line": 4207,
+  "quote": "'",
+  "raw": "Timestamp you stopped at (mm:ss or hh:mm:ss)",
+  "count": 1
+ },
+ {
+  "i": 413,
+  "line": 4210,
+  "quote": "'",
+  "raw": "Invalid timestamp — use mm:ss or hh:mm:ss.",
+  "count": 1
+ },
+ {
+  "i": 414,
+  "line": 4222,
+  "quote": "`",
+  "raw": "Update 📍 to line ${cursor.line + 1}?",
+  "count": 1
+ },
+ {
+  "i": 415,
+  "line": 4241,
+  "quote": "`",
+  "raw": "📍 moved to line ${cursor.line + 1}",
+  "count": 1
+ },
+ {
+  "i": 416,
+  "line": 4262,
+  "quote": "'",
+  "raw": "Hold (no change)",
+  "count": 1
+ },
+ {
+  "i": 417,
+  "line": 4263,
+  "quote": "`",
+  "raw": "Speed up (×${s.quality_speed_up} — see sooner)",
+  "count": 1
+ },
+ {
+  "i": 418,
+  "line": 4264,
+  "quote": "`",
+  "raw": "Slow down (×${s.quality_slow_down} — push out)",
+  "count": 1
+ },
+ {
+  "i": 419,
+  "line": 4266,
+  "quote": "'",
+  "raw": "Topic quality?",
+  "count": 1
+ },
+ {
+  "i": 420,
+  "line": 4303,
+  "quote": "`",
+  "raw": "Mark ${unit} as done?",
+  "count": 1
+ },
+ {
+  "i": 421,
+  "line": 4331,
+  "quote": "`",
+  "raw": "| ${today} | [[${file.basename}]] | ${fm.type} | — | ${elapsedDays} |  |  |  | ${round4(priorAFactor)} | ${round4(aFactor)} |\\n",
+  "count": 1
+ },
+ {
+  "i": 422,
+  "line": 4333,
+  "quote": "'",
+  "raw": "[IR] background review-log append failed",
+  "count": 1
+ },
+ {
+  "i": 423,
+  "line": 4336,
+  "quote": "'",
+  "raw": "Source",
+  "count": 1
+ },
+ {
+  "i": 424,
+  "line": 4336,
+  "quote": "'",
+  "raw": "Extract",
+  "count": 1
+ },
+ {
+  "i": 425,
+  "line": 4339,
+  "quote": "`",
+  "raw": "${typeLabel} marked done. Future reviews cleared.",
+  "count": 1
+ },
+ {
+  "i": 426,
+  "line": 4341,
+  "quote": "`",
+  "raw": "${typeLabel}: priority ${priority} a=${round4(aFactor)} → next in ${interval}d (${nextReview})",
+  "count": 1
+ },
+ {
+  "i": 427,
+  "line": 4362,
+  "quote": "'",
+  "raw": "Sidebar disabled in Incremental Reading Toolkit settings",
+  "count": 1
+ },
+ {
+  "i": 428,
+  "line": 4426,
+  "quote": "'",
+  "raw": "Category name",
+  "count": 1
+ },
+ {
+  "i": 429,
+  "line": 4429,
+  "quote": "'",
+  "raw": "Invalid category name",
+  "count": 1
+ },
+ {
+  "i": 430,
+  "line": 4432,
+  "quote": "'",
+  "raw": "Category already exists",
+  "count": 1
+ },
+ {
+  "i": 431,
+  "line": 4434,
+  "quote": "`",
+  "raw": "parent: ${JSON.stringify(`[[${parentName}]]`)}",
+  "count": 1
+ },
+ {
+  "i": 432,
+  "line": 4435,
+  "quote": "'",
+  "raw": "  - ir/category",
+  "count": 1
+ },
+ {
+  "i": 433,
+  "line": 4435,
+  "quote": "`",
+  "raw": "# ${name}",
+  "count": 1
+ },
+ {
+  "i": 434,
+  "line": 4437,
+  "quote": "`",
+  "raw": "Category created: ${name}",
+  "count": 1
+ },
+ {
+  "i": 435,
+  "line": 4443,
+  "quote": "'",
+  "raw": "Node not found",
+  "count": 1
+ },
+ {
+  "i": 436,
+  "line": 4446,
+  "quote": "`",
+  "raw": "Refused: more than one node is named \"${newParentName}\"",
+  "count": 1
+ },
+ {
+  "i": 437,
+  "line": 4449,
+  "quote": "'",
+  "raw": "Refused: would create a cycle",
+  "count": 1
+ },
+ {
+  "i": 438,
+  "line": 4460,
+  "quote": "`",
+  "raw": "Moved under ${newParentName}",
+  "count": 1
+ },
+ {
+  "i": 439,
+  "line": 4460,
+  "quote": "'",
+  "raw": "Moved to top level",
+  "count": 1
+ },
+ {
+  "i": 440,
+  "line": 4466,
+  "quote": "'",
+  "raw": "No active markdown element",
+  "count": 1
+ },
+ {
+  "i": 441,
+  "line": 4472,
+  "quote": "'",
+  "raw": "Tree node not found",
+  "count": 2
+ },
+ {
+  "i": 442,
+  "line": 4475,
+  "quote": "'",
+  "raw": "Node is not an incremental reading element",
+  "count": 1
+ },
+ {
+  "i": 443,
+  "line": 4480,
+  "quote": "`",
+  "raw": "${TREE_ICONS[p.fm.type] || '•'} ${p.basename}",
+  "count": 1
+ },
+ {
+  "i": 444,
+  "line": 4482,
+  "quote": "'",
+  "raw": "⤴ (top level / Unfiled)",
+  "count": 1
+ },
+ {
+  "i": 445,
+  "line": 4484,
+  "quote": "'",
+  "raw": "Move under…",
+  "count": 1
+ },
+ {
+  "i": 446,
+  "line": 4510,
+  "quote": "'",
+  "raw": "Could not locate this node among its siblings",
+  "count": 1
+ },
+ {
+  "i": 447,
+  "line": 4513,
+  "quote": "'",
+  "raw": "Already the first sibling",
+  "count": 1
+ },
+ {
+  "i": 448,
+  "line": 4513,
+  "quote": "'",
+  "raw": "Already the last sibling",
+  "count": 1
+ },
+ {
+  "i": 449,
+  "line": 4528,
+  "quote": "'",
+  "raw": "New name",
+  "count": 1
+ },
+ {
+  "i": 450,
+  "line": 4531,
+  "quote": "'",
+  "raw": "Invalid name",
+  "count": 1
+ },
+ {
+  "i": 451,
+  "line": 4534,
+  "quote": "'",
+  "raw": "A file with that name exists",
+  "count": 1
+ },
+ {
+  "i": 452,
+  "line": 4536,
+  "quote": "`",
+  "raw": "Renamed to ${safe}",
+  "count": 1
+ },
+ {
+  "i": 453,
+  "line": 4544,
+  "quote": "'",
+  "raw": "Card review state is managed by Spaced Repetition.",
+  "count": 1
+ },
+ {
+  "i": 454,
+  "line": 4547,
+  "quote": "`",
+  "raw": "Dismiss \"${f.basename}\"?",
+  "count": 1
+ },
+ {
+  "i": 455,
+  "line": 4548,
+  "quote": "'",
+  "raw": "Sets status: dismissed (kept in the tree, removed from the review queue).",
+  "count": 1
+ },
+ {
+  "i": 456,
+  "line": 4551,
+  "quote": "'",
+  "raw": "Dismissed",
+  "count": 1
+ },
+ {
+  "i": 457,
+  "line": 4560,
+  "quote": "'",
+  "raw": "The selected items are already done.",
+  "count": 1
+ },
+ {
+  "i": 458,
+  "line": 4562,
+  "quote": "`",
+  "raw": "${pending.length} selected items",
+  "count": 1
+ },
+ {
+  "i": 459,
+  "line": 4565,
+  "quote": "`",
+  "raw": "Mark ${label} as done?",
+  "count": 1
+ },
+ {
+  "i": 460,
+  "line": 4566,
+  "quote": "'",
+  "raw": "Future review dates will be cleared. Cards will also leave the Spaced Repetition deck.",
+  "count": 1
+ },
+ {
+  "i": 461,
+  "line": 4583,
+  "quote": "`",
+  "raw": "${pending.length} item${pending.length === 1 ? '' : 's'} marked done. Future reviews cleared.",
+  "count": 1
+ },
+ {
+  "i": 462,
+  "line": 4591,
+  "quote": "'",
+  "raw": "No resettable items selected.",
+  "count": 1
+ },
+ {
+  "i": 463,
+  "line": 4593,
+  "quote": "`",
+  "raw": "${files.length} selected items",
+  "count": 1
+ },
+ {
+  "i": 464,
+  "line": 4596,
+  "quote": "`",
+  "raw": "Reset ${label}?",
+  "count": 1
+ },
+ {
+  "i": 465,
+  "line": 4597,
+  "quote": "'",
+  "raw": "Sets status to active and clears Toolkit scheduling history. Spaced Repetition cards return to their deck as new cards.",
+  "count": 1
+ },
+ {
+  "i": 466,
+  "line": 4615,
+  "quote": "`",
+  "raw": "${files.length} item${files.length === 1 ? '' : 's'} reset.",
+  "count": 1
+ },
+ {
+  "i": 467,
+  "line": 4621,
+  "quote": "'",
+  "raw": "No active file",
+  "count": 2
+ },
+ {
+  "i": 468,
+  "line": 4625,
+  "quote": "'",
+  "raw": "Active file is not a source/extract",
+  "count": 1
+ },
+ {
+  "i": 469,
+  "line": 4636,
+  "quote": "'",
+  "raw": "No inline cards found",
+  "count": 1
+ },
+ {
+  "i": 470,
+  "line": 4659,
+  "quote": "`",
+  "raw": "==${text}==${hint ? `^[${hint}]` : ''}",
+  "count": 1
+ },
+ {
+  "i": 471,
+  "line": 4666,
+  "quote": "`",
+  "raw": "ir_inline_id: ${JSON.stringify(id)}",
+  "count": 1
+ },
+ {
+  "i": 472,
+  "line": 4672,
+  "quote": "`",
+  "raw": "Exported ${created} inline card${created === 1 ? '' : 's'} to ${this.cardBackendLabel()}",
+  "count": 1
+ },
+ {
+  "i": 473,
+  "line": 4673,
+  "quote": "'",
+  "raw": "All inline cards are already exported",
+  "count": 1
+ },
+ {
+  "i": 474,
+  "line": 4681,
+  "quote": "'",
+  "raw": "Checkpoints apply to sources and extracts only.",
+  "count": 1
+ },
+ {
+  "i": 475,
+  "line": 4687,
+  "quote": "'",
+  "raw": "Checkpoint note (prefix with Nd:: to override interval)",
+  "count": 1
+ },
+ {
+  "i": 476,
+  "line": 4714,
+  "quote": "`",
+  "raw": "Checkpoint saved, next in ${interval}d",
+  "count": 1
+ },
+ {
+  "i": 477,
+  "line": 4714,
+  "quote": "'",
+  "raw": "Checkpoint saved",
+  "count": 1
+ },
+ {
+  "i": 478,
+  "line": 4723,
+  "quote": "'",
+  "raw": "Already done.",
+  "count": 1
+ },
+ {
+  "i": 479,
+  "line": 4737,
+  "quote": "'",
+  "raw": "Already dismissed.",
+  "count": 1
+ },
+ {
+  "i": 480,
+  "line": 4742,
+  "quote": "'",
+  "raw": "Dismissed. Set status: active to restore.",
+  "count": 1
+ },
+ {
+  "i": 481,
+  "line": 4750,
+  "quote": "'",
+  "raw": "Tomorrow (+1d)",
+  "count": 1
+ },
+ {
+  "i": 482,
+  "line": 4752,
+  "quote": "'",
+  "raw": "Postpone how long?",
+  "count": 1
+ },
+ {
+  "i": 483,
+  "line": 4760,
+  "quote": "`",
+  "raw": "Postponed +${choice}d · Next review: ${newDate}",
+  "count": 1
+ },
+ {
+  "i": 484,
+  "line": 4768,
+  "quote": "`",
+  "raw": "Schedule (${dateFormat} or +Nd/-Nd; current: ${cur})",
+  "count": 1
+ },
+ {
+  "i": 485,
+  "line": 4779,
+  "quote": "`",
+  "raw": "Invalid ${dateFormat} date: ${input}",
+  "count": 1
+ },
+ {
+  "i": 486,
+  "line": 4788,
+  "quote": "`",
+  "raw": "Scheduled: ${cur} → ${newDate}",
+  "count": 1
+ },
+ {
+  "i": 487,
+  "line": 4797,
+  "quote": "'",
+  "raw": "New priority (1-100, 1=highest)",
+  "count": 1
+ },
+ {
+  "i": 488,
+  "line": 4799,
+  "quote": "'",
+  "raw": "Invalid priority — integer 1-100.",
+  "count": 2
+ },
+ {
+  "i": 489,
+  "line": 4803,
+  "quote": "`",
+  "raw": "Priority → ${p} (next_review unchanged — A-Factor-driven)",
+  "count": 1
+ },
+ {
+  "i": 490,
+  "line": 4811,
+  "quote": "'",
+  "raw": "Small (-5)",
+  "count": 1
+ },
+ {
+  "i": 491,
+  "line": 4811,
+  "quote": "'",
+  "raw": "Medium (-15)",
+  "count": 1
+ },
+ {
+  "i": 492,
+  "line": 4811,
+  "quote": "'",
+  "raw": "Strong (-30)",
+  "count": 1
+ },
+ {
+  "i": 493,
+  "line": 4811,
+  "quote": "'",
+  "raw": "Custom",
+  "count": 1
+ },
+ {
+  "i": 494,
+  "line": 4813,
+  "quote": "'",
+  "raw": "Boost amount",
+  "count": 1
+ },
+ {
+  "i": 495,
+  "line": 4818,
+  "quote": "'",
+  "raw": "Boost amount (1-99)",
+  "count": 1
+ },
+ {
+  "i": 496,
+  "line": 4820,
+  "quote": "'",
+  "raw": "Invalid amount.",
+  "count": 2
+ },
+ {
+  "i": 497,
+  "line": 4826,
+  "quote": "'",
+  "raw": "Cascade boost to all descendants in subtree?",
+  "count": 1
+ },
+ {
+  "i": 498,
+  "line": 4851,
+  "quote": "`",
+  "raw": " + ${cascaded} descendant${cascaded === 1 ? '' : 's'}",
+  "count": 1
+ },
+ {
+  "i": 499,
+  "line": 4852,
+  "quote": "`",
+  "raw": "Boosted: ${orig} → ${newPri}${cmsg}. boost_from preserved.",
+  "count": 1
+ },
+ {
+  "i": 500,
+  "line": 4862,
+  "quote": "'",
+  "raw": "All topics",
+  "count": 1
+ },
+ {
+  "i": 501,
+  "line": 4862,
+  "quote": "'",
+  "raw": "Due / overdue only",
+  "count": 1
+ },
+ {
+  "i": 502,
+  "line": 4864,
+  "quote": "'",
+  "raw": "Filter subtree by",
+  "count": 1
+ },
+ {
+  "i": 503,
+  "line": 4876,
+  "quote": "`",
+  "raw": "No descendants match.",
+  "count": 1
+ },
+ {
+  "i": 504,
+  "line": 4890,
+  "quote": "`",
+  "raw": "${t} ${statusIcon(p.fm)} p${p.fm.priority ?? '—'} u${urgency(p.fm, today, this.settings).toFixed(0)}  ${p.tfile.basename}",
+  "count": 1
+ },
+ {
+  "i": 505,
+  "line": 4892,
+  "quote": "`",
+  "raw": "Subset (${r.tfile.basename})",
+  "count": 1
+ },
+ {
+  "i": 506,
+  "line": 4900,
+  "quote": "'",
+  "raw": "Spread window",
+  "count": 1
+ },
+ {
+  "i": 507,
+  "line": 4910,
+  "quote": "'",
+  "raw": "Nothing overdue.",
+  "count": 1
+ },
+ {
+  "i": 508,
+  "line": 4920,
+  "quote": "`",
+  "raw": "Mercy: ${updated} overdue spread across ${choice}d.",
+  "count": 1
+ },
+ {
+  "i": 509,
+  "line": 4930,
+  "quote": "'",
+  "raw": "Postpone subtree by",
+  "count": 1
+ },
+ {
+  "i": 510,
+  "line": 4950,
+  "quote": "`",
+  "raw": "Subtree postponed +${choice}d · ${postponed} element${postponed === 1 ? '' : 's'}.",
+  "count": 1
+ },
+ {
+  "i": 511,
+  "line": 4962,
+  "quote": "'",
+  "raw": "Extract Selection requires an open markdown source.",
+  "count": 1
+ },
+ {
+  "i": 512,
+  "line": 4966,
+  "quote": "'",
+  "raw": "Run from a source note.",
+  "count": 1
+ },
+ {
+  "i": 513,
+  "line": 4969,
+  "quote": "'",
+  "raw": "No text selected.",
+  "count": 1
+ },
+ {
+  "i": 514,
+  "line": 4976,
+  "quote": "'",
+  "raw": "Extract created, but the source changed before its passage could be highlighted.",
+  "count": 1
+ },
+ {
+  "i": 515,
+  "line": 4987,
+  "quote": "'",
+  "raw": "Could not read clipboard.",
+  "count": 2
+ },
+ {
+  "i": 516,
+  "line": 4988,
+  "quote": "'",
+  "raw": "Clipboard empty.",
+  "count": 1
+ },
+ {
+  "i": 517,
+  "line": 5000,
+  "quote": "'",
+  "raw": " - Extract",
+  "count": 1
+ },
+ {
+  "i": 518,
+  "line": 5002,
+  "quote": "`",
+  "raw": "${safeSourceTitle} - Extract ${n}",
+  "count": 1
+ },
+ {
+  "i": 519,
+  "line": 5004,
+  "quote": "`",
+  "raw": "${safeSourceTitle} - Extract ${++n}",
+  "count": 1
+ },
+ {
+  "i": 520,
+  "line": 5008,
+  "quote": "`",
+  "raw": "First interval in days (blank for auto: ${autoInterval}d)",
+  "count": 1
+ },
+ {
+  "i": 521,
+  "line": 5011,
+  "quote": "'",
+  "raw": "Invalid interval — enter a positive whole number of days.",
+  "count": 1
+ },
+ {
+  "i": 522,
+  "line": 5016,
+  "quote": "`",
+  "raw": "---\ntype: extract\nsource: ${JSON.stringify(`[[${sourceTitle}]]`)}\nstatus: pending\npriority: ${priority}\nnext_review: ${nextReview}\ninterval: ${interval}\na_factor: 2.0\nreview_count: 0\nlast_reviewed:\ndate_added: ${today}\ntags:\n  - incremental-reading\n  - ir/extract\n---\n\n${body}\n",
+  "count": 1
+ },
+ {
+  "i": 523,
+  "line": 5036,
+  "quote": "`",
+  "raw": "Extract already exists at ${path}",
+  "count": 1
+ },
+ {
+  "i": 524,
+  "line": 5045,
+  "quote": "`",
+  "raw": " · a ${bump.from}→${bump.to}",
+  "count": 1
+ },
+ {
+  "i": 525,
+  "line": 5046,
+  "quote": "`",
+  "raw": "Extract: ${name} · p${priority}→${newPri} · review +${interval}d (${nextReview})${bumpMsg}",
+  "count": 1
+ },
+ {
+  "i": 526,
+  "line": 5051,
+  "quote": "'",
+  "raw": "flashcardClipboard start",
+  "count": 1
+ },
+ {
+  "i": 527,
+  "line": 5066,
+  "quote": "'",
+  "raw": "Clipboard empty (no text or image).",
+  "count": 1
+ },
+ {
+  "i": 528,
+  "line": 5082,
+  "quote": "'",
+  "raw": "\\n?\\n",
+  "count": 1
+ },
+ {
+  "i": 529,
+  "line": 5087,
+  "quote": "'",
+  "raw": "Cloze deletion (Wozniak rule 5 — recommended)",
+  "count": 1
+ },
+ {
+  "i": 530,
+  "line": 5088,
+  "quote": "'",
+  "raw": "Basic Q&A (question + hidden answer)",
+  "count": 1
+ },
+ {
+  "i": 531,
+  "line": 5089,
+  "quote": "'",
+  "raw": "Basic reversed (vocab pair)",
+  "count": 1
+ },
+ {
+  "i": 532,
+  "line": 5091,
+  "quote": "'",
+  "raw": "Card format",
+  "count": 1
+ },
+ {
+  "i": 533,
+  "line": 5093,
+  "quote": "'",
+  "raw": "flashcard: cardFormat =",
+  "count": 1
+ },
+ {
+  "i": 534,
+  "line": 5097,
+  "quote": "'",
+  "raw": "Word(s) to cloze (comma-separated; empty = manual edit)",
+  "count": 1
+ },
+ {
+  "i": 535,
+  "line": 5111,
+  "quote": "'",
+  "raw": "Edit text — wrap word(s) with ==marks==",
+  "count": 2
+ },
+ {
+  "i": 536,
+  "line": 5120,
+  "quote": "'",
+  "raw": "No ==marks== — aborted.",
+  "count": 1
+ },
+ {
+  "i": 537,
+  "line": 5123,
+  "quote": "'",
+  "raw": "Answer (rule 4: keep it short)",
+  "count": 1
+ },
+ {
+  "i": 538,
+  "line": 5131,
+  "quote": "\"",
+  "raw": "Context label (optional, e.g. 'bioch:' — rule 16)",
+  "count": 1
+ },
+ {
+  "i": 539,
+  "line": 5135,
+  "quote": "`",
+  "raw": "${pfx} ${questionText}",
+  "count": 1
+ },
+ {
+  "i": 540,
+  "line": 5144,
+  "quote": "'",
+  "raw": "Bidirectional card",
+  "count": 1
+ },
+ {
+  "i": 541,
+  "line": 5144,
+  "quote": "'",
+  "raw": "Cloze card",
+  "count": 1
+ },
+ {
+  "i": 542,
+  "line": 5144,
+  "quote": "'",
+  "raw": "Card",
+  "count": 1
+ },
+ {
+  "i": 543,
+  "line": 5145,
+  "quote": "`",
+  "raw": "${kind} created with ${this.cardBackendLabel()}: ${created.name}",
+  "count": 1
+ },
+ {
+  "i": 544,
+  "line": 5158,
+  "quote": "'",
+  "raw": "image/jpeg",
+  "count": 2
+ },
+ {
+  "i": 545,
+  "line": 5159,
+  "quote": "'",
+  "raw": "image/webp",
+  "count": 2
+ },
+ {
+  "i": 546,
+  "line": 5170,
+  "quote": "'",
+  "raw": "No image provided.",
+  "count": 1
+ },
+ {
+  "i": 547,
+  "line": 5176,
+  "quote": "'",
+  "raw": "Question caption (optional, shown above image)",
+  "count": 1
+ },
+ {
+  "i": 548,
+  "line": 5179,
+  "quote": "'",
+  "raw": "Answer — name what this is",
+  "count": 1
+ },
+ {
+  "i": 549,
+  "line": 5180,
+  "quote": "'",
+  "raw": "Answer required.",
+  "count": 1
+ },
+ {
+  "i": 550,
+  "line": 5191,
+  "quote": "`",
+  "raw": "Image card created with ${this.cardBackendLabel()}: ${created.name}",
+  "count": 1
+ },
+ {
+  "i": 551,
+  "line": 5230,
+  "quote": "'",
+  "raw": "No image on clipboard and no images linked to this note.",
+  "count": 1
+ },
+ {
+  "i": 552,
+  "line": 5236,
+  "quote": "'",
+  "raw": "Pick image to name",
+  "count": 1
+ },
+ {
+  "i": 553,
+  "line": 5269,
+  "quote": "'",
+  "raw": "No image on clipboard. With PDF++: enable \"Rectangular selection\" + \"Auto-copy\", drag rect, then run this command.",
+  "count": 1
+ },
+ {
+  "i": 554,
+  "line": 5274,
+  "quote": "`",
+  "raw": "Image not found in vault: ${linkPath}",
+  "count": 1
+ },
+ {
+  "i": 555,
+  "line": 5288,
+  "quote": "'",
+  "raw": "Caption (optional, used as extract body)",
+  "count": 1
+ },
+ {
+  "i": 556,
+  "line": 5311,
+  "quote": "'",
+  "raw": "Pick image to occlude",
+  "count": 1
+ },
+ {
+  "i": 557,
+  "line": 5323,
+  "quote": "'",
+  "raw": "No images for this source. Use Image-extract (Mod+Shift+K) first or embed an image.",
+  "count": 1
+ },
+ {
+  "i": 558,
+  "line": 5328,
+  "quote": "'",
+  "raw": "No images in attachment folder.",
+  "count": 1
+ },
+ {
+  "i": 559,
+  "line": 5329,
+  "quote": "'",
+  "raw": "Pick image",
+  "count": 1
+ },
+ {
+  "i": 560,
+  "line": 5336,
+  "quote": "`",
+  "raw": "Image not found: ${imgVaultPath}",
+  "count": 1
+ },
+ {
+  "i": 561,
+  "line": 5344,
+  "quote": "'",
+  "raw": "No cards generated.",
+  "count": 1
+ },
+ {
+  "i": 562,
+  "line": 5348,
+  "quote": "'",
+  "raw": "Anki export does not render Toolkit occlusion blocks; these cards will use the in-house reviewer.",
+  "count": 1
+ },
+ {
+  "i": 563,
+  "line": 5355,
+  "quote": "`",
+  "raw": "x: ${round4(rect.x)}, y: ${round4(rect.y)}, w: ${round4(rect.w)}, h: ${round4(rect.h)}",
+  "count": 1
+ },
+ {
+  "i": 564,
+  "line": 5356,
+  "quote": "\"",
+  "raw": "${String(rect.label).replace(/",
+  "count": 1
+ },
+ {
+  "i": 565,
+  "line": 5356,
+  "quote": "`",
+  "raw": " : '';\n        return ",
+  "count": 1
+ },
+ {
+  "i": 566,
+  "line": 5357,
+  "quote": "`",
+  "raw": ";\n      })\n      .join('\\n');\n\n    for (const spec of cardSpecs) {\n      const question = '",
+  "count": 1
+ },
+ {
+  "i": 567,
+  "line": 5363,
+  "quote": "`",
+  "raw": "image: ${JSON.stringify(resolvedPath)}\\n",
+  "count": 1
+ },
+ {
+  "i": 568,
+  "line": 5364,
+  "quote": "`",
+  "raw": "mode: ${result.mode}\\n",
+  "count": 1
+ },
+ {
+  "i": 569,
+  "line": 5365,
+  "quote": "`",
+  "raw": "question_index: ${spec.questionIndex}\\n",
+  "count": 1
+ },
+ {
+  "i": 570,
+  "line": 5366,
+  "quote": "'",
+  "raw": "rects:\\n",
+  "count": 1
+ },
+ {
+  "i": 571,
+  "line": 5367,
+  "quote": "'",
+  "raw": "```\\n",
+  "count": 1
+ },
+ {
+  "i": 572,
+  "line": 5373,
+  "quote": "`",
+  "raw": "occlusion_image: ${JSON.stringify(resolvedPath)}",
+  "count": 1
+ },
+ {
+  "i": 573,
+  "line": 5374,
+  "quote": "`",
+  "raw": "occlusion_mode: ${result.mode}",
+  "count": 1
+ },
+ {
+  "i": 574,
+  "line": 5375,
+  "quote": "`",
+  "raw": "occlusion_question_index: ${spec.questionIndex}",
+  "count": 1
+ },
+ {
+  "i": 575,
+  "line": 5384,
+  "quote": "`",
+  "raw": "Occlusion: ${written} ${label} card(s) from ${result.rects.length} rect(s)",
+  "count": 1
+ },
+ {
+  "i": 576,
+  "line": 5390,
+  "quote": "'",
+  "raw": "Source title",
+  "count": 1
+ },
+ {
+  "i": 577,
+  "line": 5394,
+  "quote": "'",
+  "raw": "Book",
+  "count": 1
+ },
+ {
+  "i": 578,
+  "line": 5394,
+  "quote": "'",
+  "raw": "Article",
+  "count": 1
+ },
+ {
+  "i": 579,
+  "line": 5394,
+  "quote": "'",
+  "raw": "YouTube video",
+  "count": 1
+ },
+ {
+  "i": 580,
+  "line": 5394,
+  "quote": "'",
+  "raw": "Local video file",
+  "count": 1
+ },
+ {
+  "i": 581,
+  "line": 5396,
+  "quote": "'",
+  "raw": "Source type",
+  "count": 1
+ },
+ {
+  "i": 582,
+  "line": 5399,
+  "quote": "'",
+  "raw": "Priority (1-100, 1=highest)",
+  "count": 2
+ },
+ {
+  "i": 583,
+  "line": 5402,
+  "quote": "'",
+  "raw": "Invalid priority — enter an integer from 1 to 100.",
+  "count": 2
+ },
+ {
+  "i": 584,
+  "line": 5418,
+  "quote": "'",
+  "raw": "PDF path (vault-relative or absolute)",
+  "count": 1
+ },
+ {
+  "i": 585,
+  "line": 5420,
+  "quote": "'",
+  "raw": "Total pages",
+  "count": 1
+ },
+ {
+  "i": 586,
+  "line": 5423,
+  "quote": "'",
+  "raw": "Invalid total pages — enter a positive integer.",
+  "count": 1
+ },
+ {
+  "i": 587,
+  "line": 5428,
+  "quote": "'",
+  "raw": "Source URL (optional)",
+  "count": 1
+ },
+ {
+  "i": 588,
+  "line": 5430,
+  "quote": "'",
+  "raw": "YouTube URL",
+  "count": 1
+ },
+ {
+  "i": 589,
+  "line": 5431,
+  "quote": "'",
+  "raw": "YouTube URL required.",
+  "count": 1
+ },
+ {
+  "i": 590,
+  "line": 5433,
+  "quote": "'",
+  "raw": "Bad YouTube URL.",
+  "count": 1
+ },
+ {
+  "i": 591,
+  "line": 5435,
+  "quote": "'",
+  "raw": "Author / channel (optional)",
+  "count": 1
+ },
+ {
+  "i": 592,
+  "line": 5436,
+  "quote": "'",
+  "raw": "Total duration mm:ss or hh:mm:ss (optional)",
+  "count": 2
+ },
+ {
+  "i": 593,
+  "line": 5439,
+  "quote": "'",
+  "raw": "Invalid duration — use mm:ss or hh:mm:ss.",
+  "count": 2
+ },
+ {
+  "i": 594,
+  "line": 5447,
+  "quote": "`",
+  "raw": "Drop a video into ${videosFolder}/ first.",
+  "count": 1
+ },
+ {
+  "i": 595,
+  "line": 5449,
+  "quote": "'",
+  "raw": "Pick a video file",
+  "count": 1
+ },
+ {
+  "i": 596,
+  "line": 5452,
+  "quote": "'",
+  "raw": "Author (optional)",
+  "count": 1
+ },
+ {
+  "i": 597,
+  "line": 5460,
+  "quote": "'",
+  "raw": "Hold in inbox? (Otherwise enters queue on schedule.)",
+  "count": 1
+ },
+ {
+  "i": 598,
+  "line": 5467,
+  "quote": "`",
+  "raw": "source_type: ${sourceType}",
+  "count": 1
+ },
+ {
+  "i": 599,
+  "line": 5468,
+  "quote": "`",
+  "raw": "status: ${status}",
+  "count": 1
+ },
+ {
+  "i": 600,
+  "line": 5469,
+  "quote": "`",
+  "raw": "priority: ${pNum}",
+  "count": 1
+ },
+ {
+  "i": 601,
+  "line": 5470,
+  "quote": "`",
+  "raw": "next_review: ${nextReview}",
+  "count": 1
+ },
+ {
+  "i": 602,
+  "line": 5471,
+  "quote": "`",
+  "raw": "interval: ${interval}",
+  "count": 1
+ },
+ {
+  "i": 603,
+  "line": 5472,
+  "quote": "`",
+  "raw": "a_factor: ${aFactorInit}",
+  "count": 1
+ },
+ {
+  "i": 604,
+  "line": 5476,
+  "quote": "`",
+  "raw": "read_point: ${read_point}",
+  "count": 1
+ },
+ {
+  "i": 605,
+  "line": 5477,
+  "quote": "`",
+  "raw": "total_pages: ${total_pages}",
+  "count": 1
+ },
+ {
+  "i": 606,
+  "line": 5478,
+  "quote": "`",
+  "raw": "pdf_path: ${JSON.stringify(pdf_path)}",
+  "count": 1
+ },
+ {
+  "i": 607,
+  "line": 5479,
+  "quote": "`",
+  "raw": "source_url: ${JSON.stringify(source_url)}",
+  "count": 1
+ },
+ {
+  "i": 608,
+  "line": 5480,
+  "quote": "`",
+  "raw": "video_url: ${JSON.stringify(video_url)}",
+  "count": 1
+ },
+ {
+  "i": 609,
+  "line": 5481,
+  "quote": "`",
+  "raw": "video_id: ${JSON.stringify(video_id)}",
+  "count": 1
+ },
+ {
+  "i": 610,
+  "line": 5482,
+  "quote": "`",
+  "raw": "video_path: ${JSON.stringify(video_path)}",
+  "count": 1
+ },
+ {
+  "i": 611,
+  "line": 5483,
+  "quote": "`",
+  "raw": "read_point_seconds: ${read_point_seconds}",
+  "count": 1
+ },
+ {
+  "i": 612,
+  "line": 5484,
+  "quote": "`",
+  "raw": "total_seconds: ${total_seconds}",
+  "count": 1
+ },
+ {
+  "i": 613,
+  "line": 5485,
+  "quote": "`",
+  "raw": "author: ${JSON.stringify(author)}",
+  "count": 1
+ },
+ {
+  "i": 614,
+  "line": 5486,
+  "quote": "`",
+  "raw": "date_added: ${today}",
+  "count": 1
+ },
+ {
+  "i": 615,
+  "line": 5489,
+  "quote": "'",
+  "raw": "  - ir/source",
+  "count": 1
+ },
+ {
+  "i": 616,
+  "line": 5492,
+  "quote": "`",
+  "raw": "\\n# ${title}\\n\\n",
+  "count": 1
+ },
+ {
+  "i": 617,
+  "line": 5500,
+  "quote": "`",
+  "raw": "## Reading Notes\\n\\n\\n## Extracts\\n\\n",
+  "count": 1
+ },
+ {
+  "i": 618,
+  "line": 5503,
+  "quote": "'",
+  "raw": "Source title does not contain a valid filename.",
+  "count": 1
+ },
+ {
+  "i": 619,
+  "line": 5508,
+  "quote": "`",
+  "raw": "Already exists: ${path}",
+  "count": 1
+ },
+ {
+  "i": 620,
+  "line": 5512,
+  "quote": "`",
+  "raw": "Created ${title} (${status}) a=${aFactorInit}",
+  "count": 1
+ },
+ {
+  "i": 621,
+  "line": 5518,
+  "quote": "'",
+  "raw": "Open a clipper note first.",
+  "count": 1
+ },
+ {
+  "i": 622,
+  "line": 5521,
+  "quote": "'",
+  "raw": "Already an incremental reading source.",
+  "count": 1
+ },
+ {
+  "i": 623,
+  "line": 5525,
+  "quote": "'",
+  "raw": "Invalid priority.",
+  "count": 2
+ },
+ {
+  "i": 624,
+  "line": 5532,
+  "quote": "'",
+  "raw": "Hold in inbox? (Otherwise active.)",
+  "count": 1
+ },
+ {
+  "i": 625,
+  "line": 5546,
+  "quote": "`",
+  "raw": "${sourcesFolder}/${baseName} ${suffix++}.md",
+  "count": 1
+ },
+ {
+  "i": 626,
+  "line": 5572,
+  "quote": "'",
+  "raw": "ir/source",
+  "count": 2
+ },
+ {
+  "i": 627,
+  "line": 5575,
+  "quote": "`",
+  "raw": "Imported (${initialStatus}) · p${p} · review +${interval}d",
+  "count": 1
+ },
+ {
+  "i": 628,
+  "line": 5597,
+  "quote": "'",
+  "raw": "No frontmatter.",
+  "count": 1
+ },
+ {
+  "i": 629,
+  "line": 5599,
+  "quote": "'",
+  "raw": "Not an incremental reading element.",
+  "count": 1
+ },
+ {
+  "i": 630,
+  "line": 5603,
+  "quote": "'",
+  "raw": "No parent link.",
+  "count": 1
+ },
+ {
+  "i": 631,
+  "line": 5605,
+  "quote": "`",
+  "raw": "Parent \"${parentName}\" not found.",
+  "count": 1
+ },
+ {
+  "i": 632,
+  "line": 5607,
+  "quote": "`",
+  "raw": "↑ ${parent.basename}",
+  "count": 1
+ },
+ {
+  "i": 633,
+  "line": 5615,
+  "quote": "'",
+  "raw": "No pdf_path or pdf_vault_path is set.",
+  "count": 1
+ },
+ {
+  "i": 634,
+  "line": 5618,
+  "quote": "'",
+  "raw": "Epub not supported by Obsidian viewer.",
+  "count": 1
+ },
+ {
+  "i": 635,
+  "line": 5619,
+  "quote": "`",
+  "raw": "Unsupported extension .${ext}",
+  "count": 1
+ },
+ {
+  "i": 636,
+  "line": 5628,
+  "quote": "`",
+  "raw": "PDF not found at ${rawPath}",
+  "count": 1
+ },
+ {
+  "i": 637,
+  "line": 5640,
+  "quote": "'",
+  "raw": "Open a markdown source.",
+  "count": 1
+ },
+ {
+  "i": 638,
+  "line": 5642,
+  "quote": "'",
+  "raw": "Not an incremental reading source.",
+  "count": 2
+ },
+ {
+  "i": 639,
+  "line": 5644,
+  "quote": "'",
+  "raw": "PDF source — use Open PDF (Toolkit viewer).",
+  "count": 1
+ },
+ {
+  "i": 640,
+  "line": 5648,
+  "quote": "'",
+  "raw": "No editor cursor.",
+  "count": 1
+ },
+ {
+  "i": 641,
+  "line": 5657,
+  "quote": "`",
+  "raw": "Move 📍 to line ${cursor.line + 1}",
+  "count": 1
+ },
+ {
+  "i": 642,
+  "line": 5657,
+  "quote": "'",
+  "raw": "Clear 📍 marker",
+  "count": 1
+ },
+ {
+  "i": 643,
+  "line": 5659,
+  "quote": "'",
+  "raw": "📍 already set",
+  "count": 1
+ },
+ {
+  "i": 644,
+  "line": 5663,
+  "quote": "`",
+  "raw": "Set 📍 at line ${cursor.line + 1}",
+  "count": 1
+ },
+ {
+  "i": 645,
+  "line": 5663,
+  "quote": "'",
+  "raw": "📍 marker",
+  "count": 1
+ },
+ {
+  "i": 646,
+  "line": 5685,
+  "quote": "'",
+  "raw": "📍 cleared.",
+  "count": 1
+ },
+ {
+  "i": 647,
+  "line": 5685,
+  "quote": "`",
+  "raw": "📍 ${action} at line ${cursor.line + 1}",
+  "count": 1
+ },
+ {
+  "i": 648,
+  "line": 5690,
+  "quote": "'",
+  "raw": "Not a markdown source.",
+  "count": 1
+ },
+ {
+  "i": 649,
+  "line": 5694,
+  "quote": "'",
+  "raw": "PDF — use Open PDF (Toolkit viewer).",
+  "count": 1
+ },
+ {
+  "i": 650,
+  "line": 5702,
+  "quote": "'",
+  "raw": "No 📍 read-point.",
+  "count": 1
+ },
+ {
+  "i": 651,
+  "line": 5717,
+  "quote": "`",
+  "raw": "Jumped to 📍 (line ${line + 1})",
+  "count": 1
+ },
+ {
+  "i": 652,
+  "line": 5718,
+  "quote": "'",
+  "raw": "Editor not available.",
+  "count": 1
+ },
+ {
+  "i": 653,
+  "line": 5759,
+  "quote": "'",
+  "raw": "[Incremental Reading Toolkit] performance diagnostics",
+  "count": 1
+ },
+ {
+  "i": 654,
+  "line": 5761,
+  "quote": "`",
+  "raw": "IR diagnostics · ${result.files} files (${result.cards} cards)",
+  "count": 1
+ },
+ {
+  "i": 655,
+  "line": 5762,
+  "quote": "`",
+  "raw": "Folder scan ${result.folder_scan_ms}ms · metadata ${result.metadata_ms}ms",
+  "count": 1
+ },
+ {
+  "i": 656,
+  "line": 5763,
+  "quote": "`",
+  "raw": "Tree index ${result.tree_index_ms}ms · due pool ${result.due_pool_ms}ms",
+  "count": 1
+ },
+ {
+  "i": 657,
+  "line": 5764,
+  "quote": "'",
+  "raw": "Full details were written to the developer console.",
+  "count": 1
+ },
+ {
+  "i": 658,
+  "line": 5773,
+  "quote": "'",
+  "raw": "Open a source note.",
+  "count": 1
+ },
+ {
+  "i": 659,
+  "line": 5775,
+  "quote": "'",
+  "raw": "Not a source.",
+  "count": 2
+ },
+ {
+  "i": 660,
+  "line": 5776,
+  "quote": "'",
+  "raw": "Articles only — books use Split Book.",
+  "count": 1
+ },
+ {
+  "i": 661,
+  "line": 5777,
+  "quote": "'",
+  "raw": "Already split.",
+  "count": 1
+ },
+ {
+  "i": 662,
+  "line": 5780,
+  "quote": "'",
+  "raw": "\\n---",
+  "count": 1
+ },
+ {
+  "i": 663,
+  "line": 5783,
+  "quote": "'",
+  "raw": "No H2 headings found.",
+  "count": 1
+ },
+ {
+  "i": 664,
+  "line": 5786,
+  "quote": "'",
+  "raw": "Headings to split on (delete lines to skip)",
+  "count": 1
+ },
+ {
+  "i": 665,
+  "line": 5806,
+  "quote": "`",
+  "raw": "${parentTitle} - ${h.title}",
+  "count": 1
+ },
+ {
+  "i": 666,
+  "line": 5806,
+  "quote": "`",
+  "raw": "${parentTitle} - Section ${i + 1}",
+  "count": 1
+ },
+ {
+  "i": 667,
+  "line": 5807,
+  "quote": "`",
+  "raw": "---\ntype: source\nsource_type: article\nstatus: active\nparent: ${JSON.stringify(`[[${parentTitle}]]`)}\npriority: ${priority}\nnext_review: ${nextReview}\ninterval: ${interval}\na_factor: 2.0\nreview_count: 0\nlast_reviewed:\ndate_added: ${today}\ntags:\n  - incremental-reading\n  - ir/source\n  - ir/sub-topic\n---\n\n${sectionBody}\n",
+  "count": 1
+ },
+ {
+  "i": 668,
+  "line": 5831,
+  "quote": "`",
+  "raw": "- [[${noteTitle}]]",
+  "count": 1
+ },
+ {
+  "i": 669,
+  "line": 5834,
+  "quote": "`",
+  "raw": "\\n## Sub-topics\\n\\n${links.join('\\n')}\\n",
+  "count": 1
+ },
+ {
+  "i": 670,
+  "line": 5838,
+  "quote": "`",
+  "raw": "Split into ${selected.length} sub-topic${selected.length === 1 ? '' : 's'}.",
+  "count": 1
+ },
+ {
+  "i": 671,
+  "line": 5843,
+  "quote": "'",
+  "raw": "Open a book source note.",
+  "count": 1
+ },
+ {
+  "i": 672,
+  "line": 5846,
+  "quote": "'",
+  "raw": "Already a container.",
+  "count": 1
+ },
+ {
+  "i": 673,
+  "line": 5848,
+  "quote": "\"",
+  "raw": "Not a book/PDF — proceed anyway?",
+  "count": 1
+ },
+ {
+  "i": 674,
+  "line": 5852,
+  "quote": "\"",
+  "raw": "Paste chapter list (one per line): 'START-END: Title' or 'START: Title'",
+  "count": 1
+ },
+ {
+  "i": 675,
+  "line": 5856,
+  "quote": "'",
+  "raw": "Enter at least one chapter.",
+  "count": 1
+ },
+ {
+  "i": 676,
+  "line": 5860,
+  "quote": "`",
+  "raw": "Can't parse: \"${line}\"",
+  "count": 1
+ },
+ {
+  "i": 677,
+  "line": 5862,
+  "quote": "`",
+  "raw": "Chapter title is missing: \"${line}\"",
+  "count": 1
+ },
+ {
+  "i": 678,
+  "line": 5877,
+  "quote": "`",
+  "raw": "Invalid page range for \"${chapter.title}\".",
+  "count": 1
+ },
+ {
+  "i": 679,
+  "line": 5880,
+  "quote": "`",
+  "raw": "Chapter ranges overlap or are out of order near \"${chapter.title}\".",
+  "count": 1
+ },
+ {
+  "i": 680,
+  "line": 5883,
+  "quote": "`",
+  "raw": "\"${chapter.title}\" ends after the source's ${totalPages} pages.",
+  "count": 1
+ },
+ {
+  "i": 681,
+  "line": 5901,
+  "quote": "`",
+  "raw": "Chapter ${i + 1}",
+  "count": 2
+ },
+ {
+  "i": 682,
+  "line": 5902,
+  "quote": "`",
+  "raw": "${parentTitle} - Ch${num} ${safeTitle}",
+  "count": 2
+ },
+ {
+  "i": 683,
+  "line": 5955,
+  "quote": "'",
+  "raw": "## Chapters",
+  "count": 1
+ },
+ {
+  "i": 684,
+  "line": 5960,
+  "quote": "`",
+  "raw": "- [[${name}]] (p.${ch.start}–${ch.end})",
+  "count": 1
+ },
+ {
+  "i": 685,
+  "line": 5962,
+  "quote": "`",
+  "raw": "\\n\\n## Chapters\\n\\n${list}\\n",
+  "count": 1
+ },
+ {
+  "i": 686,
+  "line": 5964,
+  "quote": "`",
+  "raw": " | Skipped ${skipped.length} (already exist)",
+  "count": 1
+ },
+ {
+  "i": 687,
+  "line": 5965,
+  "quote": "`",
+  "raw": "Split: ${created} chapter(s).${skipMsg}",
+  "count": 1
+ }
+]

@@ -18,8 +18,11 @@ if (!/^[a-z-]+$/.test(manifest.id)) fail('plugin id must contain lowercase lette
 if (manifest.id.includes('obsidian') || manifest.id.endsWith('plugin')) fail('plugin id uses a reserved term');
 if (!semver.test(manifest.version)) fail('manifest version must use x.y.z');
 if (!semver.test(manifest.minAppVersion)) fail('minimum app version must use x.y.z');
-if (!/^[\x20-\x7e]+$/.test(manifest.name)) fail('plugin name must use Basic Latin characters');
-if (manifest.description.length > 250 || !manifest.description.endsWith('.')) {
+if (!/^[\x20-\x7e\u3000-\u303f\u4e00-\u9fff\uff00-\uffef]+$/.test(manifest.name)) {
+  fail('plugin name must use Latin or CJK characters only');
+}
+const endsWithStop = manifest.description.endsWith('.') || manifest.description.endsWith('\u3002');
+if (manifest.description.length > 250 || !endsWithStop) {
   fail('description must be at most 250 characters and end with a period');
 }
 if (!/^https:\/\/github\.com\/[^/]+\/[^/]+(?:[#/?].*)?$/.test(manifest.helpUrl)) {

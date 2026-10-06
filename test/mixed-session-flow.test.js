@@ -17,7 +17,7 @@ test('topic grading consumes the current item without navigating', () => {
   assert.match(method, /this\.consumeSessionItem\(active\.path, \{ background: true \}\)/);
   assert.doesNotMatch(method, /nextElement/);
   assert.doesNotMatch(method, /reviewCardsInNote/);
-  assert.match(method, /Cards finish automatically when Spaced Repetition accepts the review/);
+  assert.match(method, /当 Spaced Repetition 接受复习后，卡片会自动完成/);
 });
 
 test('opening any learning item uses the shared suppressed navigation path', () => {
@@ -100,7 +100,7 @@ test('completed single-note card review closes the Spaced Repetition deck menu',
 test('the Toolkit registers three core commands and nine commands total', () => {
   assert.match(main, /cmd\('build-session-queue'/);
   assert.match(main, /cmd\('next-element'/);
-  assert.match(main, /cmd\('end-session',\s*'Grade current reading topic'/);
+  assert.match(main, /cmd\('end-session',\s*'为当前阅读主题评级'/);
   assert.doesNotMatch(main, /cmd\('random-due'|cmd\('review-cards'|cmd\('review-cards-in-note'/);
   assert.equal((main.match(/\bcmd\('/g) || []).length, 9);
   for (const id of ['capture-more', 'current-actions', 'open-toolkit-view', 'advanced-tools']) {

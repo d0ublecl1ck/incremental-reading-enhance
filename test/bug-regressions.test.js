@@ -50,12 +50,12 @@ test('invalid clock components are rejected', () => {
 
 test('extract creation distinguishes cancellation from an automatic interval', () => {
   assert.match(main, /if \(customStr === null\) return false;/);
-  assert.match(main, /Invalid interval — enter a positive whole number of days/);
+  assert.match(main, /间隔无效 — 请输入正整数天数/);
 });
 
 test('extract notes receive a configurable highlight in editor and reading views', () => {
   assert.match(main, /extract_highlight_color: DEFAULT_EXTRACT_HIGHLIGHT_COLOR/);
-  assert.match(main, /setName\('Extract highlight colour'\)/);
+  assert.match(main, /setName\('摘录高亮颜色'\)/);
   assert.match(main, /getFm\(this\.app, view\.file\)\?\.type === 'extract'/);
   assert.match(main, /toggleClass\('ir-extract-view', isExtract\)/);
   assert.match(main, /editor\.replaceRange\(excerptHighlightMarkup\(editor\.getRange\(from, to\)\), from, to\)/);
@@ -88,7 +88,7 @@ test('stats command opens the visual analytics dashboard', () => {
   assert.doesNotMatch(method, /new Notice/);
   assert.match(main, /_activityChart\(parent, days\)/);
   assert.match(main, /_distributionChart\(parent, rows\)/);
-  assert.match(main, /Learning analytics/);
+  assert.match(main, /学习分析/);
 });
 
 test('note navigation defers timeline work and skips forced view visibility checks', () => {
@@ -134,15 +134,15 @@ test('collection-heavy features share one cached file and metadata index', () =>
 
 test('large queue sections render incrementally and diagnostics are available', () => {
   assert.match(main, /rows\.slice\(0, limit\)/);
-  assert.match(main, /Show \$\{Math\.min\(100, rows\.length - limit\)\} more/);
-  assert.match(main, /label: 'Performance diagnostics', run: \(\) => this\.performanceDiagnostics\(\)/);
+  assert.match(main, /显示另外 \$\{Math\.min\(100, rows\.length - limit\)\} 项/);
+  assert.match(main, /label: '性能诊断', run: \(\) => this\.performanceDiagnostics\(\)/);
   assert.match(main, /async performanceDiagnostics\(\)/);
 });
 
 test('page, priority, and boost prompts reject partially numeric input', () => {
   assert.doesNotMatch(main, /const p = parseInt\(raw, 10\)/);
-  assert.match(main, /Enter a positive whole page number/);
-  assert.match(main, /Invalid duration — use mm:ss or hh:mm:ss/);
+  assert.match(main, /请输入正整数页码/);
+  assert.match(main, /时长无效 — 请使用 mm:ss 或 hh:mm:ss/);
 });
 
 test('split book validates chapter ordering before creating files', () => {
