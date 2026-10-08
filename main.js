@@ -578,6 +578,11 @@ const DEFAULT_SETTINGS = {
     types: {},
     readPoints: {},
   },
+  // enhance
+  epubImport: {
+    libraryFolder: '',
+    dropLeadingToc: true,
+  },
 };
 
 function normalizedExtractHighlightColor(value) {
@@ -2019,6 +2024,23 @@ class IncrementalReadingSettingTab extends PluginSettingTab {
     this._knowledgeTree(containerEl);
     this._paths(containerEl);
     this._misc(containerEl);
+    this._epubImport(containerEl); // enhance
+  }
+
+  // enhance
+  _epubImport(root) {
+    const sec = root.createDiv({ cls: 'ir-settings-section' });
+    new Setting(sec).setName('EPUB 导入').setHeading();
+    const s = this.settings.epubImport || (this.settings.epubImport = {});
+    const save = () => this.plugin.saveSettings();
+    new Setting(sec)
+      .setName('EPUB 库目录')
+      .setDesc('可选。填写后「从 EPUB 导入来源…」会先让你从该目录里挑书；留空则每次手输路径。解析在插件内完成，不需要外部工具。')
+      .addText((t) => t.setPlaceholder('例如 /Users/you/books/Readest/Books').setValue(s.libraryFolder || '').onChange((v) => { s.libraryFolder = v.trim(); save(); }));
+    new Setting(sec)
+      .setName('去掉开头的目录块')
+      .setDesc('EPUB 自带目录页的锚点通常在 Obsidian 里失效。开启后写入前会丢掉第一个标题之前的内容，但保留其中的图片。')
+      .addToggle((t) => t.setValue(s.dropLeadingToc !== false).onChange((v) => { s.dropLeadingToc = v; save(); }));
   }
 
   _about(root) {
@@ -3195,6 +3217,7 @@ class IncrementalReadingPlugin extends Plugin {
     cmd('trash-ir-item',     '删除当前 IR 材料…',                () => this.trashCurrentIRItem());
     cmd('remove-from-ir',    '移出 IR（保留笔记）…',             () => this.removeCurrentFromIR());
     cmd('source-clipboard',  '从剪贴板新建来源（文章）',        () => this.newSourceFromClipboard());
+    cmd('epub-import',       '从 EPUB 导入来源…',              () => this.importFromEpub());
     this.app.workspace.onLayoutReady(() => {
       this._refreshExcerptViews();
       const count = this._legacyCardFiles().length;
@@ -5710,7 +5733,7 @@ ${body}
       'read_point', 'read_point_line', 'read_point_seconds', 'total_pages', 'total_seconds',
       'page_start', 'page_end', 'pdf_path', 'pdf_vault_path', 'sioyek_path', 'source',
       'card_format', 'ir_card_backend', 'ir_spaced_repetition',
-      'ir_spaced_repetition_deck_tag', 'ir_completed_deck_tag', 'tree_order', 'inline_parent',
+      'ir_spaced_repetition_deck_tag', 'ir_completed_deck_tag', 'tree_order', 'inline_parent', 'epub_path',
     ];
     const IR_TAGS = ['incremental-reading', 'ir/source', 'ir/extract', 'ir/card', 'flashcards/incremental-reading'];
     await this.app.fileManager.processFrontMatter(active, (fmw) => {
@@ -5791,6 +5814,362 @@ ${body}
     this._invalidateIRCollection(true);
     await this.app.workspace.getLeaf(false).openFile(f);
     new Notice(`已从剪贴板创建来源「${title}」（${status}）· p${p} · 复习 +${interval} 天`);
+  }
+
+  // ---- EPUB 导入（纯 JS 解析 EPUB，不调外部进程） ----
+  _epubImportSettings() {
+    const cfg = this.settings.epubImport || {};
+    return {
+      libraryFolder: String(cfg.libraryFolder || '').trim(),
+      dropLeadingToc: cfg.dropLeadingToc !== false,
+    };
+  }
+
+  _epubReadZip(buffer) {
+    const zlib = require('zlib');
+    const bytes = new Uint8Array(buffer);
+    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    let eocd = -1;
+    const floor = Math.max(0, bytes.length - 66000);
+    for (let i = bytes.length - 22; i >= floor; i--) {
+      if (view.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+    }
+    if (eocd < 0) throw new Error('不是有效的 EPUB：找不到 ZIP 结尾记录');
+    const count = view.getUint16(eocd + 10, true);
+    let ptr = view.getUint32(eocd + 16, true);
+    const decoder = new TextDecoder('utf-8');
+    const entries = new Map();
+    for (let n = 0; n < count; n++) {
+      if (ptr + 46 > bytes.length || view.getUint32(ptr, true) !== 0x02014b50) break;
+      const method = view.getUint16(ptr + 10, true);
+      const compSize = view.getUint32(ptr + 20, true);
+      const nameLen = view.getUint16(ptr + 28, true);
+      const extraLen = view.getUint16(ptr + 30, true);
+      const commentLen = view.getUint16(ptr + 32, true);
+      const localOff = view.getUint32(ptr + 42, true);
+      const name = decoder.decode(bytes.subarray(ptr + 46, ptr + 46 + nameLen));
+      if (localOff + 30 <= bytes.length && view.getUint32(localOff, true) === 0x04034b50) {
+        const lNameLen = view.getUint16(localOff + 26, true);
+        const lExtraLen = view.getUint16(localOff + 28, true);
+        const start = localOff + 30 + lNameLen + lExtraLen;
+        const raw = bytes.subarray(start, Math.min(start + compSize, bytes.length));
+        let data = null;
+        try { data = method === 0 ? raw : zlib.inflateRawSync(raw); } catch (e) { data = null; }
+        if (data) entries.set(name, data);
+      }
+      ptr += 46 + nameLen + extraLen + commentLen;
+    }
+    return entries;
+  }
+
+  _epubText(entries, name) {
+    const data = entries.get(name);
+    if (!data) return null;
+    return new TextDecoder('utf-8').decode(data);
+  }
+
+  _epubJoin(base, href) {
+    const nodePath = require('path');
+    const clean = String(href || '').split('#')[0].trim();
+    if (!clean || /^[a-z][a-z0-9+.-]*:/i.test(clean)) return null;
+    return nodePath.posix.normalize(nodePath.posix.join(nodePath.posix.dirname(base), decodeURIComponent(clean)));
+  }
+
+  _epubInline(node) {
+    let out = '';
+    for (const child of Array.from(node.childNodes)) {
+      if (child.nodeType === 3) { out += child.nodeValue.replace(/\s+/g, ' '); continue; }
+      if (child.nodeType !== 1) continue;
+      const tag = child.tagName.toLowerCase();
+      const inner = this._epubInline(child);
+      const trimmed = inner.trim();
+      if (tag === 'strong' || tag === 'b') out += trimmed ? '**' + trimmed + '**' : inner;
+      else if (tag === 'em' || tag === 'i') out += trimmed ? '*' + trimmed + '*' : inner;
+      else if (tag === 'code') out += trimmed ? '`' + trimmed + '`' : inner;
+      else if (tag === 'br') out += '\n';
+      else if (tag === 'img') out += this._epubImage(child);
+      else out += inner;
+    }
+    return out;
+  }
+
+  _epubImage(node) {
+    const raw = node.getAttribute('src');
+    if (!raw) return '';
+    const resolved = this._epubJoin(this._epubCurrentDoc || '', raw);
+    if (!resolved) return '';
+    return '![' + (node.getAttribute('alt') || '') + '](epubimg:' + resolved + ')';
+  }
+
+  _epubBlocks(root) {
+    const out = [];
+    const push = (s) => { if (s && s.trim()) out.push(s.trim()); };
+    const walk = (node) => {
+      for (const child of Array.from(node.children)) {
+        const tag = child.tagName.toLowerCase();
+        if (/^h[1-6]$/.test(tag)) { push('#'.repeat(Number(tag[1])) + ' ' + this._epubInline(child).trim()); continue; }
+        if (tag === 'p') { push(this._epubInline(child)); continue; }
+        if (tag === 'blockquote') {
+          const inner = this._epubBlocks(child).join('\n\n');
+          if (inner) push(inner.split('\n').map((l) => '> ' + l).join('\n'));
+          continue;
+        }
+        if (tag === 'ul' || tag === 'ol') {
+          const items = [];
+          let i = 1;
+          for (const li of Array.from(child.children)) {
+            if (li.tagName.toLowerCase() !== 'li') continue;
+            items.push((tag === 'ol' ? (i++) + '. ' : '- ') + this._epubInline(li).trim());
+          }
+          push(items.join('\n'));
+          continue;
+        }
+        if (tag === 'pre') { push('~~~\n' + String(child.textContent || '').replace(/\s+$/, '') + '\n~~~'); continue; }
+        if (tag === 'img') { push(this._epubImage(child)); continue; }
+        if (tag === 'hr') { push('---'); continue; }
+        if (tag === 'table') { push(this._epubInline(child)); continue; }
+        if (['div', 'section', 'article', 'main', 'body', 'figure', 'figcaption', 'header', 'footer'].includes(tag)) { walk(child); continue; }
+        const text = this._epubInline(child).trim();
+        if (text) push(text);
+      }
+    };
+    walk(root);
+    return out;
+  }
+
+  _stripLeadingToc(text) {
+    const lines = text.split('\n');
+    let idx = -1;
+    for (let i = 0; i < lines.length; i++) {
+      if (/^#{1,6} /.test(lines[i])) { idx = i; break; }
+    }
+    if (idx <= 0 || idx > 900) return text;
+    const kept = lines.slice(0, idx).filter((l) => l.indexOf('![') === 0);
+    return (kept.length ? kept.join('\n') + '\n\n' : '') + lines.slice(idx).join('\n');
+  }
+
+  _confirmEpubPreview(text) {
+    const app = this.app;
+    return new Promise((resolve) => {
+      class EpubPreviewModal extends Modal {
+        constructor(a) { super(a); this.resolved = false; }
+        onOpen() {
+          this.titleEl.setText('EPUB 转换预览');
+          const contentEl = this.contentEl;
+          contentEl.empty();
+          const pre = contentEl.createEl('pre');
+          pre.setText(text);
+          pre.style.maxHeight = '50vh';
+          pre.style.overflow = 'auto';
+          pre.style.whiteSpace = 'pre-wrap';
+          const row = contentEl.createDiv({ cls: 'modal-button-container' });
+          const yes = row.createEl('button', { text: '写入来源', cls: 'mod-cta' });
+          yes.addEventListener('click', () => { this.finish(true); });
+          const no = row.createEl('button', { text: '取消' });
+          no.addEventListener('click', () => { this.finish(false); });
+          window.setTimeout(() => yes.focus(), 20);
+        }
+        finish(v) { if (this.resolved) return; this.resolved = true; this.close(); resolve(v); }
+        onClose() { if (!this.resolved) { this.resolved = true; resolve(false); } }
+      }
+      new EpubPreviewModal(app).open();
+    });
+  }
+
+  async importFromEpub() {
+    const fsn = require('fs');
+    const nodePath = require('path');
+    const cfg = this._epubImportSettings();
+
+    let epubPath = null;
+    if (cfg.libraryFolder && fsn.existsSync(cfg.libraryFolder)) {
+      const root = cfg.libraryFolder.replace(/\/+$/, '');
+      const found = [];
+      const scan = (dir, depth) => {
+        if (depth > 4) return;
+        let names;
+        try { names = fsn.readdirSync(dir); } catch (e) { return; }
+        for (const name of names) {
+          const full = nodePath.join(dir, name);
+          let st;
+          try { st = fsn.statSync(full); } catch (e) { continue; }
+          if (st.isDirectory()) scan(full, depth + 1);
+          else if (/\.epub$/i.test(name)) found.push(full);
+        }
+      };
+      scan(root, 0);
+      if (found.length) {
+        found.sort();
+        const rels = found.map((f) => f.slice(root.length + 1));
+        const picked = await pickFuzzy(this.app, rels, (r) => r, '选择 EPUB');
+        if (!picked) return;
+        epubPath = nodePath.join(root, picked);
+      }
+    }
+    if (!epubPath) {
+      const input = await askText(this.app, 'EPUB 路径（绝对路径或库内相对路径）', '');
+      if (input === null) return;
+      const trimmed = String(input).trim();
+      if (!trimmed) return;
+      epubPath = trimmed;
+    }
+    if (!nodePath.isAbsolute(epubPath)) {
+      const abs = vaultAbsPath(this.app, epubPath);
+      if (abs) epubPath = abs;
+    }
+    if (!fsn.existsSync(epubPath)) { new Notice('找不到文件：' + epubPath, 10000); return; }
+
+    const defaultTitle = nodePath.basename(epubPath).replace(/\.epub$/i, '');
+    const title = await askText(this.app, '来源标题', defaultTitle);
+    if (!title) return;
+
+    const priStr = await askText(this.app, '优先级（1-100，1 为最高）', '50');
+    if (priStr === null) return;
+    if (!/^\d+$/.test(String(priStr).trim())) { new Notice('优先级无效。'); return; }
+    const p = Number(String(priStr).trim());
+    if (!Number.isInteger(p) || p < 1 || p > 100) { new Notice('优先级无效。'); return; }
+
+    let entries;
+    let spine;
+    let opfPath;
+    try {
+      const buf = fsn.readFileSync(epubPath);
+      const ab = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+      entries = this._epubReadZip(ab);
+      const container = this._epubText(entries, 'META-INF/container.xml');
+      if (!container) throw new Error('缺少 META-INF/container.xml');
+      const cdoc = new DOMParser().parseFromString(container, 'text/xml');
+      const rootfile = cdoc.querySelector('rootfile');
+      opfPath = rootfile ? rootfile.getAttribute('full-path') : null;
+      if (!opfPath) throw new Error('container.xml 里没有 rootfile');
+      const opfSrc = this._epubText(entries, opfPath);
+      if (!opfSrc) throw new Error('找不到 OPF：' + opfPath);
+      const opf = new DOMParser().parseFromString(opfSrc, 'text/xml');
+      const manifest = new Map();
+      for (const item of Array.from(opf.querySelectorAll('manifest > item'))) {
+        manifest.set(item.getAttribute('id'), { href: item.getAttribute('href'), type: item.getAttribute('media-type') || '' });
+      }
+      spine = [];
+      for (const ref of Array.from(opf.querySelectorAll('spine > itemref'))) {
+        const item = manifest.get(ref.getAttribute('idref'));
+        if (item && /x?html/i.test(item.type)) spine.push(item);
+      }
+      if (!spine.length) {
+        for (const item of manifest.values()) if (/x?html/i.test(item.type)) spine.push(item);
+      }
+      if (!spine.length) throw new Error('OPF 里没有可读的 XHTML');
+    } catch (err) {
+      new Notice('EPUB 解析失败：' + String(err && err.message ? err.message : err), 12000);
+      return;
+    }
+
+    const parts = [];
+    for (const item of spine) {
+      const docPath = this._epubJoin(opfPath, item.href);
+      if (!docPath) continue;
+      const src = this._epubText(entries, docPath);
+      if (!src) continue;
+      this._epubCurrentDoc = docPath;
+      let blocks = [];
+      try {
+        const doc = new DOMParser().parseFromString(src, 'text/html');
+        blocks = this._epubBlocks(doc.body);
+      } catch (e) { blocks = []; }
+      if (blocks.length) parts.push(blocks.join('\n\n'));
+    }
+    if (!parts.length) { new Notice('没有从 EPUB 里解析出正文。'); return; }
+
+    let md = parts.join('\n\n').replace(/\n{3,}/g, '\n\n').trim() + '\n';
+    if (cfg.dropLeadingToc) md = this._stripLeadingToc(md);
+
+    const imgPaths = [];
+    md = md.replace(/\(epubimg:([^)]+)\)/g, (whole, zipPath) => {
+      if (imgPaths.indexOf(zipPath) === -1) imgPaths.push(zipPath);
+      return whole;
+    });
+    const media = imgPaths.map((zipPath, i) => {
+      const base = nodePath.basename(zipPath).replace(/[?#].*$/, '');
+      const ext = (base.match(/\.[^.]+$/) || [''])[0];
+      const stem = ext ? base.slice(0, -ext.length) : base;
+      let name = base;
+      let n = 2;
+      while (imgPaths.slice(0, i).some((other) => nodePath.basename(other) === name)) name = stem + '-' + (n++) + ext;
+      return { name: name, base: base, zipPath: zipPath };
+    });
+    const byZip = Object.create(null);
+    for (const item of media) byZip[item.zipPath] = item.name;
+    md = md.replace(/\(epubimg:([^)]+)\)/g, (whole, zipPath) => {
+      const name = byZip[zipPath] || byZip[decodeURIComponent(zipPath)];
+      return name ? '![[' + name + ']]' : '';
+    });
+
+    const lines = md.split('\n');
+    const h1 = lines.filter((l) => l.indexOf('# ') === 0).length;
+    const h2 = lines.filter((l) => l.indexOf('## ') === 0).length;
+    const dirty = lines.filter((l) => /[<>]/.test(l)).length;
+    const bodyLines = lines.filter((l) => l.trim());
+    const previewLines = [
+      '文件：' + epubPath,
+      '结果：' + spine.length + ' 个 XHTML / ' + h1 + ' 个 H1 / ' + h2 + ' 个 H2 / 残留标签行 ' + dirty + ' / 图片 ' + media.length + ' 张',
+      '正文：' + bodyLines.length + ' 个非空行，约 ' + Math.round(md.length / 1000) + ' KB',
+      '',
+      '--- 开头 ---',
+    ].concat(bodyLines.slice(0, 6)).concat(['', '--- 结尾 ---']).concat(bodyLines.slice(-4));
+
+    const ok = await this._confirmEpubPreview(previewLines.join('\n'));
+    if (!ok) return;
+
+    const safeTitle = slugifyForFolder(title);
+    if (!safeTitle) { new Notice('来源标题不含有效文件名。'); return; }
+    const mediaFolder = this.attachmentsFolder() + '/' + safeTitle;
+    const written = [];
+    if (media.length) {
+      await ensureFolder(this.app, mediaFolder);
+      for (const item of media) {
+        const data = entries.get(item.zipPath);
+        if (!data) continue;
+        const copy = data.slice();
+        await this.app.vault.adapter.writeBinary(mediaFolder + '/' + item.name, copy.buffer);
+        written.push(item.name);
+      }
+    }
+
+    const hold = await confirmDialog(this.app, '保留在收件箱？（否则为 active。）');
+    const status = hold ? 'inbox' : 'active';
+    const today = todayDateString(this.settings);
+    const interval = priorityToInterval(p);
+    const nextReview = futureDateString(interval, this.settings);
+    const aFactorInit = round4(initialAFactor(this.settings, { total_pages: null, total_seconds: null }));
+
+    const sourcesFolder = this.sourcesFolder();
+    await ensureFolder(this.app, sourcesFolder);
+    let target = sourcesFolder + '/' + safeTitle + '.md';
+    let suffix = 2;
+    while (this.app.vault.getAbstractFileByPath(target)) target = sourcesFolder + '/' + safeTitle + ' ' + (suffix++) + '.md';
+
+    const fm = [
+      '---',
+      'type: source',
+      'source_type: article',
+      'status: ' + status,
+      'priority: ' + p,
+      'next_review: ' + nextReview,
+      'interval: ' + interval,
+      'a_factor: ' + aFactorInit,
+      'review_count: 0',
+      'last_reviewed:',
+      'date_added: ' + today,
+      'epub_path: ' + JSON.stringify(epubPath),
+      'tags:',
+      '  - incremental-reading',
+      '  - ir/source',
+      '---',
+    ];
+    const content = fm.join('\n') + '\n\n# ' + title + '\n\n' + md;
+    const file = await this.app.vault.create(target, content);
+    this._invalidateIRCollection(true);
+    await this.app.workspace.getLeaf(false).openFile(file);
+    new Notice('已导入「' + title + '」· ' + status + ' · ' + h2 + ' 章可拆分 · 图片 ' + written.length + ' 张');
   }
 
   // ===== ENHANCE END =====
