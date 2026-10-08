@@ -1,11 +1,11 @@
 {
-  "id": "incremental-reading-zh",
-  "name": "渐进阅读工具包（中文版）",
+  "id": "incremental-reading-enhance",
+  "name": "渐进阅读增强（中文版）",
   "version": "1.1.8",
   "minAppVersion": "1.12.7",
-  "description": "把长文阅读拆成有排期的主题、摘录，并生成工具包或 Anki 卡片。Incremental Reading Toolkit 的简体中文汉化版。",
-  "author": "kiera（汉化：d0ublecl1ck）",
+  "description": "在 Incremental Reading Toolkit 简体中文汉化版基础上增加本地增强：把常用菜单项提升为可绑键命令、删除材料、移出 IR。",
+  "author": "kiera（汉化与增强：d0ublecl1ck）",
   "authorUrl": "https://github.com/kja140",
-  "helpUrl": "https://github.com/d0ublecl1ck/incremental-reading-zh#readme",
+  "helpUrl": "https://github.com/d0ublecl1ck/incremental-reading-enhance#readme",
   "isDesktopOnly": true
 }

@@ -29,7 +29,7 @@
 
 ## 中文版说明
 
-本仓库是 [Incremental Reading Toolkit](https://github.com/kja140/incremental-reading) 的简体中文汉化 fork，插件 id 为 `incremental-reading-zh`，可与上游英文版并存安装。
+本仓库是 [d0ublecl1ck/incremental-reading-zh](https://github.com/d0ublecl1ck/incremental-reading-zh)（简体中文汉化 fork）的下游增强分支，插件 id 为 `incremental-reading-enhance`。在纯汉化之外增加本地功能，第一批是把「当前元素操作…」菜单里的常用动作提升为可绑键的 Obsidian 命令，并补上删除材料与移出 IR。增强清单见 [docs/ENHANCE.zh-CN.md](docs/ENHANCE.zh-CN.md)。
 
 - 汉化范围：插件内面向用户的全部文案（命令、设置项、通知、弹窗、侧边栏、仪表盘、内置使用指南）。
 - 保持不变：笔记 frontmatter 键值、标签、文件夹路径、日期格式与正则表达式等数据格式与上游一致，因此中英文版本可以共用同一批笔记。
@@ -40,7 +40,7 @@
 ### 安装
 
 1. 取得本仓库的 `main.js`、`manifest.json`、`styles.css`。
-2. 放入 `<你的库>/.obsidian/plugins/incremental-reading-zh/`。
+2. 放入 `<你的库>/.obsidian/plugins/incremental-reading-enhance/`。
 3. 在 Obsidian「设置 → 第三方插件」中启用「渐进阅读工具包（中文版）」。
 
 ### 重新套用汉化 / 合并上游

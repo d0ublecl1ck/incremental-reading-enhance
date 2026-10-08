@@ -9,7 +9,7 @@ const source = fs.readFileSync(path.join(root, 'main.js'), 'utf8');
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.json'), 'utf8'));
 
 test('manifest Help action opens the repository README', () => {
-  assert.equal(manifest.helpUrl, 'https://github.com/d0ublecl1ck/incremental-reading-zh#readme');
+  assert.equal(manifest.helpUrl, 'https://github.com/d0ublecl1ck/incremental-reading-enhance#readme');
 });
 
 test('in-app guide is exposed through the grouped view command and settings', () => {

@@ -1,7 +1,9 @@
 # FREAK
 
-- [ ] `main.js` 内联的 core 代码块（`// >>> xxx-functions`）——汉化流水线已自动跳过，但上游若新增内联块，需确认 `scripts/i18n-extract.mjs` 的 `VERBATIM_RE` 仍能匹配新块名。记录：2026-10-07
-- [ ] `docs/USER-GUIDE.zh-CN.md` —— 引用的命令名/设置名必须与 `main.js` 实际文案逐字一致；每次改文案后重跑 `node` 比对脚本（见上次会话做法）或人工核对。记录：2026-10-07
-- [ ] `test/` 中被翻译文案的断言 —— 上游改动这些测试时会与汉化冲突，合并上游后优先看 `test/bug-regressions.test.js`、`test/card-backends.test.js`、`test/in-app-help.test.js`、`test/mixed-session-flow.test.js`、`test/tree-interactions.test.js`。记录：2026-10-07
-- [ ] `scripts/validate-release.mjs` —— 放开了 `manifest.name` 只允许 Basic Latin、以及 description 必须以 `.` 结尾两条校验；上游收紧校验策略时需重新对齐。记录：2026-10-07
-- [ ] `manifest.json` 版本号仍与上游同为 1.1.8 —— 每次合并上游后确认是否需要跟随；本地安装版不参与社区插件更新，版本号仅用于标识。记录：2026-10-07
+- [ ] `main.js` 的 ENHANCE 块 —— 上游合并会整文件覆盖；下次合并后确认 docs/ENHANCE.zh-CN.md 的 7 条命令与增强方法都已重贴，并跑 `npm run check`。记录：2026-10-09
+- [ ] `test/mixed-session-flow.test.js`、`test/in-app-help.test.js` —— 断言里写死了命令数量与 helpUrl，每次增删命令或换仓库地址都要同步。记录：2026-10-09
+- [ ] `manifest.json` 版本号仍与上游同为 1.1.8 —— 本地增强不参与社区插件更新，版本号只作标识；下次合并上游时确认是否跟随。记录：2026-10-09
+- [ ] `incremental-reading-enhance` 与 `incremental-reading-zh` 共用 `IR/` 数据但 id 不同 —— 同时启用会重复处理同一批笔记；切换时先禁用旧的。记录：2026-10-09
+- [ ] `main.js` 内联的 core 代码块（`// >>> xxx-functions`）—— 汉化流水线已自动跳过；上游若新增内联块，需确认 `scripts/i18n-extract.mjs` 的 VERBATIM_RE 仍能匹配新块名。记录：2026-10-09
+- [ ] `docs/USER-GUIDE.zh-CN.md` —— 引用的命令名必须与 main.js 实际文案逐字一致；本次新增的 7 条命令尚未写进使用指南。记录：2026-10-09
+- [ ] `scripts/validate-release.mjs` —— 放开了 `manifest.name` 只允许 Basic Latin 与 description 结尾两条校验；上游收紧校验时需重新对齐。记录：2026-10-09

@@ -1,6 +1,6 @@
-# 汉化术语表与规则（incremental-reading-zh）
+# 汉化术语表与规则（incremental-reading-enhance）
 
-本文件是 `incremental-reading-zh` 的汉化规范。`i18n/keys.json` 是 `scripts/i18n-extract.mjs` 从英文 `main.js` 抽取出的候选字符串索引；`i18n/zh-CN.jsonl` 是按索引存放的译文。
+本文件是 `incremental-reading-enhance` 的汉化规范。`i18n/keys.json` 是 `scripts/i18n-extract.mjs` 从英文 `main.js` 抽取出的候选字符串索引；`i18n/zh-CN.jsonl` 是按索引存放的译文。
 
 ## 工具链
 

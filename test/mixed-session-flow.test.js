@@ -97,13 +97,23 @@ test('completed single-note card review closes the Spaced Repetition deck menu',
   assert.match(main, /modal-close-button/);
 });
 
-test('the Toolkit registers three core commands and nine commands total', () => {
+test('the Toolkit registers three core commands and sixteen commands total', () => {
   assert.match(main, /cmd\('build-session-queue'/);
   assert.match(main, /cmd\('next-element'/);
   assert.match(main, /cmd\('end-session',\s*'为当前阅读主题评级'/);
   assert.doesNotMatch(main, /cmd\('random-due'|cmd\('review-cards'|cmd\('review-cards-in-note'/);
-  assert.equal((main.match(/\bcmd\('/g) || []).length, 9);
+  assert.equal((main.match(/\bcmd\('/g) || []).length, 16);
   for (const id of ['capture-more', 'current-actions', 'open-toolkit-view', 'advanced-tools']) {
     assert.match(main, new RegExp(`cmd\\('${id}'`));
   }
+});
+
+test('enhance adds hotkeyable commands for the current element and read point', () => {
+  for (const id of ['read-point-set', 'read-point-jump', 'mark-done-current', 'dismiss-current', 'postpone-current', 'trash-ir-item', 'remove-from-ir']) {
+    assert.match(main, new RegExp(`cmd\\('${id}'`));
+  }
+  assert.match(main, /async setReadPointAtCursor\(\)/);
+  assert.match(main, /async trashCurrentIRItem\(\)/);
+  assert.match(main, /async removeCurrentFromIR\(\)/);
+  assert.match(main, /trashFile\(active\)/);
 });

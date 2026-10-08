@@ -3186,6 +3186,14 @@ class IncrementalReadingPlugin extends Plugin {
     cmd('current-actions',    '当前元素操作…',         () => this.currentElementActions());
     cmd('open-toolkit-view',  '打开工具包视图…',               () => this.openToolkitView());
     cmd('advanced-tools',     '高级工具…',                  () => this.advancedTools());
+    // ---- 增强：把常用菜单项提升为可绑键的命令 ----
+    cmd('read-point-set',    '阅读点：设到光标',                 () => this.setReadPointAtCursor());
+    cmd('read-point-jump',   '阅读点：跳转到阅读位置',           () => this.jumpToReadPoint());
+    cmd('mark-done-current', '当前元素：已完成',                 () => this.markDone());
+    cmd('dismiss-current',   '当前元素：搁置',                   () => this.dismiss());
+    cmd('postpone-current',  '当前元素：推迟',                   () => this.postpone());
+    cmd('trash-ir-item',     '删除当前 IR 材料…',                () => this.trashCurrentIRItem());
+    cmd('remove-from-ir',    '移出 IR（保留笔记）…',             () => this.removeCurrentFromIR());
     this.app.workspace.onLayoutReady(() => {
       this._refreshExcerptViews();
       const count = this._legacyCardFiles().length;
@@ -5634,6 +5642,99 @@ ${body}
     await leaf.setViewState({ type: PDF_VIEW_TYPE, active: true, state: { url, page, title: r.tfile.basename, sourcePath: r.tfile.path } });
     this.app.workspace.revealLeaf(leaf);
   }
+
+  // ===== ENHANCE BEGIN =====
+  // incremental-reading-enhance 的本地增强；合并上游后需重新套用，见 docs/ENHANCE.zh-CN.md。
+
+  async setReadPointAtCursor() {
+    const active = this.app.workspace.getActiveFile();
+    if (!active || active.extension !== 'md') { new Notice('请打开一个 Markdown 来源。'); return; }
+    const fm = getFm(this.app, active);
+    if (!fm || fm.type !== 'source') { new Notice('不是渐进阅读来源。'); return; }
+    if (fm.total_pages || fm.pdf_path || fm.pdf_vault_path || fm.sioyek_path) {
+      new Notice('PDF 来源 — 请使用打开 PDF（工具包查看器）。'); return;
+    }
+    const editor = getEditorForFile(this.app, active);
+    const cursor = editor?.getCursor?.();
+    if (!editor || !cursor) { new Notice('没有编辑器光标。'); return; }
+    const line = cursor.line + 1;
+    await this.app.vault.process(active, (text) => {
+      let stripped = text;
+      const ms = [...text.matchAll(READ_POINT_RE)];
+      for (const m of ms.reverse()) {
+        stripped = stripped.slice(0, m.index) + stripped.slice(m.index + m[0].length);
+      }
+      const fmEnd = frontmatterEndOffset(stripped);
+      const lines = stripped.split('\n');
+      let insertAt = 0;
+      for (let i = 0; i < cursor.line; i++) insertAt += lines[i].length + 1;
+      if (insertAt < fmEnd) insertAt = fmEnd;
+      return stripped.slice(0, insertAt) + READ_POINT_MARKER + stripped.slice(insertAt);
+    });
+    await this.app.fileManager.processFrontMatter(active, (next) => { next.read_point_line = line; });
+    new Notice(`📍 阅读点已设到第 ${line} 行`);
+  }
+
+  _isIRManaged(file) {
+    const folders = [this.sourcesFolder(), this.extractsFolder(), this.cardsFolder(), this.categoriesFolder()]
+      .filter(Boolean)
+      .map((f) => normalizePath(f).replace(/\/+$/, '') + '/');
+    const path = normalizePath(file.path);
+    return folders.some((f) => path.startsWith(f));
+  }
+
+  async trashCurrentIRItem() {
+    const active = this.app.workspace.getActiveFile();
+    if (!active) { new Notice('没有活动文件。'); return; }
+    const fm = getFm(this.app, active);
+    if (!fm || !['source', 'extract', 'card'].includes(fm.type)) { new Notice('当前笔记不是渐进阅读元素。'); return; }
+    const ok = await confirmDialog(this.app, `将「${active.basename}」移入回收站？`);
+    if (!ok) return;
+    await this.app.fileManager.trashFile(active);
+    this._invalidateIRCollection(true);
+    new Notice(`已移入回收站：${active.basename}`);
+  }
+
+  async removeCurrentFromIR() {
+    const active = this.app.workspace.getActiveFile();
+    if (!active) { new Notice('没有活动文件。'); return; }
+    const fm0 = getFm(this.app, active);
+    if (!fm0 || !['source', 'extract', 'card'].includes(fm0.type)) { new Notice('当前笔记不是渐进阅读元素。'); return; }
+    const ok = await confirmDialog(this.app, '移出 IR：清掉排期字段、ir/* 标签与 📍 标记，并把笔记移到库根目录？');
+    if (!ok) return;
+    const IR_FM_KEYS = [
+      'type', 'source_type', 'status', 'priority', 'next_review', 'interval', 'a_factor',
+      'review_count', 'last_reviewed', 'date_added', 'date_done', 'date_dismissed',
+      'read_point', 'read_point_line', 'read_point_seconds', 'total_pages', 'total_seconds',
+      'page_start', 'page_end', 'pdf_path', 'pdf_vault_path', 'sioyek_path', 'source',
+      'card_format', 'ir_card_backend', 'ir_spaced_repetition',
+      'ir_spaced_repetition_deck_tag', 'ir_completed_deck_tag', 'tree_order', 'inline_parent',
+    ];
+    const IR_TAGS = ['incremental-reading', 'ir/source', 'ir/extract', 'ir/card', 'flashcards/incremental-reading'];
+    await this.app.fileManager.processFrontMatter(active, (fmw) => {
+      for (const k of IR_FM_KEYS) delete fmw[k];
+      if (fmw.tags !== undefined) {
+        const list = Array.isArray(fmw.tags) ? fmw.tags : String(fmw.tags ?? '').split(/[\s,]+/);
+        const kept = list.map((t) => String(t).trim()).filter((t) => t && !IR_TAGS.includes(t.replace(/^#/, '')));
+        if (kept.length) fmw.tags = kept; else delete fmw.tags;
+      }
+      if (Array.isArray(fmw.cssclasses)) {
+        const kept = fmw.cssclasses.filter((c) => c !== 'hide-answer');
+        if (kept.length) fmw.cssclasses = kept; else delete fmw.cssclasses;
+      }
+    });
+    await this.app.vault.process(active, (text) => {
+      READ_POINT_RE.lastIndex = 0;
+      return text.replace(READ_POINT_RE, '').replace(/\n{3,}/g, '\n\n');
+    });
+    let target = active.basename + '.md';
+    let suffix = 2;
+    while (this.app.vault.getAbstractFileByPath(target)) target = `${active.basename} ${suffix++}.md`;
+    await this.app.fileManager.renameFile(active, target);
+    this._invalidateIRCollection(true);
+    new Notice(`已移出 IR：${target}`);
+  }
+  // ===== ENHANCE END =====
 
   async toggleReadPoint() {
     const active = this.app.workspace.getActiveFile();
