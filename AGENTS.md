@@ -16,7 +16,7 @@
 
 ## 目录与约定
 
-- main.js：插件唯一源文件，同时承载汉化产物与本地增强，不要手工零散改文案，走 i18n 流水线。
+- main.js：插件唯一源文件，同时承载汉化产物与本地增强。改中文措辞时 main.js 与 i18n/zh-CN.jsonl 必须同时改，否则 npm run i18n:check 会失败。
 - main.js 中 `// ===== ENHANCE BEGIN =====` 与 `// ===== ENHANCE END =====` 之间、以及 `// ---- 增强：把常用菜单项提升为可绑键的命令 ----` 之后是本地增强；合并上游后必须重新套用，清单与步骤见 docs/ENHANCE.zh-CN.md。
 - docs/ENHANCE.zh-CN.md：本地增强的命令、行为与重新套用步骤。
 - i18n/GLOSSARY.md：术语表、跳过规则与工具链说明，汉化前必读。

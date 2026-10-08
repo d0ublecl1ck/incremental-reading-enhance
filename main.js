@@ -4296,7 +4296,7 @@ class IncrementalReadingPlugin extends Plugin {
        `加快（×${s.quality_speed_up}，更早再见）`,
        `减慢（×${s.quality_slow_down}，往后推）`],
       [s.quality_hold, s.quality_speed_up, s.quality_slow_down],
-      '主题质量？'
+      '这次读得怎么样？（决定下次间隔怎么调）'
     );
     if (qualityFactor == null) return;
     const aFactor = clampAFactor(this.settings, baseAF * qualityFactor);
@@ -4627,7 +4627,7 @@ class IncrementalReadingPlugin extends Plugin {
       const ok = await confirmDialog(
         this.app,
         `重置 ${label}？`,
-        '将状态设为 active 并清除工具包排期历史。Spaced Repetition 卡片会作为新卡片回到自己的牌组。'
+        '把它设回「进行中」并清空排期历史？下次会重新累计间隔，已进队列的内容按新内容重排。'
       );
       if (!ok) return 0;
     }
@@ -4772,7 +4772,7 @@ class IncrementalReadingPlugin extends Plugin {
       fmw.status = 'dismissed';
       fmw.date_dismissed = todayDateString(this.settings);
     });
-    new Notice('已搁置。将 status 设为 active 可恢复。');
+    new Notice('已搁置：仍留在知识树，但不再出现在阅读队列。想恢复就打开它，用「当前元素操作… → 重置」。');
   }
 
   async postpone() {
@@ -5490,8 +5490,8 @@ ${body}
       read_point_seconds = 0;
     }
 
-    const holdInInbox = await confirmDialog(this.app, '保留在收件箱？（否则将按排期进入队列。）');
-    const status = holdInInbox ? 'inbox' : 'active';
+    const status = await this._askInboxOrActive(); // enhance
+    if (!status) return;
 
     const aFactorInit = round4(initialAFactor(this.settings, { total_pages, total_seconds }));
     const fmLines = [
@@ -5542,7 +5542,7 @@ ${body}
     }
     const f = await this.app.vault.create(path, fmLines.join('\n') + body);
     await this.app.workspace.getLeaf(false).openFile(f);
-    new Notice(`已创建 ${title}（${status}）a=${aFactorInit}`);
+    new Notice(`已创建 ${title}。初始间隔倍率 ${aFactorInit}。`);
   }
 
   async importClipping() {
@@ -5562,8 +5562,8 @@ ${body}
     const today = todayDateString(this.settings);
     const interval = priorityToInterval(p);
     const nextReview = futureDateString(interval, this.settings);
-    const hold = await confirmDialog(this.app, '保留在收件箱？（否则为 active。）');
-    const initialStatus = hold ? 'inbox' : 'active';
+    const initialStatus = await this._askInboxOrActive(); // enhance
+    if (!initialStatus) return;
 
     const aFactorInit = round4(initialAFactor(this.settings, {
       total_pages: Number(existing?.total_pages) || null,
@@ -5776,8 +5776,8 @@ ${body}
     const p = Number(priStr);
     if (!Number.isInteger(p) || p < 1 || p > 100) { new Notice('优先级无效。'); return; }
 
-    const hold = await confirmDialog(this.app, '保留在收件箱？（否则为 active。）');
-    const status = hold ? 'inbox' : 'active';
+    const status = await this._askInboxOrActive(); // enhance
+    if (!status) return;
 
     const today = todayDateString(this.settings);
     const interval = priorityToInterval(p);
@@ -6134,8 +6134,8 @@ ${body}
       }
     }
 
-    const hold = await confirmDialog(this.app, '保留在收件箱？（否则为 active。）');
-    const status = hold ? 'inbox' : 'active';
+    const status = await this._askInboxOrActive(); // enhance
+    if (!status) return;
     const today = todayDateString(this.settings);
     const interval = priorityToInterval(p);
     const nextReview = futureDateString(interval, this.settings);
@@ -6170,6 +6170,15 @@ ${body}
     this._invalidateIRCollection(true);
     await this.app.workspace.getLeaf(false).openFile(file);
     new Notice('已导入「' + title + '」· ' + status + ' · ' + h2 + ' 章可拆分 · 图片 ' + written.length + ' 张');
+  }
+
+  async _askInboxOrActive() {
+    return await pickFromList(
+      this.app,
+      ['放进收件箱（暂不排期）', '立刻排期，进入阅读队列'],
+      ['inbox', 'active'],
+      '先放进收件箱（暂不排期）？选「取消」＝立刻按优先级排期，进入阅读队列。'
+    );
   }
 
   // ===== ENHANCE END =====
