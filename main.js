@@ -3218,6 +3218,7 @@ class IncrementalReadingPlugin extends Plugin {
     cmd('remove-from-ir',    '移出 IR（保留笔记）…',             () => this.removeCurrentFromIR());
     cmd('source-clipboard',  '从剪贴板新建来源（文章）',        () => this.newSourceFromClipboard());
     cmd('epub-import',       '从 EPUB 导入来源…',              () => this.importFromEpub());
+    cmd('activate-ir-item',  '当前元素：设为活跃（加入今日队列）', () => this.activateCurrentIRItem());
     this.app.workspace.onLayoutReady(() => {
       this._refreshExcerptViews();
       const count = this._legacyCardFiles().length;
@@ -3288,6 +3289,7 @@ class IncrementalReadingPlugin extends Plugin {
     return this._runActionMenu('当前元素操作', [
       { label: '已完成', run: () => this.markDone() },
       { label: '重置', run: () => this.resetCurrent() },
+      { label: '设为活跃（加入今日队列）', run: () => this.activateCurrentIRItem() }, // enhance
       { label: '搁置', run: () => this.dismiss() },
       { label: '推迟', run: () => this.postpone() },
       { label: '排期（手动日期）', run: () => this.schedule() },
@@ -6179,6 +6181,21 @@ ${body}
       ['inbox', 'active'],
       '先放进收件箱（暂不排期）？选「取消」＝立刻按优先级排期，进入阅读队列。'
     );
+  }
+
+  async activateCurrentIRItem() {
+    const r = await resolveIRFromActive(this.app, this.settings, { allowCard: false, allowPdfFallback: true });
+    if (!r) return;
+    const tfile = r.tfile;
+    const today = todayDateString(this.settings);
+    await this.app.fileManager.processFrontMatter(tfile, (fmw) => {
+      fmw.status = 'active';
+      fmw.next_review = today;
+      if (fmw.date_done !== undefined) delete fmw.date_done;
+      if (fmw.date_dismissed !== undefined) delete fmw.date_dismissed;
+    });
+    this._invalidateIRCollection(true);
+    new Notice('已设为进行中，今天就会进阅读队列：' + tfile.basename);
   }
 
   // ===== ENHANCE END =====
