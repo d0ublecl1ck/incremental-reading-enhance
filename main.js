@@ -3194,6 +3194,7 @@ class IncrementalReadingPlugin extends Plugin {
     cmd('postpone-current',  '当前元素：推迟',                   () => this.postpone());
     cmd('trash-ir-item',     '删除当前 IR 材料…',                () => this.trashCurrentIRItem());
     cmd('remove-from-ir',    '移出 IR（保留笔记）…',             () => this.removeCurrentFromIR());
+    cmd('source-clipboard',  '从剪贴板新建来源（文章）',        () => this.newSourceFromClipboard());
     this.app.workspace.onLayoutReady(() => {
       this._refreshExcerptViews();
       const count = this._legacyCardFiles().length;
@@ -3251,6 +3252,7 @@ class IncrementalReadingPlugin extends Plugin {
   captureOrCreate() {
     return this._runActionMenu('捕获或创建', [
       { label: '新建来源', run: () => this.newSource() },
+      { label: '从剪贴板新建来源（文章）', run: () => this.newSourceFromClipboard() }, // enhance
       { label: '导入剪藏（当前笔记）', run: () => this.importClipping() },
       { label: '从剪贴板摘录（支持 PDF）', run: () => this.extractClipboard() },
       { label: '卡片：为此图片命名', run: () => this.flashcardImageName() },
@@ -5734,6 +5736,63 @@ ${body}
     this._invalidateIRCollection(true);
     new Notice(`已移出 IR：${target}`);
   }
+  async newSourceFromClipboard() {
+    let clip = '';
+    try { clip = (await navigator.clipboard.readText()).trim(); }
+    catch (e) { new Notice('无法读取剪贴板。'); return; }
+    if (!clip) { new Notice('剪贴板为空（无文本）。'); return; }
+
+    const firstLine = clip.split('\n').map((s) => s.trim()).find(Boolean) || '';
+    const suggested = (firstLine.replace(/^#+\s*/, '').slice(0, 60).trim()) || '剪贴板文章';
+    const title = await askText(this.app, '来源标题', suggested);
+    if (!title) return;
+
+    const priStr = await askText(this.app, '优先级（1-100，1 为最高）', '50');
+    if (priStr === null) return;
+    if (!/^\d+$/.test(priStr.trim())) { new Notice('优先级无效。'); return; }
+    const p = Number(priStr);
+    if (!Number.isInteger(p) || p < 1 || p > 100) { new Notice('优先级无效。'); return; }
+
+    const hold = await confirmDialog(this.app, '保留在收件箱？（否则为 active。）');
+    const status = hold ? 'inbox' : 'active';
+
+    const today = todayDateString(this.settings);
+    const interval = priorityToInterval(p);
+    const nextReview = futureDateString(interval, this.settings);
+    const aFactorInit = round4(initialAFactor(this.settings, { total_pages: null, total_seconds: null }));
+
+    const safeTitle = slugifyForFolder(title);
+    if (!safeTitle) { new Notice('来源标题不含有效文件名。'); return; }
+    const sourcesFolder = this.sourcesFolder();
+    await ensureFolder(this.app, sourcesFolder);
+    let path = `${sourcesFolder}/${safeTitle}.md`;
+    let suffix = 2;
+    while (this.app.vault.getAbstractFileByPath(path)) path = `${sourcesFolder}/${safeTitle} ${suffix++}.md`;
+
+    const fmLines = [
+      '---',
+      'type: source',
+      'source_type: article',
+      `status: ${status}`,
+      `priority: ${p}`,
+      `next_review: ${nextReview}`,
+      `interval: ${interval}`,
+      `a_factor: ${aFactorInit}`,
+      'review_count: 0',
+      'last_reviewed:',
+      `date_added: ${today}`,
+      'tags:',
+      '  - incremental-reading',
+      '  - ir/source',
+      '---',
+    ];
+    const body = `\n# ${title}\n\n${clip}\n\n## Reading Notes\n\n\n## Extracts\n\n`;
+    const f = await this.app.vault.create(path, fmLines.join('\n') + body);
+    this._invalidateIRCollection(true);
+    await this.app.workspace.getLeaf(false).openFile(f);
+    new Notice(`已从剪贴板创建来源「${title}」（${status}）· p${p} · 复习 +${interval} 天`);
+  }
+
   // ===== ENHANCE END =====
 
   async toggleReadPoint() {
