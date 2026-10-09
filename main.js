@@ -6100,7 +6100,7 @@ ${body}
     });
     const byZip = Object.create(null);
     for (const item of media) byZip[item.zipPath] = item.name;
-    md = md.replace(/\(epubimg:([^)]+)\)/g, (whole, zipPath) => {
+    md = md.replace(/!\[[^\]]*\]\(epubimg:([^)]+)\)/g, (whole, zipPath) => {
       const name = byZip[zipPath] || byZip[decodeURIComponent(zipPath)];
       return name ? '![[' + name + ']]' : '';
     });

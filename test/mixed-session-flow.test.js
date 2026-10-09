@@ -122,5 +122,6 @@ test('enhance adds hotkeyable commands for the current element and read point', 
   assert.match(main, /_epubReadZip\(/);
   assert.match(main, /_confirmEpubPreview\(/);
   assert.match(main, /async activateCurrentIRItem\(\)/);
+  assert.ok(main.includes('!\\[[^\\]]*\\]\\(epubimg:'), 'epub image replacement must match the whole markdown image');
   assert.match(main, /label: '设为活跃（加入今日队列）'/);
 });
