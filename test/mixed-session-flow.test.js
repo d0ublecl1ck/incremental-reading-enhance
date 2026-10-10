@@ -130,6 +130,8 @@ test('enhance adds hotkeyable commands for the current element and read point', 
   assert.ok(main.includes('还没有记录记忆状态，留在这一篇。'), 'nextElement must refuse to advance with no memory state today');
   assert.ok(main.includes('今天不算做完'), 'end-of-queue notice must distinguish unfinished items');
   assert.ok(!main.includes("if (!next) { new Notice('✨ 已全部跟上。'); return; }"), 'nextElement must not claim completion unconditionally');
+  assert.ok(main.includes('const settled = !!activeFm'), 'nextElement must gate on a settled memory state');
+  assert.ok(main.includes('今日队列是空的'), 'empty queue must say so instead of 已全部跟上');
   assert.match(main, /if \(cfg.autoSplit && h2 > 0\)/, 'epub import must auto-split after creating the source');
   assert.ok(main.includes('!\\[[^\\]]*\\]\\(epubimg:'), 'epub image replacement must match the whole markdown image');
   assert.match(main, /label: '设为活跃（加入今日队列）'/);
