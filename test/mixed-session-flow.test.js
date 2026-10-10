@@ -127,6 +127,9 @@ test('enhance adds hotkeyable commands for the current element and read point', 
   assert.ok(main.includes('for (const level of [2, 1])'), 'split must pick the chapter level, preferring H2 then H1');
   assert.ok(main.includes('while (used.has(noteTitle))'), 'split must de-duplicate filenames instead of skipping sections');
   assert.ok(main.includes("'status: inbox\\n' +"), 'split children must land in the inbox, not the queue');
+  assert.ok(main.includes('还没有记录记忆状态，留在这一篇。'), 'nextElement must refuse to advance with no memory state today');
+  assert.ok(main.includes('今天不算做完'), 'end-of-queue notice must distinguish unfinished items');
+  assert.ok(!main.includes("if (!next) { new Notice('✨ 已全部跟上。'); return; }"), 'nextElement must not claim completion unconditionally');
   assert.match(main, /if \(cfg.autoSplit && h2 > 0\)/, 'epub import must auto-split after creating the source');
   assert.ok(main.includes('!\\[[^\\]]*\\]\\(epubimg:'), 'epub image replacement must match the whole markdown image');
   assert.match(main, /label: '设为活跃（加入今日队列）'/);

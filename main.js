@@ -4169,12 +4169,40 @@ class IncrementalReadingPlugin extends Plugin {
       new Notice("今日没有已保存的队列。请先运行「构建今日会话队列」。");
       return;
     }
-    const activePath = this.app.workspace.getActiveFile()?.path;
+    const today = todayDateString(this.settings);
+    const active = this.app.workspace.getActiveFile();
+    const activePath = active?.path;
+    // enhance：先算好下一批再评级，避免评级把当前项移出队列后回退到队首。
     const candidates = savedQueueCandidates(session.paths, activePath, fromStart);
+    // enhance：当前这篇属于今日队列、今天却还没有记忆状态时，直接弹出评级；不选就不前进。
+    if (!fromStart && activePath && session.paths.includes(activePath)) {
+      const activeFm = active ? getFm(this.app, active) : null;
+      const settled = !!activeFm && (
+        activeFm.last_reviewed === today ||
+        activeFm.status === 'done' ||
+        activeFm.status === 'dismissed' ||
+        activeFm.status === 'container'
+      );
+      if (!settled) {
+        const graded = await this.gradeCurrent();
+        if (!graded) { new Notice('还没有记录记忆状态，留在这一篇。'); return; }
+      }
+    }
     const next = candidates
       .map(path => this.app.vault.getAbstractFileByPath(path))
       .find(file => file instanceof TFile);
-    if (!next) { new Notice('✨ 已全部跟上。'); return; }
+    if (!next) {
+      const pending = session.paths.filter((path) => {
+        const f = this.app.vault.getAbstractFileByPath(path);
+        const rowFm = f instanceof TFile ? getFm(this.app, f) : null;
+        if (!rowFm) return false;
+        return !(rowFm.last_reviewed === today || rowFm.status === 'done' || rowFm.status === 'dismissed' || rowFm.status === 'container');
+      });
+      new Notice(pending.length
+        ? '队列里还有 ' + pending.length + ' 篇没记录记忆状态，今天不算做完。'
+        : '✨ 已全部跟上。');
+      return;
+    }
     const nextType = session.types?.[next.path] || getFm(this.app, next)?.type;
     const readPointLine = session.readPoints?.[next.path] || 0;
 
