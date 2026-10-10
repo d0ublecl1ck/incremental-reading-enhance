@@ -4169,29 +4169,30 @@ class IncrementalReadingPlugin extends Plugin {
       new Notice("今日没有已保存的队列。请先运行「构建今日会话队列」。");
       return;
     }
-    // enhance：空队列直接说清楚，别让人以为今天已经做完了。
-    if (!session.paths.length) {
-      new Notice('今日队列是空的：先在阅读队列里把要读的章节「设为活跃（加入今日队列）」，再运行「构建今日会话队列」。');
-      return;
-    }
     const today = todayDateString(this.settings);
     const active = this.app.workspace.getActiveFile();
     const activePath = active?.path;
     // enhance：先算好下一批再评级，避免评级把当前项移出队列后回退到队首。
     const candidates = savedQueueCandidates(session.paths, activePath, fromStart);
-    // enhance：当前这篇属于今日队列、今天却还没有记忆状态时，直接弹出评级；不选就不前进。
-    if (!fromStart && activePath && session.paths.includes(activePath)) {
-      const activeFm = active ? getFm(this.app, active) : null;
+    // enhance：只要当前打开的是来源/摘录、今天又还没有记忆状态，就先弹出评级；不选就不前进。
+    if (!fromStart && active) {
+      const activeFm = getFm(this.app, active);
+      const gradable = !!activeFm && (activeFm.type === 'source' || activeFm.type === 'extract');
       const settled = !!activeFm && (
         activeFm.last_reviewed === today ||
         activeFm.status === 'done' ||
         activeFm.status === 'dismissed' ||
         activeFm.status === 'container'
       );
-      if (!settled) {
+      if (gradable && !settled) {
         const graded = await this.gradeCurrent();
         if (!graded) { new Notice('还没有记录记忆状态，留在这一篇。'); return; }
       }
+    }
+    // enhance：空队列直接说清楚，别让人以为今天已经做完了。
+    if (!session.paths.length) {
+      new Notice('今日队列是空的：先在阅读队列里把要读的章节「设为活跃（加入今日队列）」，再运行「构建今日会话队列」。');
+      return;
     }
     const next = candidates
       .map(path => this.app.vault.getAbstractFileByPath(path))
