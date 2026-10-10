@@ -6218,10 +6218,46 @@ ${body}
     const content = await this.app.vault.read(file);
     const fmEnd = content.indexOf('\n---', 3);
     const body = fmEnd !== -1 ? content.slice(fmEnd + 4) : content;
-    const headings = [...body.matchAll(/^## (.+)$/gm)].map((m) => ({ title: m[1].trim(), index: m.index }));
-    if (!headings.length) { new Notice('没有找到 ## 标题，无法拆分。'); return 0; }
-
     const parentTitle = file.basename;
+
+    const norm = (s) => String(s).replace(/\s+/g, '').toLowerCase();
+    const skipTitles = ['目录', 'cover', '封面', '版权', '版权信息', '扉页', 'sub-topics'];
+    const isSkipped = (title) => {
+      const n = norm(title);
+      return n === norm(parentTitle) || skipTitles.includes(n);
+    };
+
+    const all = [];
+    const re = new RegExp('^(#{1,2}) (.+)$', 'gm');
+    let m;
+    while ((m = re.exec(body)) !== null) {
+      all.push({ level: m[1].length, title: m[2].trim(), index: m.index });
+    }
+    const usable = all.filter((h) => !isSkipped(h.title));
+    if (!usable.length) { new Notice('没有找到可用的标题，无法拆分。'); return 0; }
+
+    const sectionLength = (h) => {
+      const next = usable.find((x) => x.index > h.index);
+      const end = next ? next.index : body.length;
+      return body.slice(h.index, end).trim().length;
+    };
+    const candidates = {};
+    for (const level of [2, 1]) {
+      const heads = usable.filter((h) => h.level === level && sectionLength(h) >= 200);
+      const titles = heads.map((h) => h.title);
+      candidates[level] = { heads, unique: new Set(titles).size === titles.length };
+    }
+    let chosen = null;
+    for (const level of [2, 1]) {
+      const c = candidates[level];
+      if (c && c.heads.length >= 3 && c.unique) { chosen = c.heads; break; }
+    }
+    if (!chosen) {
+      const c2 = candidates[2] && candidates[2].heads.length >= 3 ? candidates[2].heads : (candidates[1] ? candidates[1].heads : []);
+      chosen = c2.length ? c2 : usable;
+    }
+    if (!chosen.length) { new Notice('没有找到可拆分的章节。'); return 0; }
+
     const safeTitle = slugifyForFolder(parentTitle) || '未命名';
     const bookFolder = this.sourcesFolder() + '/' + safeTitle;
     await ensureFolder(this.app, bookFolder);
@@ -6230,15 +6266,20 @@ ${body}
     const priority = fm.priority ?? 50;
     const baseInterval = priorityToInterval(priority);
     const links = [];
+    const used = new Set();
     let created = 0;
 
-    for (let i = 0; i < headings.length; i++) {
-      const h = headings[i];
-      const next = headings[i + 1];
+    for (let i = 0; i < chosen.length; i++) {
+      const h = chosen[i];
+      const next = chosen[i + 1];
       const sectionBody = body.slice(h.index, next ? next.index : body.length).trimEnd();
       const interval = baseInterval + i;
       const nextReview = futureDateString(interval, this.settings);
-      const noteTitle = slugifyForFolder(parentTitle + ' - ' + h.title) || (parentTitle + ' - 第 ' + (i + 1) + ' 节');
+      const stem = slugifyForFolder(parentTitle + ' - ' + h.title) || (parentTitle + ' - 第 ' + (i + 1) + ' 节');
+      let noteTitle = stem;
+      let n = 2;
+      while (used.has(noteTitle)) noteTitle = stem + ' ' + (n++);
+      used.add(noteTitle);
       const noteContent = '---\n' +
         'type: source\n' +
         'source_type: article\n' +
@@ -6274,7 +6315,7 @@ ${body}
     await this.app.vault.process(moved, () => bodyWithoutOld + subSection);
     await this.app.fileManager.processFrontMatter(moved, (fmw) => { fmw.status = 'container'; });
     this._invalidateIRCollection(true);
-    new Notice('已拆出 ' + created + ' 章到 ' + bookFolder + '，全部停在收件箱；原书保留为容器。');
+    new Notice('已拆出 ' + created + ' 篇（按 H' + (chosen[0].level) + '）到 ' + bookFolder + '，全部停在收件箱。');
     return created;
   }
 

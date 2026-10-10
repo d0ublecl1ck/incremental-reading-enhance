@@ -123,6 +123,9 @@ test('enhance adds hotkeyable commands for the current element and read point', 
   assert.match(main, /_confirmEpubPreview\(/);
   assert.match(main, /async activateCurrentIRItem\(\)/);
   assert.match(main, /async splitSourceIntoChapters\(file\)/);
+  assert.ok(main.includes('skipTitles'), 'split must skip structural headings like the book title and 目录');
+  assert.ok(main.includes('for (const level of [2, 1])'), 'split must pick the chapter level, preferring H2 then H1');
+  assert.ok(main.includes('while (used.has(noteTitle))'), 'split must de-duplicate filenames instead of skipping sections');
   assert.ok(main.includes("'status: inbox\\n' +"), 'split children must land in the inbox, not the queue');
   assert.match(main, /if \(cfg.autoSplit && h2 > 0\)/, 'epub import must auto-split after creating the source');
   assert.ok(main.includes('!\\[[^\\]]*\\]\\(epubimg:'), 'epub image replacement must match the whole markdown image');
