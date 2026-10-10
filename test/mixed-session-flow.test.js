@@ -97,19 +97,19 @@ test('completed single-note card review closes the Spaced Repetition deck menu',
   assert.match(main, /modal-close-button/);
 });
 
-test('the Toolkit registers three core commands and nineteen commands total', () => {
+test('the Toolkit registers three core commands and twenty commands total', () => {
   assert.match(main, /cmd\('build-session-queue'/);
   assert.match(main, /cmd\('next-element'/);
   assert.match(main, /cmd\('end-session',\s*'为当前阅读主题评级'/);
   assert.doesNotMatch(main, /cmd\('random-due'|cmd\('review-cards'|cmd\('review-cards-in-note'/);
-  assert.equal((main.match(/\bcmd\('/g) || []).length, 19);
+  assert.equal((main.match(/\bcmd\('/g) || []).length, 20);
   for (const id of ['capture-more', 'current-actions', 'open-toolkit-view', 'advanced-tools']) {
     assert.match(main, new RegExp(`cmd\\('${id}'`));
   }
 });
 
 test('enhance adds hotkeyable commands for the current element and read point', () => {
-  for (const id of ['read-point-set', 'read-point-jump', 'mark-done-current', 'dismiss-current', 'postpone-current', 'trash-ir-item', 'remove-from-ir', 'source-clipboard', 'epub-import', 'activate-ir-item']) {
+  for (const id of ['read-point-set', 'read-point-jump', 'mark-done-current', 'dismiss-current', 'postpone-current', 'trash-ir-item', 'remove-from-ir', 'source-clipboard', 'epub-import', 'activate-ir-item', 'split-source-chapters']) {
     assert.match(main, new RegExp(`cmd\\('${id}'`));
   }
   assert.match(main, /async setReadPointAtCursor\(\)/);
@@ -122,6 +122,9 @@ test('enhance adds hotkeyable commands for the current element and read point', 
   assert.match(main, /_epubReadZip\(/);
   assert.match(main, /_confirmEpubPreview\(/);
   assert.match(main, /async activateCurrentIRItem\(\)/);
+  assert.match(main, /async splitSourceIntoChapters\(file\)/);
+  assert.ok(main.includes("'status: inbox\\n' +"), 'split children must land in the inbox, not the queue');
+  assert.match(main, /if \(cfg.autoSplit && h2 > 0\)/, 'epub import must auto-split after creating the source');
   assert.ok(main.includes('!\\[[^\\]]*\\]\\(epubimg:'), 'epub image replacement must match the whole markdown image');
   assert.match(main, /label: '设为活跃（加入今日队列）'/);
 });

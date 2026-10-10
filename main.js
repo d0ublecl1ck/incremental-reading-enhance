@@ -582,6 +582,7 @@ const DEFAULT_SETTINGS = {
   epubImport: {
     libraryFolder: '',
     dropLeadingToc: true,
+    autoSplit: true,
   },
 };
 
@@ -2038,6 +2039,10 @@ class IncrementalReadingSettingTab extends PluginSettingTab {
       .setDesc('可选。填写后「从 EPUB 导入来源…」会先让你从该目录里挑书；留空则每次手输路径。解析在插件内完成，不需要外部工具。')
       .addText((t) => t.setPlaceholder('例如 /Users/you/books/Readest/Books').setValue(s.libraryFolder || '').onChange((v) => { s.libraryFolder = v.trim(); save(); }));
     new Setting(sec)
+      .setName('导入后自动拆章')
+      .setDesc('开启后，EPUB 导入完成即按 ## 标题拆成每章一篇，放进 IR/Sources/<书名>/，全部停在收件箱等你说要不要读。')
+      .addToggle((t) => t.setValue(s.autoSplit !== false).onChange((v) => { s.autoSplit = v; save(); }));
+    new Setting(sec)
       .setName('去掉开头的目录块')
       .setDesc('EPUB 自带目录页的锚点通常在 Obsidian 里失效。开启后写入前会丢掉第一个标题之前的内容，但保留其中的图片。')
       .addToggle((t) => t.setValue(s.dropLeadingToc !== false).onChange((v) => { s.dropLeadingToc = v; save(); }));
@@ -3219,6 +3224,7 @@ class IncrementalReadingPlugin extends Plugin {
     cmd('source-clipboard',  '从剪贴板新建来源（文章）',        () => this.newSourceFromClipboard());
     cmd('epub-import',       '从 EPUB 导入来源…',              () => this.importFromEpub());
     cmd('activate-ir-item',  '当前元素：设为活跃（加入今日队列）', () => this.activateCurrentIRItem());
+    cmd('split-source-chapters', '拆分来源为章节（每章一个文件）', () => this.splitSourceIntoChapters(this.app.workspace.getActiveFile()));
     this.app.workspace.onLayoutReady(() => {
       this._refreshExcerptViews();
       const count = this._legacyCardFiles().length;
@@ -6168,10 +6174,15 @@ ${body}
       '---',
     ];
     const content = fm.join('\n') + '\n\n# ' + title + '\n\n' + md;
-    const file = await this.app.vault.create(target, content);
+    let file = await this.app.vault.create(target, content);
     this._invalidateIRCollection(true);
+    if (cfg.autoSplit && h2 > 0) {
+      await this.splitSourceIntoChapters(file);
+      const movedFile = this.app.vault.getAbstractFileByPath(this.sourcesFolder() + '/' + safeTitle + '/' + safeTitle + '.md');
+      if (movedFile) file = movedFile;
+    }
     await this.app.workspace.getLeaf(false).openFile(file);
-    new Notice('已导入「' + title + '」· ' + status + ' · ' + h2 + ' 章可拆分 · 图片 ' + written.length + ' 张');
+    new Notice('已导入「' + title + '」· ' + status + ' · 图片 ' + written.length + ' 张');
   }
 
   async _askInboxOrActive() {
@@ -6196,6 +6207,75 @@ ${body}
     });
     this._invalidateIRCollection(true);
     new Notice('已设为进行中，今天就会进阅读队列：' + tfile.basename);
+  }
+
+  async splitSourceIntoChapters(file) {
+    if (!file || file.extension !== 'md') { new Notice('请先打开一篇来源笔记。'); return 0; }
+    const fm = getFm(this.app, file);
+    if (!fm || fm.type !== 'source') { new Notice('不是渐进阅读来源。'); return 0; }
+    if (fm.status === 'container') { new Notice('已经是容器，无需再拆。'); return 0; }
+
+    const content = await this.app.vault.read(file);
+    const fmEnd = content.indexOf('\n---', 3);
+    const body = fmEnd !== -1 ? content.slice(fmEnd + 4) : content;
+    const headings = [...body.matchAll(/^## (.+)$/gm)].map((m) => ({ title: m[1].trim(), index: m.index }));
+    if (!headings.length) { new Notice('没有找到 ## 标题，无法拆分。'); return 0; }
+
+    const parentTitle = file.basename;
+    const safeTitle = slugifyForFolder(parentTitle) || '未命名';
+    const bookFolder = this.sourcesFolder() + '/' + safeTitle;
+    await ensureFolder(this.app, bookFolder);
+
+    const today = todayDateString(this.settings);
+    const priority = fm.priority ?? 50;
+    const baseInterval = priorityToInterval(priority);
+    const links = [];
+    let created = 0;
+
+    for (let i = 0; i < headings.length; i++) {
+      const h = headings[i];
+      const next = headings[i + 1];
+      const sectionBody = body.slice(h.index, next ? next.index : body.length).trimEnd();
+      const interval = baseInterval + i;
+      const nextReview = futureDateString(interval, this.settings);
+      const noteTitle = slugifyForFolder(parentTitle + ' - ' + h.title) || (parentTitle + ' - 第 ' + (i + 1) + ' 节');
+      const noteContent = '---\n' +
+        'type: source\n' +
+        'source_type: article\n' +
+        'status: inbox\n' +
+        'parent: ' + JSON.stringify('[[' + parentTitle + ']]') + '\n' +
+        'priority: ' + priority + '\n' +
+        'next_review: ' + nextReview + '\n' +
+        'interval: ' + interval + '\n' +
+        'a_factor: 2.0\n' +
+        'review_count: 0\n' +
+        'last_reviewed:\n' +
+        'date_added: ' + today + '\n' +
+        'tags:\n' +
+        '  - incremental-reading\n' +
+        '  - ir/source\n' +
+        '  - ir/sub-topic\n' +
+        '---\n\n' + sectionBody + '\n';
+      const p = bookFolder + '/' + noteTitle + '.md';
+      if (!this.app.vault.getAbstractFileByPath(p)) {
+        await this.app.vault.create(p, noteContent);
+        created++;
+      }
+      links.push('- [[' + noteTitle + ']]');
+    }
+
+    const targetParentPath = bookFolder + '/' + safeTitle + '.md';
+    if (file.path !== targetParentPath && !this.app.vault.getAbstractFileByPath(targetParentPath)) {
+      await this.app.fileManager.renameFile(file, targetParentPath);
+    }
+    const moved = this.app.vault.getAbstractFileByPath(targetParentPath) || file;
+    const subSection = '\n## Sub-topics\n\n' + links.join('\n') + '\n';
+    const bodyWithoutOld = content.replace(/\n## Sub-topics[\s\S]*?(?=\n## |$)/, '');
+    await this.app.vault.process(moved, () => bodyWithoutOld + subSection);
+    await this.app.fileManager.processFrontMatter(moved, (fmw) => { fmw.status = 'container'; });
+    this._invalidateIRCollection(true);
+    new Notice('已拆出 ' + created + ' 章到 ' + bookFolder + '，全部停在收件箱；原书保留为容器。');
+    return created;
   }
 
   // ===== ENHANCE END =====
@@ -6372,7 +6452,7 @@ ${body}
       const noteContent = `---
 type: source
 source_type: article
-status: active
+status: inbox // enhance：拆分产物停在收件箱，不自动进队列
 parent: ${JSON.stringify(`[[${parentTitle}]]`)}
 priority: ${priority}
 next_review: ${nextReview}

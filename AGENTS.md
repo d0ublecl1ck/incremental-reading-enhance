@@ -18,14 +18,14 @@
 
 - main.js：插件唯一源文件，同时承载汉化产物与本地增强。改中文措辞时 main.js 与 i18n/zh-CN.jsonl 必须同时改，否则 npm run i18n:check 会失败。
 - main.js 中 `// ===== ENHANCE BEGIN =====` 与 `// ===== ENHANCE END =====` 之间、以及 `// ---- 增强：把常用菜单项提升为可绑键的命令 ----` 之后是本地增强；合并上游后必须重新套用，清单与步骤见 docs/ENHANCE.zh-CN.md。
-- docs/ENHANCE.zh-CN.md：本地增强的命令、行为与重新套用步骤。
+- docs/ENHANCE.zh-CN.md：本地增强的命令、行为与重新套用步骤，含「拆分与纳入 IR 分离」的约定：拆分产物一律 `status: inbox` 放在 `IR/Sources/<书名>/`。
 - i18n/GLOSSARY.md：术语表、跳过规则与工具链说明，汉化前必读。
 - scripts/i18n-*：extract / remap / apply 三步流水线。合并上游时先 `git checkout upstream/main -- main.js`，再 `npm run i18n:remap`、`npm run i18n:apply`，最后按 docs/ENHANCE.zh-CN.md 重贴增强块。
 - docs/USER-GUIDE.zh-CN.md：中文使用指南，命令名必须与 main.js 实际文案逐字一致。
 
 ## 增强命令
 
-在纯汉化版的 9 条命令之外新增 10 条，均可在 Obsidian「设置 → 快捷键」绑定：阅读点：设到光标、阅读点：跳转到阅读位置、当前元素：已完成、当前元素：搁置、当前元素：推迟、删除当前 IR 材料…、移出 IR（保留笔记）…、从剪贴板新建来源（文章）、从 EPUB 导入来源…、当前元素：设为活跃（加入今日队列）。
+在纯汉化版的 9 条命令之外新增 11 条，均可在 Obsidian「设置 → 快捷键」绑定：阅读点：设到光标、阅读点：跳转到阅读位置、当前元素：已完成、当前元素：搁置、当前元素：推迟、删除当前 IR 材料…、移出 IR（保留笔记）…、从剪贴板新建来源（文章）、从 EPUB 导入来源…、当前元素：设为活跃（加入今日队列）、拆分来源为章节（每章一个文件）。
 
 ## 硬约束
 
@@ -36,4 +36,4 @@
 
 ## 当前状态
 
-v1.1.8 + 首批增强：19 条命令（9 条原有 + 10 条增强），`npm run check` 全绿。
+v1.1.8 + 首批增强：20 条命令（9 条原有 + 11 条增强），`npm run check` 全绿。

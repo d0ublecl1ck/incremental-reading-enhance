@@ -10,3 +10,5 @@
 - [ ] `main.js` 的 EPUB 解析（`_epubReadZip` / `_epubBlocks`）—— ZIP、OPF、spine 层已用真实 EPUB 在 Node 里验证；DOM 转换层只能在 Obsidian 里实测，导入排版异常的书时先看预览指标。记录：2026-10-09
 - [ ] `newSource` / `importClipping` 里的去向选择已改成 `_askInboxOrActive()`，这两处在 ENHANCE 块之外，合并上游后会还原成 confirmDialog，需按 docs/ENHANCE.zh-CN.md 重贴（4 处调用点）。记录：2026-10-09
 - [ ] `currentElementActions()` 菜单里新增了「设为活跃（加入今日队列）」一项，该处在 ENHANCE 块之外，合并上游后需重贴。记录：2026-10-09
+- [ ] `splitArticle()` 的子笔记模板已从 `status: active` 改为 `status: inbox`（ENHANCE 块之外），合并上游后需重贴，否则拆完会立刻乱跳。记录：2026-10-09
+- [ ] EPUB 导入的自动拆章依赖「来源文件夹递归扫描」这一上游行为（`filesInFolder`）；上游若改成只扫一层，子文件夹方案会失效。记录：2026-10-09
